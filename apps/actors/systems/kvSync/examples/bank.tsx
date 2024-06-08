@@ -23,10 +23,53 @@ import { Inspector } from "./common/inspector";
 function BankUI(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
 
+  {
+    client.state.loginState.type === "LoggedIn" ? (
+      <div style={{ margin: 10 }}>
+        <h3>MyBank</h3>
+        <span>👤 {client.state.loginState.username}</span>
+        <InnerContent client={client} />
+      </div>
+    ) : (
+      <LoginSignupForm client={client} />
+    );
+  }
+}
+
+function LoginSignupForm(props: { client: Client }) {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLogin, setIsLogin] = useState(true);
+
   return (
-    <div style={{ margin: 10 }}>
-      <h3>MyBank</h3>
-      <InnerContent client={client} />
+    <div>
+      <form
+        onSubmit={(evt) => {
+          evt.preventDefault();
+          if (isLogin) {
+            props.client.login(username, password);
+          } else {
+            props.client.signup(username, password);
+          }
+        }}
+      >
+        <input
+          type="text"
+          value={username}
+          onChange={(evt) => setUsername(evt.target.value)}
+        />
+        <input
+          type="password"
+          value={password}
+          onChange={(evt) => setPassword(evt.target.value)}
+        />
+        <input
+          type="checkbox"
+          checked={isLogin}
+          onChange={() => setIsLogin(!isLogin)}
+        />
+        <button type="submit">{isLogin ? "Login" : "Signup"}</button>
+      </form>
     </div>
   );
 }
