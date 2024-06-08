@@ -37,21 +37,19 @@ function BankUI(props: UIProps<ClientState, UserInput>) {
 function LoginSignupForm(props: { client: Client }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [isLogin, setIsLogin] = useState(true);
+  const loginState = props.client.state.loginState;
+  const inFlight =
+    loginState.type === "LoggedOut" ? loginState.loggingInAs !== null : false;
 
   return (
     <div>
       <form
         onSubmit={(evt) => {
           evt.preventDefault();
-          if (isLogin) {
-            props.client.login(username, password);
-          } else {
-            props.client.signup(username, password);
-          }
+          props.client.login(username, password);
         }}
       >
-        <h3>{isLogin ? "Login" : "Signup"}</h3>
+        <h3>Login or Signup</h3>
         <p>
           <span>Username</span>
           <br />
@@ -70,16 +68,15 @@ function LoginSignupForm(props: { client: Client }) {
             onChange={(evt) => setPassword(evt.target.value)}
           />
         </p>
-        <p>
-          <span>Login</span>
-          <br />
-          <input
-            type="checkbox"
-            checked={isLogin}
-            onChange={() => setIsLogin(!isLogin)}
-          />
-        </p>
-        <button type="submit">{isLogin ? "Login" : "Signup"}</button>
+        <button type="submit" disabled={inFlight}>
+          Login
+        </button>{" "}
+        <button
+          onClick={() => props.client.signup(username, password)}
+          disabled={inFlight}
+        >
+          Signup
+        </button>
       </form>
     </div>
   );
