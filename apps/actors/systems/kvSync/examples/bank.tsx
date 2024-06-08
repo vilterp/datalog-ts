@@ -176,9 +176,9 @@ const mutations: MutationDefns = {
   Deposit: lambda(
     ["amount"],
     letExpr(
-      [{ varName: "balanceBefore", val: read(apply("currentUser", []), 0) }],
+      [{ varName: "balanceBefore", val: read(varr("curUser"), 0) }],
       write(
-        apply("currentUser", []),
+        varr("curUser"),
         apply("+", [varr("balanceBefore"), varr("amount")])
       )
     )
@@ -186,12 +186,12 @@ const mutations: MutationDefns = {
   Withdraw: lambda(
     ["amount"],
     letExpr(
-      [{ varName: "balanceBefore", val: read(apply("currentUser", []), 0) }],
+      [{ varName: "balanceBefore", val: read(varr("curUser"), 0) }],
       ifExpr(
         apply(">", [varr("amount"), varr("balanceBefore")]),
         abort(str("balance not high enough")),
         write(
-          apply("currentUser", []),
+          varr("curUser"),
           apply("-", [varr("balanceBefore"), varr("amount")])
         )
       )
@@ -201,7 +201,7 @@ const mutations: MutationDefns = {
     ["toAccount", "amount"],
     letExpr(
       [
-        { varName: "fromBalance", val: read(apply("currentUser", []), 0) },
+        { varName: "fromBalance", val: read(varr("curUser"), 0) },
         { varName: "toBalance", val: read(varr("toAccount"), 0) },
       ],
       ifExpr(
@@ -209,7 +209,7 @@ const mutations: MutationDefns = {
         abort(str("balance not high enough")),
         doExpr([
           write(
-            apply("currentUser", []),
+            varr("curUser"),
             apply("-", [varr("fromBalance"), varr("amount")])
           ),
           write(
