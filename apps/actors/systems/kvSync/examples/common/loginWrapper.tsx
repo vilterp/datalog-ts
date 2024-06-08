@@ -60,3 +60,8 @@ function LoginSignupForm(props: { client: Client }) {
     </div>
   );
 }
+
+// TODO: this should only need LoggedInClient arg
+export function LoggedIn(props: { user: string; client: Client }) {
+  return <div onClick={() => props.client.logout()}>👤 {props.user}</div>;
+}

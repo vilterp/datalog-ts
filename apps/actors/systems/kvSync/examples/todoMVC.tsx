@@ -18,7 +18,7 @@ import {
 import { mapObjToList } from "../../../../../util/util";
 import { Client, makeClient, useLiveQuery } from "../hooks";
 import { Inspector } from "./common/inspector";
-import { LoginWrapper } from "./common/loginWrapper";
+import { LoggedIn, LoginWrapper } from "./common/loginWrapper";
 
 function TodoMVC(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
@@ -43,7 +43,17 @@ function TodoMVCInner(props: { client: Client; user: string }) {
 
   return (
     <div style={{ margin: 10 }}>
-      <h2>TodoMVC</h2>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        <h2>TodoMVC</h2>
+        <LoggedIn user={props.user} client={client} />
+      </div>
       <input
         type="text"
         value={newTodo}

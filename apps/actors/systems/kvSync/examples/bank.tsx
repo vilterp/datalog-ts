@@ -19,7 +19,7 @@ import {
 import { MutationDefns, MutationInvocation, UserInput } from "../types";
 import { KVApp } from "./types";
 import { Inspector } from "./common/inspector";
-import { LoginWrapper } from "./common/loginWrapper";
+import { LoggedIn, LoginWrapper } from "./common/loginWrapper";
 
 function BankUI(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
@@ -38,7 +38,7 @@ function BankUI(props: UIProps<ClientState, UserInput>) {
             }}
           >
             <h3>MyBank</h3>
-            <div>👤 {user}</div>
+            <LoggedIn user={user} client={client} />
           </div>
           <InnerContent client={client} />
         </div>
@@ -48,8 +48,6 @@ function BankUI(props: UIProps<ClientState, UserInput>) {
 }
 
 function InnerContent(props: { client: Client }) {
-  const [balance, txnState, queryState] = useMyBalance(props.client);
-
   return (
     <div>
       <h4>My balance</h4>
