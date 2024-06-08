@@ -219,9 +219,11 @@ function ThreadList(props: {
 
         const key = `/latestMessageRead/byUser/${props.user}/${threadID}`;
         const latestMessageReadInThread = latestMessageRead[key];
-        const hasUnread =
-          latestMessageInThread?.value >
-          (latestMessageReadInThread?.value || -1);
+        const numUnread =
+          ((latestMessageInThread?.value as number) || 0) -
+          ((latestMessageReadInThread?.value as number) || 0);
+
+        const hasUnread = numUnread > 0;
         // console.log(
         //   "ThreadList item hasUnread",
         //   props.client.state.id,
@@ -240,7 +242,7 @@ function ThreadList(props: {
             }}
           >
             {threadID}
-            {hasUnread ? "*" : ""}
+            {hasUnread ? ` (${numUnread})` : ""}
           </div>
         );
       })}
