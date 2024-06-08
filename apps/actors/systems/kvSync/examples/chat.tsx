@@ -19,6 +19,7 @@ import { TxnState } from "./common/txnState";
 import { KVApp } from "./types";
 import { Table } from "./common/table";
 import { Inspector } from "./common/inspector";
+import { LoggedIn, LoginWrapper } from "./common/loginWrapper";
 
 type Message = {
   id: number;
@@ -28,10 +29,21 @@ type Message = {
 };
 
 function ChatUI(props: UIProps<ClientState, UserInput>) {
+  const client = makeClient(props);
+
+  return (
+    <LoginWrapper
+      client={client}
+      loggedIn={(user) => <ChatUIInner client={client} user={user} />}
+    />
+  );
+}
+
+function ChatUIInner(props: { client: Client; user: string }) {
+  const client = props.client;
+
   const [curThread, setCurThread] = useState("foo");
   const scrollRef = useRef<HTMLDivElement>();
-
-  const client = makeClient(props);
 
   useLayoutEffect(() => {
     if (scrollRef.current) {
@@ -47,6 +59,7 @@ function ChatUI(props: UIProps<ClientState, UserInput>) {
             <td valign="top" style={{ backgroundColor: "rgb(221, 255, 244)" }}>
               <ThreadList
                 client={client}
+                user={props.user}
                 curThread={curThread}
                 setCurThread={setCurThread}
                 threads={EXAMPLE_THREADS}
@@ -57,7 +70,11 @@ function ChatUI(props: UIProps<ClientState, UserInput>) {
                 ref={scrollRef}
                 style={{ width: 400, height: 250, overflowY: "scroll" }}
               >
-                <MessageTable threadID={curThread} client={client} />
+                <MessageTable
+                  threadID={curThread}
+                  client={client}
+                  user={props.user}
+                />
               </div>
               <SendBox threadID={curThread} client={client} />
             </td>
@@ -71,7 +88,11 @@ function ChatUI(props: UIProps<ClientState, UserInput>) {
 
 type MessageWithTxnID = Message & { transactionID: string };
 
-function MessageTable(props: { threadID: string; client: Client }) {
+function MessageTable(props: {
+  threadID: string;
+  client: Client;
+  user: string;
+}) {
   const [messages, messagesStatus] = useLiveQuery(
     props.client,
     `messages-${props.threadID}`,
@@ -124,7 +145,7 @@ function MessageTable(props: { threadID: string; client: Client }) {
             width: 100,
             render: (msg) =>
               (usersSeenBySeqNo[msg.seqNo] || [])
-                .filter((user) => user !== props.client.state.id)
+                .filter((user) => user !== props.user)
                 .join(", "),
           },
         ]}
@@ -166,6 +187,7 @@ function SendBox(props: { threadID: string; client: Client }) {
 
 function ThreadList(props: {
   client: Client;
+  user: string; // TODO: get from client
   threads: string[];
   curThread: string;
   setCurThread: (th: string) => void;
@@ -182,23 +204,26 @@ function ThreadList(props: {
     props.client,
     "latest-message-read",
     {
-      prefix: `/latestMessageRead/byUser/${props.client.state.id}`,
+      prefix: `/latestMessageRead/byUser/${props.user}`,
     }
   );
 
   return (
     <div style={{ width: 100 }}>
       <h4>Chat</h4>
+      <LoggedIn client={props.client} user={props.user} />
       {props.threads.map((threadID) => {
         // TODO: need full keys
         const latestMessageInThread =
           latestMessage[`/latestMessage/${threadID}`];
 
-        const key = `/latestMessageRead/byUser/${props.client.state.id}/${threadID}`;
+        const key = `/latestMessageRead/byUser/${props.user}/${threadID}`;
         const latestMessageReadInThread = latestMessageRead[key];
-        const hasUnread =
-          latestMessageInThread?.value >
-          (latestMessageReadInThread?.value || -1);
+        const numUnread =
+          ((latestMessageInThread?.value as number) || 0) -
+          ((latestMessageReadInThread?.value as number) || 0);
+
+        const hasUnread = numUnread > 0;
         // console.log(
         //   "ThreadList item hasUnread",
         //   props.client.state.id,
@@ -217,7 +242,7 @@ function ThreadList(props: {
             }}
           >
             {threadID}
-            {hasUnread ? "*" : ""}
+            {hasUnread ? ` (${numUnread})` : ""}
           </div>
         );
       })}

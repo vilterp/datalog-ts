@@ -1,11 +1,7 @@
 import React, { useState } from "react";
-import {
-  mapObjToList,
-  randStep2,
-  randomFromList,
-} from "../../../../../util/util";
+import { mapObj, randStep2, randomFromList } from "../../../../../util/util";
 import { UIProps } from "../../../types";
-import { ClientState, QueryStatus } from "../client";
+import { ClientState, QueryStatus, TransactionState } from "../client";
 import { Client, makeClient, useLiveQuery } from "../hooks";
 import {
   apply,
@@ -21,201 +17,72 @@ import {
   int,
 } from "../mutations/types";
 import { MutationDefns, MutationInvocation, UserInput } from "../types";
-import { TxnState } from "./common/txnState";
 import { KVApp } from "./types";
-import { Table } from "./common/table";
 import { Inspector } from "./common/inspector";
+import { LoggedIn, LoginWrapper } from "./common/loginWrapper";
 
 function BankUI(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
 
   return (
-    <div style={{ margin: 10 }}>
-      <h3>MyBank</h3>
-      <InnerContent client={client} />
-    </div>
+    <LoginWrapper
+      client={client}
+      loggedIn={(user) => (
+        <div style={{ margin: 10 }}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <h3>MyBank</h3>
+            <LoggedIn user={user} client={client} />
+          </div>
+          <InnerContent client={client} />
+        </div>
+      )}
+    />
   );
 }
 
 function InnerContent(props: { client: Client }) {
-  const [accounts, queryState] = useAccountList(props.client);
-
-  if (queryState === "Loading") {
-    return <div>Loading...</div>;
-  }
-
   return (
     <div>
-      <BalanceTable client={props.client} accounts={accounts} />
-      <h4>Operations</h4>
+      <h4>My balance</h4>
+      <div>
+        <MyBalance client={props.client} />
+      </div>
 
+      <h4>Operations</h4>
       <ul>
         <li>
-          <WithdrawForm client={props.client} accounts={accounts} />
+          <WithdrawForm client={props.client} />
         </li>
         <li>
-          <DepositForm client={props.client} accounts={accounts} />
+          <DepositForm client={props.client} />
         </li>
         <li>
-          <MoveForm client={props.client} accounts={accounts} />
-        </li>
-        <li>
-          <CreateAccountForm client={props.client} />
+          <PayForm client={props.client} />
         </li>
       </ul>
-
       <Inspector client={props.client} />
     </div>
   );
 }
 
-function WithdrawForm(props: { client: Client; accounts: Account[] }) {
-  const [account, setAccount] = useState("");
-  const [amount, setAmount] = useState(10);
+function MyBalance(props: { client: Client }) {
+  const [balance, txnState, queryState] = useMyBalance(props.client);
+
+  if (queryState === "Loading") {
+    return <p>...</p>;
+  }
 
   return (
-    <form
-      onSubmit={(evt) => {
-        evt.preventDefault();
-        props.client.runMutation("Withdraw", [account, amount]);
-      }}
-    >
-      Withdraw{" "}
-      <input
-        value={amount}
-        size={5}
-        onChange={(evt) => setAmount(parseInt(evt.target.value))}
-      />{" "}
-      from account{" "}
-      <AccountChooser
-        accounts={props.accounts}
-        current={account}
-        onChange={setAccount}
-      />{" "}
-      <button>Submit</button>
-    </form>
-  );
-}
-
-function DepositForm(props: { client: Client; accounts: Account[] }) {
-  const [account, setAccount] = useState("foo");
-  const [amount, setAmount] = useState(10);
-
-  return (
-    <form
-      onSubmit={(evt) => {
-        evt.preventDefault();
-        props.client.runMutation("Deposit", [account, amount]);
-      }}
-    >
-      Deposit{" "}
-      <input
-        value={amount}
-        size={5}
-        onChange={(evt) => setAmount(parseInt(evt.target.value))}
-      />{" "}
-      into account{" "}
-      <AccountChooser
-        accounts={props.accounts}
-        current={account}
-        onChange={setAccount}
-      />{" "}
-      <button>Submit</button>
-    </form>
-  );
-}
-
-function MoveForm(props: { client: Client; accounts: Account[] }) {
-  const [fromAccount, setFromAccount] = useState("");
-  const [toAccount, setToAccount] = useState("");
-  const [amount, setAmount] = useState(10);
-
-  return (
-    <form
-      onSubmit={(evt) => {
-        evt.preventDefault();
-        props.client.runMutation("Transfer", [fromAccount, toAccount, amount]);
-      }}
-    >
-      Move{" "}
-      <input
-        value={amount}
-        size={5}
-        onChange={(evt) => setAmount(parseInt(evt.target.value))}
-      />{" "}
-      from account{" "}
-      <AccountChooser
-        accounts={props.accounts}
-        current={fromAccount}
-        onChange={setFromAccount}
-      />{" "}
-      to account{" "}
-      <AccountChooser
-        accounts={props.accounts}
-        current={toAccount}
-        onChange={setToAccount}
-      />{" "}
-      <button>Submit</button>
-    </form>
-  );
-}
-
-function BalanceTable(props: { client: Client; accounts: Account[] }) {
-  return (
-    <>
-      <h4>Accounts</h4>
-      <Table<Account>
-        columns={[
-          { name: "Account", render: (account) => account.name },
-          { name: "Balance", render: (account) => account.balance },
-          {
-            name: "State",
-            render: (account) => (
-              <TxnState client={props.client} txnID={account.transactionID} />
-            ),
-          },
-        ]}
-        data={props.accounts}
-        getKey={(account) => account.name}
-      />
-    </>
-  );
-}
-
-function CreateAccountForm(props: { client: Client }) {
-  const [name, setName] = useState("");
-
-  return (
-    <form
-      onSubmit={(evt) => {
-        evt.preventDefault();
-        setName("");
-        props.client.runMutation("CreateAccount", [name]);
-      }}
-    >
-      Create account{" "}
-      <input value={name} onChange={(evt) => setName(evt.target.value)} />{" "}
-      <button>Submit</button>
-    </form>
-  );
-}
-
-// ==== Account list and chooser ====
-
-function AccountChooser(props: {
-  accounts: Account[];
-  current: string;
-  onChange: (account: string) => void;
-}) {
-  return (
-    <select onChange={(evt) => props.onChange(evt.target.value)}>
-      <option key=""></option>
-      {props.accounts.map((account) => (
-        <option key={account.name} value={account.name}>
-          {account.name}
-        </option>
-      ))}
-    </select>
+    <p style={{ color: txnState.type === "Committed" ? "black" : "grey" }}>
+      ${balance}
+    </p>
   );
 }
 
@@ -225,17 +92,39 @@ type Account = {
   transactionID: string;
 };
 
-function useAccountList(client: Client): [Account[], QueryStatus] {
+function useMyBalance(client: Client): [number, TransactionState, QueryStatus] {
+  if (client.state.loginState.type !== "LoggedIn") {
+    // TODO: better types here
+    return [0, { type: "Committed", serverTimestamp: 0 }, "Loading"];
+  }
+
+  const [accounts, queryState] = useAccountList(client);
+  const account = accounts[client.state.loginState.username];
+  if (!account) {
+    return [0, { type: "Committed", serverTimestamp: 0 }, queryState];
+  }
+
+  return [
+    account.balance,
+    client.state.transactions[account.transactionID].state,
+    queryState,
+  ];
+}
+
+// TODO: one client shouldn't be able to query for balances of all accounts
+function useAccountList(
+  client: Client
+): [{ [name: string]: Account }, QueryStatus] {
   const [queryResults, queryState] = useLiveQuery(client, "list-accounts", {
     prefix: "",
   });
 
   if (queryState === "Loading") {
-    return [[], queryState];
+    return [{}, queryState];
   }
 
   return [
-    mapObjToList(queryResults, (key, value) => ({
+    mapObj(queryResults, (key, value) => ({
       name: key,
       balance: value.value as number,
       transactionID: value.transactionID,
@@ -244,40 +133,110 @@ function useAccountList(client: Client): [Account[], QueryStatus] {
   ];
 }
 
+function WithdrawForm(props: { client: Client }) {
+  const [amount, setAmount] = useState(10);
+
+  return (
+    <form
+      onSubmit={(evt) => {
+        evt.preventDefault();
+        props.client.runMutation("Withdraw", [amount]);
+      }}
+    >
+      Withdraw{" "}
+      <input
+        value={amount}
+        size={5}
+        onChange={(evt) => setAmount(parseInt(evt.target.value))}
+      />{" "}
+      <button>Submit</button>
+    </form>
+  );
+}
+
+function DepositForm(props: { client: Client }) {
+  const [amount, setAmount] = useState(10);
+
+  return (
+    <form
+      onSubmit={(evt) => {
+        evt.preventDefault();
+        props.client.runMutation("Deposit", [amount]);
+      }}
+    >
+      Deposit{" "}
+      <input
+        value={amount}
+        size={5}
+        onChange={(evt) => setAmount(parseInt(evt.target.value))}
+      />{" "}
+      <button>Submit</button>
+    </form>
+  );
+}
+
+function PayForm(props: { client: Client }) {
+  const [toAccount, setToAccount] = useState("");
+  const [amount, setAmount] = useState(10);
+
+  return (
+    <form
+      onSubmit={(evt) => {
+        evt.preventDefault();
+        props.client.runMutation("Transfer", [toAccount, amount]);
+      }}
+    >
+      Pay{" "}
+      <input
+        value={amount}
+        size={5}
+        onChange={(evt) => setAmount(parseInt(evt.target.value))}
+      />{" "}
+      to account{" "}
+      <input
+        type="text"
+        value={toAccount}
+        onChange={(evt) => setToAccount(evt.target.value)}
+      />{" "}
+      <button>Submit</button>
+    </form>
+  );
+}
+
 // ==== Mutations ====
 
 // TODO: is default=0 correct for everything here?
 const mutations: MutationDefns = {
   CreateAccount: lambda(["name"], write(varr("name"), int(0))),
   Deposit: lambda(
-    ["toAccount", "amount"],
+    ["amount"],
     letExpr(
-      [{ varName: "balanceBefore", val: read(varr("toAccount"), 0) }],
+      [{ varName: "balanceBefore", val: read(varr("curUser"), 0) }],
       write(
-        varr("toAccount"),
+        varr("curUser"),
         apply("+", [varr("balanceBefore"), varr("amount")])
       )
     )
   ),
   Withdraw: lambda(
-    ["fromAccount", "amount"],
+    ["amount"],
     letExpr(
-      [{ varName: "balanceBefore", val: read(varr("fromAccount"), 0) }],
+      [{ varName: "balanceBefore", val: read(varr("curUser"), 0) }],
       ifExpr(
         apply(">", [varr("amount"), varr("balanceBefore")]),
         abort(str("balance not high enough")),
         write(
-          varr("fromAccount"),
+          varr("curUser"),
           apply("-", [varr("balanceBefore"), varr("amount")])
         )
       )
     )
   ),
   Transfer: lambda(
-    ["fromAccount", "toAccount", "amount"],
+    ["toAccount", "amount"],
     letExpr(
       [
-        { varName: "fromBalance", val: read(varr("fromAccount"), 0) },
+        { varName: "fromBalance", val: read(varr("curUser"), 0) },
         { varName: "toBalance", val: read(varr("toAccount"), 0) },
       ],
       ifExpr(
@@ -285,7 +244,7 @@ const mutations: MutationDefns = {
         abort(str("balance not high enough")),
         doExpr([
           write(
-            varr("fromAccount"),
+            varr("curUser"),
             apply("-", [varr("fromBalance"), varr("amount")])
           ),
           write(
@@ -316,19 +275,17 @@ function choose(
     return [null, randomSeed1];
   }
 
-  const [account, randomSeed2] = randomFromList(randomSeed1, accounts);
-
-  const [amount01, randomSeed3] = randStep2(randomSeed2);
+  const [amount01, randomSeed2] = randStep2(randomSeed1);
   const amount = Math.floor(amount01 * MAX_RANDOM_TXN_AMOUNT);
 
   const possibleInvocations: MutationInvocation[] = [
-    { type: "Invocation", name: "Withdraw", args: [account, amount] },
-    { type: "Invocation", name: "Deposit", args: [account, amount] },
+    { type: "Invocation", name: "Withdraw", args: [amount] },
+    { type: "Invocation", name: "Deposit", args: [amount] },
     // TODO: transfer
   ];
 
   const [invocation, randomSeed4] = randomFromList(
-    randomSeed3,
+    randomSeed2,
     possibleInvocations
   );
 

@@ -10,15 +10,75 @@ export type VersionedValue = {
 export type KVData = { [key: string]: VersionedValue };
 
 export type UserInput =
+  | { type: "Signup"; username: string; password: string }
+  | { type: "Login"; username: string; password: string }
+  | { type: "Logout" }
   | { type: "RunMutation"; invocation: MutationInvocation }
   | { type: "RegisterQuery"; id: string; query: Query }
   | { type: "CancelTransaction"; id: string };
 
-export type MsgToServer = LiveQueryRequest | MutationRequest;
+export type MsgToServer =
+  | SignupRequest
+  | LogInRequest
+  | {
+      type: "AuthenticatedRequest";
+      token: string;
+      request: AuthenticatedRequest;
+    };
+
+export type AuthenticatedRequest =
+  | LogOutRequest
+  | LiveQueryRequest
+  | MutationRequest;
 
 export type MsgToClient = MsgFromServer | UserInput;
 
-type MsgFromServer = MutationResponse | LiveQueryUpdate | LiveQueryResponse;
+type MsgFromServer =
+  | SignupResponse
+  | LogInResponse
+  | LogOutResponse
+  | UnauthorizedError
+  | MutationResponse
+  | LiveQueryUpdate
+  | LiveQueryResponse;
+
+type UnauthorizedError = {
+  type: "UnauthorizedError";
+};
+
+// Login / Logout
+
+type SignupRequest = {
+  type: "SignupRequest";
+  username: string;
+  password: string;
+};
+
+type SignupResponse = {
+  type: "SignupResponse";
+  response: { type: "Success"; token: string } | { type: "Failure" };
+};
+
+type LogInRequest = {
+  type: "LogInRequest";
+  username: string;
+  password: string;
+};
+
+type LogInResponse = {
+  type: "LogInResponse";
+  response: { type: "Success"; token: string } | { type: "Failure" };
+};
+
+type LogOutRequest = {
+  type: "LogOutRequest";
+};
+
+type LogOutResponse = {
+  type: "LogOutResponse";
+};
+
+// Mutations & Queries
 
 export type MutationDefns = { [name: string]: Lambda };
 

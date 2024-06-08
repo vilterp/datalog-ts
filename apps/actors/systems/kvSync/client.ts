@@ -34,12 +34,17 @@ export type ClientState = {
   type: "ClientState";
   id: string;
   data: KVData;
+  loginState: LoginState;
   liveQueries: { [id: string]: LiveQuery };
   transactions: { [id: string]: TransactionRecord };
   mutationDefns: MutationDefns;
   randSeed: number;
   time: number;
 };
+
+export type LoginState =
+  | { type: "LoggedOut"; loggingInAs: string | null }
+  | { type: "LoggedIn"; username: string; token: string; loggingOut: boolean };
 
 export function initialClientState(
   clientID: string,
@@ -49,11 +54,12 @@ export function initialClientState(
   return {
     type: "ClientState",
     id: clientID,
+    loginState: { type: "LoggedOut", loggingInAs: null },
     data: {},
     liveQueries: {},
     mutationDefns,
     transactions: {},
-    randSeed: hashString(clientID),
+    randSeed,
     time: 0,
   };
 }
@@ -77,7 +83,7 @@ export type TransactionRecord = {
 function processMutationResponse(
   state: ClientState,
   response: MutationResponse
-): [ClientState, MutationRequest | null] {
+): ClientState {
   const txn = state.transactions[response.txnID];
   const payload = response.payload;
   const newTxnState: TransactionState =
@@ -106,9 +112,9 @@ function processMutationResponse(
         payload
       );
       // TODO: roll back & retry?
-      return [state1, null];
+      return state1;
     case "Accept":
-      return [state1, null];
+      return state1;
   }
 }
 
@@ -300,13 +306,79 @@ function updateClientInner(
     case "messageReceived": {
       const msg = init.payload;
       switch (msg.type) {
-        // from server
-        case "MutationResponse": {
-          const [newState, resp] = processMutationResponse(state, msg);
-          if (resp == null) {
-            return effects.updateState(newState);
+        // ==== from server ====
+
+        // Auth
+
+        case "SignupResponse": {
+          if (msg.response.type === "Failure") {
+            console.warn("CLIENT: signup failed");
+            // TODO: store error in state
+            return effects.updateState({
+              ...state,
+              loginState: { type: "LoggedOut", loggingInAs: null },
+            });
           }
-          return effects.reply(init, newState, resp);
+          if (state.loginState.type !== "LoggedOut") {
+            console.warn("CLIENT: already logged in");
+            return effects.updateState(state);
+          }
+          if (state.loginState.loggingInAs === null) {
+            console.warn("CLIENT: no user to log in as");
+            return effects.updateState(state);
+          }
+
+          return effects.updateState({
+            ...state,
+            loginState: {
+              type: "LoggedIn",
+              username: state.loginState.loggingInAs,
+              token: msg.response.token,
+              loggingOut: false,
+            },
+          });
+        }
+        case "LogInResponse": {
+          if (msg.response.type === "Failure") {
+            console.warn("CLIENT: login failed");
+            // TODO: store error in state
+            return effects.updateState({
+              ...state,
+              loginState: { type: "LoggedOut", loggingInAs: null },
+            });
+          }
+
+          if (state.loginState.type !== "LoggedOut") {
+            console.warn("CLIENT: already logged in");
+            return effects.updateState(state);
+          }
+          if (state.loginState.loggingInAs === null) {
+            console.warn("CLIENT: no user to log in as");
+            return effects.updateState(state);
+          }
+
+          return effects.updateState({
+            ...state,
+            loginState: {
+              type: "LoggedIn",
+              username: state.loginState.loggingInAs,
+              token: msg.response.token,
+              loggingOut: false,
+            },
+          });
+        }
+        case "LogOutResponse": {
+          return effects.updateState({
+            ...state,
+            loginState: { type: "LoggedOut", loggingInAs: null },
+          });
+        }
+
+        // Queries & Mutations
+
+        case "MutationResponse": {
+          const newState = processMutationResponse(state, msg);
+          return effects.updateState(newState);
         }
         case "LiveQueryResponse": {
           return effects.updateState(processLiveQueryResponse(state, msg));
@@ -314,12 +386,92 @@ function updateClientInner(
         case "LiveQueryUpdate": {
           return effects.updateState(processLiveQueryUpdate(state, msg));
         }
-        // user input
+
+        // ==== user input ===
+
+        // Auth
+
+        case "Signup": {
+          const newState: ClientState = {
+            ...state,
+            loginState: { type: "LoggedOut", loggingInAs: msg.username },
+          };
+          return effects.updateAndSend(newState, [
+            {
+              to: "server",
+              msg: {
+                type: "SignupRequest",
+                username: msg.username,
+                password: msg.password,
+              },
+            },
+          ]);
+        }
+        case "Login": {
+          const newState: ClientState = {
+            ...state,
+            loginState: { type: "LoggedOut", loggingInAs: msg.username },
+          };
+          return effects.updateAndSend(newState, [
+            {
+              to: "server",
+              msg: {
+                type: "LogInRequest",
+                username: msg.username,
+                password: msg.password,
+              },
+            },
+          ]);
+        }
+        case "Logout": {
+          if (state.loginState.type === "LoggedOut") {
+            console.warn("CLIENT: already logged out");
+            return effects.updateState(state);
+          }
+
+          const newState: ClientState = {
+            ...state,
+            loginState: { ...state.loginState, loggingOut: true },
+          };
+
+          return effects.updateAndSend(newState, [
+            {
+              to: "server",
+              msg: {
+                type: "AuthenticatedRequest",
+                token: state.loginState.token,
+                request: { type: "LogOutRequest" },
+              },
+            },
+          ]);
+        }
+
+        // Queries & Mutations
+
         case "RegisterQuery": {
           const [newState, req] = registerLiveQuery(state, msg.id, msg.query);
-          return effects.updateAndSend(newState, [{ to: "server", msg: req }]);
+          if (state.loginState.type === "LoggedOut") {
+            console.warn("CLIENT: must be logged in to register query");
+            return effects.updateState(state);
+          }
+
+          return effects.updateAndSend(newState, [
+            {
+              to: "server",
+              msg: {
+                type: "AuthenticatedRequest",
+                token: state.loginState.token,
+                request: req,
+              },
+            },
+          ]);
         }
         case "RunMutation": {
+          if (state.loginState.type === "LoggedOut") {
+            console.warn("CLIENT: must be logged in to run mutation");
+            return effects.updateState(state);
+          }
+
           const [newState, req] = runMutationOnClient(
             state,
             {
@@ -327,15 +479,20 @@ function updateClientInner(
               name: msg.invocation.name,
               args: msg.invocation.args,
             },
-            state.id
+            state.loginState.username
           );
           if (req === null) {
             return effects.updateState(newState);
           }
+
           return effects.updateAndSend(newState, [
             {
               to: "server",
-              msg: req,
+              msg: {
+                type: "AuthenticatedRequest",
+                token: state.loginState.token,
+                request: req,
+              },
             },
           ]);
         }

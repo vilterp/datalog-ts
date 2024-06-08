@@ -11,6 +11,7 @@ import { initialServerState, ServerState, updateServer } from "./server";
 import { MsgToClient, MsgToServer } from "./types";
 import { EXAMPLES } from "./examples";
 import { KVApp } from "./examples/types";
+import { hashString } from "../../../../util/util";
 
 export type State = ServerState | ClientState | { type: "UserState" };
 
@@ -49,6 +50,7 @@ export const kvSyncTodoMVC: System<State, Msg> = makeActorSystem(
 );
 
 export function makeActorSystem(app: KVApp): System<State, Msg> {
+  const randServerSeed = 1234; // TODO: pass this in
   return {
     name: `KV: ${app.name}`,
     id: `kv-${app.name}`,
@@ -56,11 +58,15 @@ export function makeActorSystem(app: KVApp): System<State, Msg> {
     update,
     getInitialState: (interp) =>
       spawnInitialActors(update, interp, {
-        server: initialServerState(app.mutations, app.initialKVPairs || {}),
+        server: initialServerState(
+          app.mutations,
+          app.initialKVPairs || {},
+          randServerSeed
+        ),
       }),
     // TODO: generate ID deterministically
     initialClientState: (id: string) =>
-      initialClientState(id, app.mutations, 10),
+      initialClientState(id, app.mutations, hashString(id)),
     initialUserState: { type: "UserState" },
     chooseNextMove: (state, randomSeed) => {
       if (!app.choose) {
