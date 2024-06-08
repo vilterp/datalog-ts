@@ -14,6 +14,7 @@ export function Inspector(props: { client: Client }) {
       <Tabs
         curTabID={curTab}
         setTabID={setTab}
+        innerPadding={5}
         tabs={[
           {
             id: "transactions",
