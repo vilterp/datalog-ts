@@ -19,66 +19,31 @@ import {
 import { MutationDefns, MutationInvocation, UserInput } from "../types";
 import { KVApp } from "./types";
 import { Inspector } from "./common/inspector";
+import { LoginWrapper } from "./common/loginWrapper";
 
 function BankUI(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
 
-  return client.state.loginState.type === "LoggedIn" ? (
-    <div style={{ margin: 10 }}>
-      <h3>MyBank</h3>
-      <span>👤 {client.state.loginState.username}</span>
-      <InnerContent client={client} />
-    </div>
-  ) : (
-    <LoginSignupForm client={client} />
-  );
-}
-
-function LoginSignupForm(props: { client: Client }) {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const loginState = props.client.state.loginState;
-  const inFlight =
-    loginState.type === "LoggedOut" ? loginState.loggingInAs !== null : false;
-
   return (
-    <div>
-      <form
-        onSubmit={(evt) => {
-          evt.preventDefault();
-          props.client.login(username, password);
-        }}
-      >
-        <h3>Login or Signup</h3>
-        <p>
-          <span>Username</span>
-          <br />
-          <input
-            type="text"
-            value={username}
-            onChange={(evt) => setUsername(evt.target.value)}
-          />
-        </p>
-        <p>
-          <span>Password</span>
-          <br />
-          <input
-            type="password"
-            value={password}
-            onChange={(evt) => setPassword(evt.target.value)}
-          />
-        </p>
-        <button type="submit" disabled={inFlight}>
-          Login
-        </button>{" "}
-        <button
-          onClick={() => props.client.signup(username, password)}
-          disabled={inFlight}
-        >
-          Signup
-        </button>
-      </form>
-    </div>
+    <LoginWrapper
+      client={client}
+      loggedIn={(user) => (
+        <div style={{ margin: 10 }}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <h3>MyBank</h3>
+            <div>👤 {user}</div>
+          </div>
+          <InnerContent client={client} />
+        </div>
+      )}
+    />
   );
 }
 
