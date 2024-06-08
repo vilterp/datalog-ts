@@ -53,7 +53,9 @@ function InnerContent(props: { client: Client }) {
   return (
     <div>
       <h4>My balance</h4>
-      <p>{queryState === "Loading" ? "..." : `$${balance}`}</p>
+      <div>
+        <MyBalance client={props.client} />
+      </div>
 
       <h4>Operations</h4>
       <ul>
@@ -72,6 +74,20 @@ function InnerContent(props: { client: Client }) {
   );
 }
 
+function MyBalance(props: { client: Client }) {
+  const [balance, txnState, queryState] = useMyBalance(props.client);
+
+  if (queryState === "Loading") {
+    return <p>...</p>;
+  }
+
+  return (
+    <p style={{ color: txnState.type === "Committed" ? "black" : "grey" }}>
+      ${balance}
+    </p>
+  );
+}
+
 type Account = {
   name: string;
   balance: number;
@@ -79,8 +95,13 @@ type Account = {
 };
 
 function useMyBalance(client: Client): [number, TransactionState, QueryStatus] {
+  if (client.state.loginState.type !== "LoggedIn") {
+    // TODO: better types here
+    return [0, { type: "Committed", serverTimestamp: 0 }, "Loading"];
+  }
+
   const [accounts, queryState] = useAccountList(client);
-  const account = accounts[client.state.id];
+  const account = accounts[client.state.loginState.username];
   if (!account) {
     return [0, { type: "Committed", serverTimestamp: 0 }, queryState];
   }

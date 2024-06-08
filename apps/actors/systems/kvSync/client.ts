@@ -467,6 +467,11 @@ function updateClientInner(
           ]);
         }
         case "RunMutation": {
+          if (state.loginState.type === "LoggedOut") {
+            console.warn("CLIENT: must be logged in to run mutation");
+            return effects.updateState(state);
+          }
+
           const [newState, req] = runMutationOnClient(
             state,
             {
@@ -474,14 +479,10 @@ function updateClientInner(
               name: msg.invocation.name,
               args: msg.invocation.args,
             },
-            state.id
+            state.loginState.username
           );
           if (req === null) {
             return effects.updateState(newState);
-          }
-          if (state.loginState.type === "LoggedOut") {
-            console.warn("CLIENT: must be logged in to run mutation");
-            return effects.updateState(state);
           }
 
           return effects.updateAndSend(newState, [
