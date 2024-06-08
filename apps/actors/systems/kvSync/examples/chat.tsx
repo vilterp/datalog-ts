@@ -19,6 +19,7 @@ import { TxnState } from "./common/txnState";
 import { KVApp } from "./types";
 import { Table } from "./common/table";
 import { Inspector } from "./common/inspector";
+import { LoginWrapper } from "./common/loginWrapper";
 
 type Message = {
   id: number;
@@ -28,10 +29,21 @@ type Message = {
 };
 
 function ChatUI(props: UIProps<ClientState, UserInput>) {
+  const client = makeClient(props);
+
+  return (
+    <LoginWrapper
+      client={client}
+      loggedIn={(user) => <ChatUIInner client={client} user={user} />}
+    />
+  );
+}
+
+function ChatUIInner(props: { client: Client; user: string }) {
+  const client = props.client;
+
   const [curThread, setCurThread] = useState("foo");
   const scrollRef = useRef<HTMLDivElement>();
-
-  const client = makeClient(props);
 
   useLayoutEffect(() => {
     if (scrollRef.current) {
