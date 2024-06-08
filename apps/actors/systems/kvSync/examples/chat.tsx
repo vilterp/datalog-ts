@@ -204,7 +204,7 @@ function ThreadList(props: {
     props.client,
     "latest-message-read",
     {
-      prefix: `/latestMessageRead/byUser/${props.client.state.id}`,
+      prefix: `/latestMessageRead/byUser/${props.user}`,
     }
   );
 
@@ -217,7 +217,7 @@ function ThreadList(props: {
         const latestMessageInThread =
           latestMessage[`/latestMessage/${threadID}`];
 
-        const key = `/latestMessageRead/byUser/${props.client.state.id}/${threadID}`;
+        const key = `/latestMessageRead/byUser/${props.user}/${threadID}`;
         const latestMessageReadInThread = latestMessageRead[key];
         const hasUnread =
           latestMessageInThread?.value >
