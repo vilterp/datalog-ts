@@ -14,7 +14,7 @@ export function Tabs(props: {
             <div
               style={{
                 cursor: "pointer",
-                fontWeight: selected ? "bold" : "normal",
+                // fontWeight: selected ? "bold" : "normal",
                 backgroundColor: selected ? null : "rgb(230, 230, 230)",
                 border: "1px solid grey",
                 borderBottom: selected ? "none" : "1px solid grey",
