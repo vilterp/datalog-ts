@@ -5,6 +5,7 @@ export function Tabs(props: {
   curTabID: string;
   setTabID: (id: string) => void;
 }) {
+  const border = "1px solid grey";
   return (
     <div>
       <div style={{ display: "flex", flexDirection: "row" }}>
@@ -14,10 +15,13 @@ export function Tabs(props: {
             <div
               style={{
                 cursor: "pointer",
-                // fontWeight: selected ? "bold" : "normal",
                 backgroundColor: selected ? null : "rgb(230, 230, 230)",
-                border: "1px solid grey",
-                borderBottom: selected ? "none" : "1px solid grey",
+                // border
+                borderTop: border,
+                borderLeft: border,
+                borderRight: tabIdx === props.tabs.length - 1 ? border : "none",
+                borderBottom: selected ? "none" : border,
+                // padding
                 paddingLeft: 10,
                 paddingRight: 10,
                 paddingTop: 5,
