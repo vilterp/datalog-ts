@@ -34,12 +34,17 @@ export type ClientState = {
   type: "ClientState";
   id: string;
   data: KVData;
+  loginState: LoginState;
   liveQueries: { [id: string]: LiveQuery };
   transactions: { [id: string]: TransactionRecord };
   mutationDefns: MutationDefns;
   randSeed: number;
   time: number;
 };
+
+export type LoginState =
+  | { type: "LoggedOut"; loggingIn: boolean }
+  | { type: "LoggedIn"; token: string; loggingOut: boolean };
 
 export function initialClientState(
   clientID: string,
@@ -49,6 +54,7 @@ export function initialClientState(
   return {
     type: "ClientState",
     id: clientID,
+    loginState: { type: "LoggedOut", loggingIn: false },
     data: {},
     liveQueries: {},
     mutationDefns,
@@ -301,7 +307,57 @@ function updateClientInner(
     case "messageReceived": {
       const msg = init.payload;
       switch (msg.type) {
-        // from server
+        // ==== from server ====
+
+        // Auth
+
+        case "SignupResponse": {
+          if (msg.response.type === "Failure") {
+            console.warn("CLIENT: signup failed");
+            // TODO: store error in state
+            return effects.updateState({
+              ...state,
+              loginState: { type: "LoggedOut", loggingIn: false },
+            });
+          }
+
+          return effects.updateState({
+            ...state,
+            loginState: {
+              type: "LoggedIn",
+              token: msg.response.token,
+              loggingOut: false,
+            },
+          });
+        }
+        case "LogInResponse": {
+          if (msg.response.type === "Failure") {
+            console.warn("CLIENT: login failed");
+            // TODO: store error in state
+            return effects.updateState({
+              ...state,
+              loginState: { type: "LoggedOut", loggingIn: false },
+            });
+          }
+
+          return effects.updateState({
+            ...state,
+            loginState: {
+              type: "LoggedIn",
+              token: msg.response.token,
+              loggingOut: false,
+            },
+          });
+        }
+        case "LogOutResponse": {
+          return effects.updateState({
+            ...state,
+            loginState: { type: "LoggedOut", loggingIn: false },
+          });
+        }
+
+        // Queries & Mutations
+
         case "MutationResponse": {
           const [newState, resp] = processMutationResponse(state, msg);
           if (resp == null) {
@@ -315,7 +371,58 @@ function updateClientInner(
         case "LiveQueryUpdate": {
           return effects.updateState(processLiveQueryUpdate(state, msg));
         }
-        // user input
+
+        // ==== user input ===
+
+        // Auth
+
+        case "Signup": {
+          const newState: ClientState = {
+            ...state,
+            loginState: { type: "LoggedOut", loggingIn: true },
+          };
+          return effects.updateAndSend(newState, [
+            {
+              to: "server",
+              msg: {
+                type: "SignupRequest",
+                username: msg.username,
+                password: msg.password,
+              },
+            },
+          ]);
+        }
+        case "Login": {
+          const newState: ClientState = {
+            ...state,
+            loginState: { type: "LoggedOut", loggingIn: true },
+          };
+          return effects.updateAndSend(newState, [
+            {
+              to: "server",
+              msg: {
+                type: "LogInRequest",
+                username: msg.username,
+                password: msg.password,
+              },
+            },
+          ]);
+        }
+        case "Logout": {
+          const newState: ClientState = {
+            ...state,
+            loginState: { type: "LoggedIn", token: "", loggingOut: true },
+          };
+          return effects.updateAndSend(newState, [
+            {
+              to: "server",
+              msg: { type: "LogOutRequest" },
+            },
+          ]);
+        }
+
+        // Queries & Mutations
+
         case "RegisterQuery": {
           const [newState, req] = registerLiveQuery(state, msg.id, msg.query);
           return effects.updateAndSend(newState, [{ to: "server", msg: req }]);
