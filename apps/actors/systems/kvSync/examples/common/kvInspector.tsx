@@ -4,6 +4,7 @@ import { Table } from "./table";
 import { VersionedValue } from "../../types";
 import { getVisibleValue } from "../../mutations/common";
 import { TransactionState, isTxnVisible } from "../../client";
+import { intersperse } from "../../../../../../util/util";
 
 export function KVInspector(props: { client: Client }) {
   const isVisible = (txnID: string) => isTxnVisible(props.client.state, txnID);
@@ -29,13 +30,16 @@ export function KVInspector(props: { client: Client }) {
         {
           name: "Statuses",
           render: ([key, vvs]) =>
-            vvs
-              .map((vv) =>
-                iconForState(
-                  props.client.state.transactions[vv.transactionID].state
-                )
-              )
-              .join(""),
+            intersperse(
+              <></>,
+              vvs.map((vv) => (
+                <span title={vv.transactionID}>
+                  {iconForState(
+                    props.client.state.transactions[vv.transactionID].state
+                  )}
+                </span>
+              ))
+            ),
         },
       ]}
     />
