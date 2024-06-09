@@ -18,7 +18,7 @@ import {
 } from "./types";
 import * as effects from "../../effects";
 import { mapObj, randStep } from "../../../../util/util";
-import { runMutation } from "./mutations/run";
+import { addNewVersion, runMutation } from "./mutations/run";
 import { InterpreterState } from "./mutations/builtins";
 
 export type QueryStatus = "Loading" | "Online";
@@ -123,7 +123,7 @@ function processLiveQueryUpdate(
     const key = update.key;
     switch (update.type) {
       case "Updated":
-        newData[key] = [...(newData[key] || []), update.value];
+        newData[key] = addNewVersion(newData, key, update.value);
         break;
       case "Deleted":
         delete newData[key]; // TODO: tombstone?

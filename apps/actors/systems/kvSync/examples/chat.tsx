@@ -174,7 +174,10 @@ function SendBox(props: { threadID: string; client: Client }) {
           if (status === "Online") {
             props.client.runMutation("markRead", [props.threadID, latestSeqNo]);
           } else {
-            console.log("not marking read because query status is", status);
+            console.warn(
+              "SendBox: not marking read because query status is",
+              status
+            );
           }
         }}
       />

@@ -4,7 +4,7 @@ import { Table } from "./table";
 import { VersionedValue } from "../../types";
 import { getVisibleValue } from "../../mutations/common";
 import { TransactionState, isTxnVisible } from "../../client";
-import { intersperse, reversed } from "../../../../../../util/util";
+import { reversed } from "../../../../../../util/util";
 
 export function KVInspector(props: {
   client: Client;
@@ -34,28 +34,25 @@ export function KVInspector(props: {
         {
           name: "Statuses",
           render: ([key, vvs]) =>
-            intersperse(
-              <></>,
-              reversed(vvs).map((vv) => (
-                // TODO: clicking on this should show the txn trace
-                <span
-                  title={vv.transactionID}
-                  style={{
-                    cursor: "pointer",
-                    textDecoration:
-                      vv.transactionID === props.selectedTxnID
-                        ? "underline"
-                        : "none",
-                  }}
-                  key={vv.transactionID}
-                  onClick={() => props.onSelectTxn(vv.transactionID)}
-                >
-                  {iconForState(
-                    props.client.state.transactions[vv.transactionID].state
-                  )}
-                </span>
-              ))
-            ),
+            reversed(vvs).map((vv) => (
+              // TODO: clicking on this should show the txn trace
+              <span
+                title={vv.transactionID}
+                style={{
+                  cursor: "pointer",
+                  textDecoration:
+                    vv.transactionID === props.selectedTxnID
+                      ? "underline"
+                      : "none",
+                }}
+                key={vv.transactionID}
+                onClick={() => props.onSelectTxn(vv.transactionID)}
+              >
+                {iconForState(
+                  props.client.state.transactions[vv.transactionID].state
+                )}
+              </span>
+            )),
         },
       ]}
     />
