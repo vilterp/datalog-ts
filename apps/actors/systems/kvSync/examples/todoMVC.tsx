@@ -19,6 +19,7 @@ import { mapObjToList } from "../../../../../util/util";
 import { Client, makeClient, useLiveQuery } from "../hooks";
 import { Inspector } from "./common/inspector";
 import { LoggedIn, LoginWrapper } from "./common/loginWrapper";
+import { Table } from "./common/table";
 
 function TodoMVC(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
@@ -68,39 +69,38 @@ function TodoMVCInner(props: { client: Client; user: string }) {
       />
       <button onClick={() => handleSubmit()}>Submit</button>
       <div>
-        {todos.length === 0 && queryStatus === "Online" ? (
-          <p>
-            <em>Empty</em>
-          </p>
-        ) : null}
         {queryStatus === "Loading" ? (
           <p>
             <em>Loading...</em>
           </p>
-        ) : null}
-        <ul>
-          {todos.map((todo) => (
-            <li key={todo.id}>
-              <input
-                type="checkbox"
-                onChange={(evt) => {
-                  client.runMutation("ChangeCompletionStatus", [
-                    todo.id,
-                    (evt.target as HTMLInputElement).checked,
-                  ]);
-                }}
-                checked={todo.done}
-              />{" "}
-              <span
-                style={{
-                  color: todo.state.type === "Pending" ? "grey" : "inherit",
-                }}
-              >
-                {todo.name} ({todo.user})
-              </span>
-            </li>
-          ))}
-        </ul>
+        ) : (
+          <div style={{ paddingTop: 10 }}>
+            <Table<Todo>
+              data={todos}
+              getKey={(row) => row.id}
+              columns={[
+                {
+                  name: "Done",
+                  width: 50,
+                  render: (todo) => (
+                    <input
+                      type="checkbox"
+                      onChange={(evt) => {
+                        client.runMutation("ChangeCompletionStatus", [
+                          todo.id,
+                          (evt.target as HTMLInputElement).checked,
+                        ]);
+                      }}
+                      checked={todo.done}
+                    />
+                  ),
+                },
+                { name: "Name", render: (row) => row.name },
+                { name: "Added By", width: 75, render: (row) => row.user },
+              ]}
+            />
+          </div>
+        )}
       </div>
       <Inspector client={client} />
     </div>
@@ -160,7 +160,7 @@ const mutations: MutationDefns = {
         varr("key"),
         obj({
           name: memberAccess(varr("current"), "name"),
-          user: memberAccess(varr("curUser"), "user"),
+          user: memberAccess(varr("current"), "user"),
           done: varr("newCompletionStatus"),
         })
       )
