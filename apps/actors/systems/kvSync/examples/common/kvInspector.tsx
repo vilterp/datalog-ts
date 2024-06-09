@@ -6,7 +6,11 @@ import { getVisibleValue } from "../../mutations/common";
 import { TransactionState, isTxnVisible } from "../../client";
 import { intersperse } from "../../../../../../util/util";
 
-export function KVInspector(props: { client: Client }) {
+export function KVInspector(props: {
+  client: Client;
+  selectedTxnID: string | null;
+  onSelectTxn: (txnID: string) => void;
+}) {
   const isVisible = (txnID: string) => isTxnVisible(props.client.state, txnID);
 
   return (
@@ -34,7 +38,18 @@ export function KVInspector(props: { client: Client }) {
               <></>,
               vvs.map((vv) => (
                 // TODO: clicking on this should show the txn trace
-                <span title={vv.transactionID} key={vv.transactionID}>
+                <span
+                  title={vv.transactionID}
+                  style={{
+                    cursor: "pointer",
+                    textDecoration:
+                      vv.transactionID === props.selectedTxnID
+                        ? "underline"
+                        : "none",
+                  }}
+                  key={vv.transactionID}
+                  onClick={() => props.onSelectTxn(vv.transactionID)}
+                >
                   {iconForState(
                     props.client.state.transactions[vv.transactionID].state
                   )}

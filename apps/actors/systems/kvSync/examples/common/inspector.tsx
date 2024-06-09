@@ -4,9 +4,12 @@ import { Tabs } from "../../../../../../uiCommon/generic/tabs";
 import { TransactionList } from "./txnList";
 import { KVInspector } from "./kvInspector";
 import { LiveQueryInspector } from "./liveQueryInspector";
+import { Table } from "./table";
+import { TraceOp } from "../../types";
 
 export function Inspector(props: { client: Client }) {
   const [curTab, setTab] = useState("data");
+  const [selectedTxnID, setSelectedTxnID] = useState<string | null>(null);
 
   return (
     <div style={{ width: "100%" }}>
@@ -19,12 +22,24 @@ export function Inspector(props: { client: Client }) {
           {
             id: "transactions",
             name: "Transactions",
-            render: () => <TransactionList client={props.client} />,
+            render: () => (
+              <TransactionList
+                client={props.client}
+                selectedTxnID={selectedTxnID}
+                onSelectTxn={setSelectedTxnID}
+              />
+            ),
           },
           {
             id: "data",
             name: "Data",
-            render: () => <KVInspector client={props.client} />,
+            render: () => (
+              <KVInspector
+                client={props.client}
+                selectedTxnID={selectedTxnID}
+                onSelectTxn={setSelectedTxnID}
+              />
+            ),
           },
           {
             id: "queries",
@@ -33,6 +48,31 @@ export function Inspector(props: { client: Client }) {
           },
         ]}
       />
+      {selectedTxnID !== null ? (
+        <>
+          <h5>Transaction Trace</h5>
+          <Table<TraceOp>
+            data={props.client.state.transactions[selectedTxnID].clientTrace}
+            getKey={(_, idx) => idx.toString()}
+            columns={[
+              { name: "Op", render: (op) => op.type },
+              { name: "Key", render: (op) => <code>{op.key}</code> },
+              {
+                name: "Value",
+                render: (op) =>
+                  op.type === "Write" ? (
+                    <code>{JSON.stringify(op.desc)}</code>
+                  ) : null,
+              },
+              {
+                name: "TxnID",
+                render: (op) =>
+                  op.type === "Read" ? <code>{op.transactionID}</code> : null,
+              },
+            ]}
+          />
+        </>
+      ) : null}
     </div>
   );
 }
