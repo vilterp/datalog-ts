@@ -4,7 +4,7 @@ import { Table } from "./table";
 import { VersionedValue } from "../../types";
 import { getVisibleValue } from "../../mutations/common";
 import { TransactionState, isTxnVisible } from "../../client";
-import { intersperse } from "../../../../../../util/util";
+import { intersperse, reversed } from "../../../../../../util/util";
 
 export function KVInspector(props: {
   client: Client;
@@ -36,7 +36,7 @@ export function KVInspector(props: {
           render: ([key, vvs]) =>
             intersperse(
               <></>,
-              vvs.map((vv) => (
+              reversed(vvs).map((vv) => (
                 // TODO: clicking on this should show the txn trace
                 <span
                   title={vv.transactionID}
