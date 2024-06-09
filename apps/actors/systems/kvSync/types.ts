@@ -90,17 +90,26 @@ export type LiveQueryRequest = {
   query: Query;
 };
 
+// Full trace
+
 export type Trace = TraceOp[];
 
 export type TraceOp = ReadOp | WriteOp;
 
-export type ReadOp = { type: "Read"; key: string; transactionID: string };
-
 export type WriteOp = {
   type: "Write";
   key: string;
-  value: Json;
+  desc: WriteDesc;
 };
+
+export type ReadOp = { type: "Read"; key: string; transactionID: string };
+
+export type WriteDesc =
+  | { type: "Insert"; after: Json }
+  | { type: "Update"; before: Json; after: Json }
+  | { type: "Delete"; before: Json };
+
+// Mutations
 
 export type MutationRequest = {
   type: "MutationRequest";

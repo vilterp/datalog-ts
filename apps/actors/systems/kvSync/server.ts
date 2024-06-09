@@ -174,14 +174,18 @@ function runMutationOnServer(
         transactionMetadata: {
           [req.txnID]: { serverTimestamp: txnTime, invocation: req.invocation },
         },
-        updates: matchingWrites.map((write) => ({
-          type: "Updated",
-          key: write.key,
-          value: {
-            value: write.value,
-            transactionID: req.txnID,
-          },
-        })),
+        updates: matchingWrites.map((write) =>
+          write.desc.type === "Delete"
+            ? { type: "Deleted", key: write.key }
+            : {
+                type: "Updated",
+                key: write.key,
+                value: {
+                  value: write.desc.after,
+                  transactionID: req.txnID,
+                },
+              }
+        ),
       };
     }
   );

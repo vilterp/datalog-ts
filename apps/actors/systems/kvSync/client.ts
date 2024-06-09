@@ -14,15 +14,10 @@ import {
   Query,
   Trace,
   TransactionMetadata,
+  WriteOp,
 } from "./types";
 import * as effects from "../../effects";
-import {
-  filterObj,
-  hashString,
-  mapObj,
-  pairsToObj,
-  randStep,
-} from "../../../../util/util";
+import { filterObj, mapObj, pairsToObj, randStep } from "../../../../util/util";
 import { runMutation } from "./mutations/run";
 import { InterpreterState } from "./mutations/builtins";
 
@@ -77,6 +72,7 @@ export type TransactionState =
 export type TransactionRecord = {
   invocation: MutationInvocation;
   clientTrace: Trace;
+  writes: WriteOp[];
   state: TransactionState;
 };
 
@@ -171,11 +167,13 @@ function runMutationOnClient(
     randSeed: newInterpState.randSeed,
     data: data1,
   };
+  const writes = [];
   if (outcome === "Abort") {
     console.warn("CLIENT: txn aborted client side:", resVal, trace);
     const state2 = addTransaction(state1, txnID, {
       invocation,
       clientTrace: trace,
+      writes,
       state: {
         type: "Aborted",
         // TODO: pretty print values
@@ -185,12 +183,14 @@ function runMutationOnClient(
         serverTimestamp: state.time,
       },
     });
+    const state3 = rollBackTxn(state2, txnID);
     return [state2, null];
   }
 
   const state2 = addTransaction(state1, txnID, {
     invocation,
     clientTrace: trace,
+    writes,
     state: { type: "Pending", sentTime: state.time },
   });
 
@@ -218,6 +218,11 @@ function addTransaction(
   };
 }
 
+function rollBackTxn(state: ClientState, txnID: string): ClientState {
+  // TODO: actually roll back
+  return state;
+}
+
 function registerLiveQuery(
   state: ClientState,
   id: string,
@@ -241,6 +246,7 @@ function getNewTransactions(metadata: TransactionMetadata): {
         type: "Committed",
         serverTimestamp: metadata.serverTimestamp,
       },
+      writes: [],
       invocation: metadata.invocation,
     })
   );

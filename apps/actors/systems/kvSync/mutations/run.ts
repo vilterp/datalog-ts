@@ -1,6 +1,6 @@
 import { pairsToObj } from "../../../../../util/util";
 import { Expr, Lambda, Outcome, Scope, Value } from "./types";
-import { KVData, Trace } from "../types";
+import { KVData, Trace, WriteOp } from "../types";
 import { BUILTINS, InterpreterState } from "./builtins";
 
 export function runMutation(
@@ -100,17 +100,15 @@ function runMutationExpr(
         return [valRes, "Abort", state2, data2, trace2];
       }
       // TODO: actually assert string
-      const data3: KVData = {
-        ...data2,
-        [keyRes as string]: {
-          value: valRes as string,
-          transactionID,
-        },
-      };
-      const trace3: Trace = [
-        ...trace2,
-        { type: "Write", key: keyRes as string, value: valRes },
-      ];
+
+      const [data3, writeDesc] = doWrite(
+        data2,
+        transactionID,
+        keyRes as string,
+        valRes
+      );
+
+      const trace3: Trace = [...trace2, writeDesc];
       return [valRes, "Commit", state2, data3, trace3];
     }
     case "Lambda":
@@ -297,4 +295,34 @@ function runMutationExpr(
       return [values, outcome, curState, curData, curTrace];
     }
   }
+}
+
+function doWrite(
+  kvData: KVData,
+  transactionID: string,
+  key: string,
+  value: Value
+): [KVData, WriteOp] {
+  const newKVData: KVData = {
+    ...kvData,
+    [key]: { transactionID, value },
+  };
+  if (kvData[key]) {
+    return [
+      newKVData,
+      {
+        type: "Write",
+        key,
+        desc: { type: "Update", before: kvData[key], after: value },
+      },
+    ];
+  }
+  return [
+    newKVData,
+    {
+      type: "Write",
+      key,
+      desc: { type: "Insert", after: value },
+    },
+  ];
 }
