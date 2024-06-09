@@ -1,6 +1,6 @@
 import { pairsToObj } from "../../../../../util/util";
 import { Expr, Lambda, Outcome, Scope, Value } from "./types";
-import { KVData, Trace, WriteOp } from "../types";
+import { KVData, Trace, VersionedValue, WriteOp } from "../types";
 import { BUILTINS, InterpreterState } from "./builtins";
 
 export function runMutation(
@@ -303,9 +303,10 @@ function doWrite(
   key: string,
   value: Value
 ): [KVData, WriteOp] {
+  const versionedValue: VersionedValue = { transactionID, value };
   const newKVData: KVData = {
     ...kvData,
-    [key]: { transactionID, value },
+    [key]: versionedValue,
   };
   if (kvData[key]) {
     return [
@@ -313,7 +314,7 @@ function doWrite(
       {
         type: "Write",
         key,
-        desc: { type: "Update", before: kvData[key], after: value },
+        desc: { type: "Update", before: kvData[key], after: versionedValue },
       },
     ];
   }
@@ -322,7 +323,7 @@ function doWrite(
     {
       type: "Write",
       key,
-      desc: { type: "Insert", after: value },
+      desc: { type: "Insert", after: versionedValue },
     },
   ];
 }

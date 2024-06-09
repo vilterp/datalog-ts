@@ -107,8 +107,7 @@ function processMutationResponse(
         "CLIENT: processMutationResponse: rejected on server",
         payload
       );
-      // TODO: roll back & retry?
-      return state1;
+      return rollBackTxn(state1, response.txnID);
     case "Accept":
       return state1;
   }
@@ -184,7 +183,7 @@ function runMutationOnClient(
       },
     });
     const state3 = rollBackTxn(state2, txnID);
-    return [state2, null];
+    return [state3, null];
   }
 
   const state2 = addTransaction(state1, txnID, {
@@ -219,8 +218,24 @@ function addTransaction(
 }
 
 function rollBackTxn(state: ClientState, txnID: string): ClientState {
-  // TODO: actually roll back
-  return state;
+  const writes = state.transactions[txnID].writes;
+
+  const newData = { ...state.data };
+  for (const write of writes.reverse()) {
+    switch (write.desc.type) {
+      case "Insert":
+        delete newData[write.key];
+        break;
+      case "Update":
+        state.data[write.key] = write.desc.before;
+        break;
+      case "Delete":
+        state.data[write.key] = write.desc.before;
+        break;
+    }
+  }
+
+  return { ...state, data: newData };
 }
 
 function registerLiveQuery(

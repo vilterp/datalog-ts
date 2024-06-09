@@ -105,9 +105,9 @@ export type WriteOp = {
 export type ReadOp = { type: "Read"; key: string; transactionID: string };
 
 export type WriteDesc =
-  | { type: "Insert"; after: Json }
-  | { type: "Update"; before: Json; after: Json }
-  | { type: "Delete"; before: Json };
+  | { type: "Insert"; after: VersionedValue }
+  | { type: "Update"; before: VersionedValue; after: VersionedValue }
+  | { type: "Delete"; before: VersionedValue };
 
 // Mutations
 

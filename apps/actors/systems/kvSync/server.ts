@@ -168,6 +168,7 @@ function runMutationOnServer(
       if (liveQuery.clientID === clientID) {
         return null;
       }
+
       return {
         type: "LiveQueryUpdate",
         clientID: liveQuery.clientID,
@@ -180,10 +181,7 @@ function runMutationOnServer(
             : {
                 type: "Updated",
                 key: write.key,
-                value: {
-                  value: write.desc.after,
-                  transactionID: req.txnID,
-                },
+                value: write.desc.after,
               }
         ),
       };
