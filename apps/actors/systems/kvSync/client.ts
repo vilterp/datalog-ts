@@ -74,6 +74,7 @@ export type TransactionRecord = {
   clientTrace: Trace;
   writes: WriteOp[];
   state: TransactionState;
+  fromMe: boolean; // TODO: record client it's from?
 };
 
 function processMutationResponse(
@@ -121,7 +122,7 @@ function processLiveQueryUpdate(
   for (const [key, update] of Object.entries(updateMsg.updates)) {
     switch (update.type) {
       case "Updated":
-        newData[key] = [...newData[key], update.value];
+        newData[key] = [...(newData[key] || []), update.value];
         break;
       case "Deleted":
         delete newData[key]; // TODO: tombstone?
@@ -150,8 +151,10 @@ function runMutationOnClient(
     type: "InterpreterState",
     randSeed: randStep(randNum),
   };
-  const isTxnCommitted = (txnID: string) =>
-    state.transactions[txnID].state.type === "Committed";
+  const isTxnVisible = (txnID: string) => {
+    const txn = state.transactions[txnID];
+    return txn.fromMe || txn.state.type === "Committed";
+  };
   const [data1, resVal, newInterpState, outcome, trace] = runMutation(
     state.data,
     initialInterpState,
@@ -159,7 +162,7 @@ function runMutationOnClient(
     state.mutationDefns[invocation.name],
     invocation.args,
     username,
-    isTxnCommitted
+    isTxnVisible
   );
   const state1: ClientState = {
     ...state,
@@ -173,6 +176,7 @@ function runMutationOnClient(
       invocation,
       clientTrace: trace,
       writes,
+      fromMe: true,
       state: {
         type: "Aborted",
         // TODO: pretty print values
@@ -189,6 +193,7 @@ function runMutationOnClient(
     invocation,
     clientTrace: trace,
     writes,
+    fromMe: true,
     state: { type: "Pending", sentTime: state.time },
   });
 
@@ -235,6 +240,7 @@ function getNewTransactions(metadata: TransactionMetadata): {
     metadata,
     (txnid, metadata): TransactionRecord => ({
       clientTrace: [],
+      fromMe: true,
       state: {
         type: "Committed",
         serverTimestamp: metadata.serverTimestamp,
