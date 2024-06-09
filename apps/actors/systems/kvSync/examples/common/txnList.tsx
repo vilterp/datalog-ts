@@ -4,11 +4,12 @@ import { TxnState } from "./txnState";
 import { prettyPrintInvocation } from "./pretty";
 import { TransactionRecord, TransactionState } from "../../client";
 import { Table } from "./table";
-import { TraceOp } from "../../types";
 
-export function TransactionList(props: { client: Client }) {
-  const [selectedTxnID, setSelectedTxnID] = useState<string | null>(null);
-
+export function TransactionList(props: {
+  client: Client;
+  selectedTxnID: string | null;
+  onSelectTxn: (txnID: string) => void;
+}) {
   return (
     <>
       <Table<[string, TransactionRecord]>
@@ -19,9 +20,10 @@ export function TransactionList(props: { client: Client }) {
               <span
                 style={{
                   cursor: "pointer",
-                  backgroundColor: id === selectedTxnID ? "lightskyblue" : null,
+                  backgroundColor:
+                    id === props.selectedTxnID ? "lightskyblue" : null,
                 }}
-                onClick={() => setSelectedTxnID(id)}
+                onClick={() => props.onSelectTxn(id)}
               >
                 <code>{id}</code>
               </span>
@@ -45,31 +47,6 @@ export function TransactionList(props: { client: Client }) {
           .reverse()}
         getKey={([id, txn]) => id}
       />
-      {selectedTxnID !== null ? (
-        <>
-          <h5>Trace</h5>
-          <Table<TraceOp>
-            data={props.client.state.transactions[selectedTxnID].clientTrace}
-            getKey={(_, idx) => idx.toString()}
-            columns={[
-              { name: "Op", render: (op) => op.type },
-              { name: "Key", render: (op) => <code>{op.key}</code> },
-              {
-                name: "Value",
-                render: (op) =>
-                  op.type === "Write" ? (
-                    <code>{JSON.stringify(op.value)}</code>
-                  ) : null,
-              },
-              {
-                name: "TxnID",
-                render: (op) =>
-                  op.type === "Read" ? <code>{op.transactionID}</code> : null,
-              },
-            ]}
-          />
-        </>
-      ) : null}
     </>
   );
 }

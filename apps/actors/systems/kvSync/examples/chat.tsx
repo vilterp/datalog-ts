@@ -1,6 +1,6 @@
 import React, { Ref, useLayoutEffect, useRef, useState } from "react";
 import { UIProps } from "../../../types";
-import { ClientState } from "../client";
+import { ClientState, QueryStatus } from "../client";
 import { Client, makeClient, useLiveQuery } from "../hooks";
 import {
   apply,
@@ -156,8 +156,7 @@ function MessageTable(props: {
 
 function SendBox(props: { threadID: string; client: Client }) {
   const [message, setMessage] = useState("");
-  const latestSeqNo =
-    props.client.state.data[`/latestMessage/${props.threadID}`];
+  const [latestSeqNo, status] = useLatestSeqNo(props.client, props.threadID);
 
   return (
     <form
@@ -172,17 +171,34 @@ function SendBox(props: { threadID: string; client: Client }) {
         value={message}
         size={40}
         onFocus={() => {
-          if (latestSeqNo) {
-            props.client.runMutation("markRead", [
-              props.threadID,
-              latestSeqNo.value,
-            ]);
+          if (status === "Online") {
+            props.client.runMutation("markRead", [props.threadID, latestSeqNo]);
+          } else {
+            console.log("not marking read because query status is", status);
           }
         }}
       />
       <button>Send</button>
     </form>
   );
+}
+
+// TODO: make these easier to write
+function useLatestSeqNo(
+  client: Client,
+  threadID: string
+): [number, QueryStatus] {
+  const [results, status] = useLiveQuery(client, `latestSeqNo-${threadID}`, {
+    prefix: `/latestMessage/${threadID}`,
+  });
+  if (status === "Loading") {
+    return [0, status];
+  }
+  const result = results[`/latestMessage/${threadID}`];
+  if (!result) {
+    return [0, status];
+  }
+  return [result.value as number, status];
 }
 
 function ThreadList(props: {

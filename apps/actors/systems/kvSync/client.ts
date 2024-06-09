@@ -14,15 +14,10 @@ import {
   Query,
   Trace,
   TransactionMetadata,
+  WriteOp,
 } from "./types";
 import * as effects from "../../effects";
-import {
-  filterObj,
-  hashString,
-  mapObj,
-  pairsToObj,
-  randStep,
-} from "../../../../util/util";
+import { mapObj, randStep } from "../../../../util/util";
 import { runMutation } from "./mutations/run";
 import { InterpreterState } from "./mutations/builtins";
 
@@ -77,7 +72,9 @@ export type TransactionState =
 export type TransactionRecord = {
   invocation: MutationInvocation;
   clientTrace: Trace;
+  writes: WriteOp[];
   state: TransactionState;
+  fromMe: boolean; // TODO: record client it's from?
 };
 
 function processMutationResponse(
@@ -111,7 +108,6 @@ function processMutationResponse(
         "CLIENT: processMutationResponse: rejected on server",
         payload
       );
-      // TODO: roll back & retry?
       return state1;
     case "Accept":
       return state1;
@@ -120,37 +116,35 @@ function processMutationResponse(
 
 function processLiveQueryUpdate(
   state: ClientState,
-  update: LiveQueryUpdate
+  updateMsg: LiveQueryUpdate
 ): ClientState {
+  const newData = { ...state.data };
+  for (const update of updateMsg.updates) {
+    const key = update.key;
+    switch (update.type) {
+      case "Updated":
+        newData[key] = [...(newData[key] || []), update.value];
+        break;
+      case "Deleted":
+        delete newData[key]; // TODO: tombstone?
+        break;
+    }
+  }
+
   return {
     ...state,
     transactions: {
       ...state.transactions,
-      ...getNewTransactions(update.transactionMetadata),
+      ...getNewTransactions(updateMsg.transactionMetadata),
     },
-    data: {
-      ...state.data,
-      ...pairsToObj(
-        update.updates.map((update) => {
-          switch (update.type) {
-            case "Updated":
-              return {
-                key: update.key,
-                value: update.value,
-              };
-            default:
-              console.warn("CLIENT: unsupported update type:", update);
-          }
-        })
-      ),
-    },
+    data: newData,
   };
 }
 
 function runMutationOnClient(
   state: ClientState,
   invocation: MutationInvocation,
-  clientID: string
+  username: string
 ): [ClientState, MutationRequest | null] {
   const randNum = randStep(state.randSeed);
   const txnID = randNum.toString();
@@ -158,24 +152,29 @@ function runMutationOnClient(
     type: "InterpreterState",
     randSeed: randStep(randNum),
   };
+  const isVisible = (txnID) => isTxnVisible(state, txnID);
   const [data1, resVal, newInterpState, outcome, trace] = runMutation(
     state.data,
     initialInterpState,
     txnID,
     state.mutationDefns[invocation.name],
     invocation.args,
-    clientID
+    username,
+    isVisible
   );
   const state1: ClientState = {
     ...state,
     randSeed: newInterpState.randSeed,
     data: data1,
   };
+  const writes = [];
   if (outcome === "Abort") {
     console.warn("CLIENT: txn aborted client side:", resVal, trace);
     const state2 = addTransaction(state1, txnID, {
       invocation,
       clientTrace: trace,
+      writes,
+      fromMe: true,
       state: {
         type: "Aborted",
         // TODO: pretty print values
@@ -191,6 +190,8 @@ function runMutationOnClient(
   const state2 = addTransaction(state1, txnID, {
     invocation,
     clientTrace: trace,
+    writes,
+    fromMe: true,
     state: { type: "Pending", sentTime: state.time },
   });
 
@@ -202,6 +203,11 @@ function runMutationOnClient(
     trace: trace,
   };
   return [state2, req];
+}
+
+export function isTxnVisible(client: ClientState, txnID: string): boolean {
+  const txn = client.transactions[txnID];
+  return txn.fromMe || txn.state.type === "Committed";
 }
 
 function addTransaction(
@@ -237,10 +243,12 @@ function getNewTransactions(metadata: TransactionMetadata): {
     metadata,
     (txnid, metadata): TransactionRecord => ({
       clientTrace: [],
+      fromMe: true,
       state: {
         type: "Committed",
         serverTimestamp: metadata.serverTimestamp,
       },
+      writes: [],
       invocation: metadata.invocation,
     })
   );
@@ -252,6 +260,14 @@ function processLiveQueryResponse(
 ): ClientState {
   const query = state.liveQueries[resp.id];
   const newTransactions = getNewTransactions(resp.transactionMetadata);
+
+  let newData = { ...state.data };
+  for (const [key, value] of Object.entries(resp.results)) {
+    // add latest transaction onto the end
+    // TODO: GC old transactions
+    newData[key] = [...newData[key], value];
+  }
+
   return {
     ...state,
     liveQueries: {
@@ -261,24 +277,12 @@ function processLiveQueryResponse(
         status: "Online",
       },
     },
-    data: {
-      ...state.data,
-      ...resp.results,
-    },
+    data: newData,
     transactions: {
       ...state.transactions,
       ...newTransactions,
     },
   };
-}
-
-export function getStateForKey(
-  state: ClientState,
-  key: string
-): TransactionState {
-  const value = state.data[key];
-  const txn = state.transactions[value.transactionID];
-  return txn.state;
 }
 
 export function updateClient(
@@ -497,19 +501,9 @@ function updateClientInner(
           ]);
         }
         case "CancelTransaction":
-          return effects.updateState({
-            ...state,
-            // TODO: this rolls back inserts, but what about updates?
-            // will have to keep old versions to roll back to
-            data: filterObj(
-              state.data,
-              (key, val) => val.transactionID !== msg.id
-            ),
-            transactions: filterObj(
-              state.transactions,
-              (id, val) => id !== msg.id
-            ),
-          });
+          console.warn("TODO: implement cancel transaction");
+          // what should this even mean
+          return effects.updateState(state);
       }
     }
     default:

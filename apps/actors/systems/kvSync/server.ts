@@ -18,7 +18,6 @@ import { filterMap, mapObj, randStep2, removeKey } from "../../../../util/util";
 import { Json, jsonEq } from "../../../../util/json";
 import { runMutation } from "./mutations/run";
 import { keyInQuery, runQuery } from "./query";
-import { InterpreterState } from "./mutations/builtins";
 
 export type ServerState = {
   type: "ServerState";
@@ -41,10 +40,12 @@ export function initialServerState(
     type: "ServerState",
     users: {},
     userSessions: {},
-    data: mapObj(initialKVPairs, (key, value) => ({
-      value,
-      transactionID: "0",
-    })),
+    data: mapObj(initialKVPairs, (key, value) => [
+      {
+        value,
+        transactionID: "0",
+      },
+    ]),
     liveQueries: [],
     transactionMetadata: {
       0: {
@@ -68,7 +69,8 @@ function processLiveQueryRequest(
     liveQueries: [...state.liveQueries, { clientID, query: req.query }],
   };
   // TODO: dedup with useQuery
-  const results = runQuery(state.data, req.query);
+  const txnIsCommitted = () => true;
+  const results = runQuery(txnIsCommitted, state.data, req.query);
   const transactionTimestamps: TransactionMetadata = {};
   Object.values(results).forEach((vv) => {
     transactionTimestamps[vv.transactionID] =
@@ -91,13 +93,15 @@ function runMutationOnServer(
   req: MutationRequest,
   clientID: string
 ): [ServerState, MutationResponse, LiveQueryUpdate[]] {
+  const isTxnCommitted = (txnID: string) => true;
   const [newData, resVal, newInterpState, outcome, trace] = runMutation(
     state.data,
     req.interpState,
     req.txnID,
     state.mutationDefns[req.invocation.name],
     req.invocation.args,
-    user
+    user,
+    isTxnCommitted
   );
   const txnTime = state.time;
   const newState: ServerState = {
@@ -168,20 +172,22 @@ function runMutationOnServer(
       if (liveQuery.clientID === clientID) {
         return null;
       }
+
       return {
         type: "LiveQueryUpdate",
         clientID: liveQuery.clientID,
         transactionMetadata: {
           [req.txnID]: { serverTimestamp: txnTime, invocation: req.invocation },
         },
-        updates: matchingWrites.map((write) => ({
-          type: "Updated",
-          key: write.key,
-          value: {
-            value: write.value,
-            transactionID: req.txnID,
-          },
-        })),
+        updates: matchingWrites.map((write) =>
+          write.desc.type === "Delete"
+            ? { type: "Deleted", key: write.key }
+            : {
+                type: "Updated",
+                key: write.key,
+                value: write.desc.after,
+              }
+        ),
       };
     }
   );
