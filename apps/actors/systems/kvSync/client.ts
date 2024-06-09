@@ -265,7 +265,7 @@ function processLiveQueryResponse(
   for (const [key, value] of Object.entries(resp.results)) {
     // add latest transaction onto the end
     // TODO: GC old transactions
-    newData[key] = { ...newData[key], ...value };
+    newData[key] = [...newData[key], value];
   }
 
   return {
