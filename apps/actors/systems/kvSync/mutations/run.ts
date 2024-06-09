@@ -324,7 +324,7 @@ function doWrite(
   const newVersionedValue: VersionedValue = { transactionID, value };
   const newKVData: KVData = {
     ...kvData,
-    [key]: [...(kvData[key] || []), newVersionedValue],
+    [key]: addNewVersion(kvData, key, newVersionedValue),
   };
   const oldValue = getVisibleValue(isTxnCommitted, kvData, key);
   if (kvData[key]) {
@@ -345,4 +345,19 @@ function doWrite(
       desc: { type: "Insert", after: newVersionedValue },
     },
   ];
+}
+
+export function addNewVersion(
+  kvData: KVData,
+  key: string,
+  newVersion: VersionedValue
+) {
+  const versions = kvData[key] || [];
+  // Check if the transactionID is already in the list
+  // This can result from overlapping live queries
+  // TODO: this is O(n) and could be O(1)
+  if (versions.some((v) => v.transactionID === newVersion.transactionID)) {
+    return versions;
+  }
+  return [...versions, newVersion];
 }
