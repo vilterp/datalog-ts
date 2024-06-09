@@ -33,7 +33,8 @@ export function KVInspector(props: { client: Client }) {
             intersperse(
               <></>,
               vvs.map((vv) => (
-                <span title={vv.transactionID}>
+                // TODO: clicking on this should show the txn trace
+                <span title={vv.transactionID} key={vv.transactionID}>
                   {iconForState(
                     props.client.state.transactions[vv.transactionID].state
                   )}

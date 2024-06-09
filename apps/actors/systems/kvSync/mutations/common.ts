@@ -1,3 +1,4 @@
+import { reversed } from "../../../../../util/util";
 import { KVData, VersionedValue } from "../types";
 
 export function getVisibleValue(
@@ -9,7 +10,7 @@ export function getVisibleValue(
     return null;
   }
 
-  for (const vv of kvData[key].reverse()) {
+  for (const vv of reversed(kvData[key])) {
     if (isTxnCommitted(vv.transactionID)) {
       return vv;
     }

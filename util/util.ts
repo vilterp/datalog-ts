@@ -434,6 +434,10 @@ export function max(numbers: number[]): number {
   return numbers.reduce((prev, cur) => Math.max(prev, cur), 0);
 }
 
+export function reversed<T>(arr: T[]): T[] {
+  return arr.slice().reverse();
+}
+
 // TODO: something more 'random'
 export function randStep(num: number) {
   return (num * 234 - 534) % 5235255;
