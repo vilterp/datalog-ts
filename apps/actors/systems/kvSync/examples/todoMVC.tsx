@@ -96,7 +96,7 @@ function TodoMVCInner(props: { client: Client; user: string }) {
                   color: todo.state.type === "Pending" ? "grey" : "inherit",
                 }}
               >
-                {todo.name}
+                {todo.name} ({todo.user})
               </span>
             </li>
           ))}
@@ -110,6 +110,7 @@ function TodoMVCInner(props: { client: Client; user: string }) {
 type Todo = {
   id: string;
   name: string;
+  user: string;
   done: boolean;
   state: TransactionState;
 };
@@ -126,6 +127,7 @@ function useTodos(client: Client): [Todo[], QueryStatus] {
         id: key.split("/todos/")[1],
         name: val.name,
         done: val.done,
+        user: val.user,
         state: client.state.transactions[rawVal.transactionID]?.state,
       };
     }),
@@ -140,7 +142,11 @@ const mutations: MutationDefns = {
     ["name"],
     write(
       apply("concat", [str("/todos/"), apply("rand", [])]),
-      obj({ name: varr("name"), done: bool(false) })
+      obj({
+        name: varr("name"),
+        user: varr("curUser"),
+        done: bool(false),
+      })
     )
   ),
   ChangeCompletionStatus: lambda(
@@ -154,6 +160,7 @@ const mutations: MutationDefns = {
         varr("key"),
         obj({
           name: memberAccess(varr("current"), "name"),
+          user: memberAccess(varr("curUser"), "user"),
           done: varr("newCompletionStatus"),
         })
       )
