@@ -69,7 +69,8 @@ function processLiveQueryRequest(
     liveQueries: [...state.liveQueries, { clientID, query: req.query }],
   };
   // TODO: dedup with useQuery
-  const results = runQuery(state.data, req.query);
+  const txnIsCommitted = () => true;
+  const results = runQuery(txnIsCommitted, state.data, req.query);
   const transactionTimestamps: TransactionMetadata = {};
   Object.values(results).forEach((vv) => {
     transactionTimestamps[vv.transactionID] =

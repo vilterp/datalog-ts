@@ -2,6 +2,7 @@ import { pairsToObj } from "../../../../../util/util";
 import { Expr, Lambda, Outcome, Scope, Value } from "./types";
 import { KVData, Trace, VersionedValue, WriteOp } from "../types";
 import { BUILTINS, InterpreterState } from "./builtins";
+import { getVisibleValue } from "./common";
 
 export function runMutation(
   kvData: KVData,
@@ -58,12 +59,7 @@ function runMutationExpr(
         return [keyRes, "Abort", newState, newKVData, newTrace];
       }
       // TODO: actually assert string
-      const val = getVisibleValue(
-        isTxnCommitted,
-        kvData,
-        keyRes as string,
-        expr.default
-      );
+      const val = getVisibleValue(isTxnCommitted, kvData, keyRes as string);
       if (!val) {
         const newTrace2: Trace = [
           ...newTrace,
@@ -318,24 +314,6 @@ function runMutationExpr(
   }
 }
 
-function getVisibleValue(
-  isTxnCommitted: (txnID: string) => boolean,
-  kvData: KVData,
-  key: string,
-  defaultVal: Value
-): VersionedValue {
-  if (!kvData[key]) {
-    return { transactionID: "-1", value: defaultVal };
-  }
-
-  for (const vv of kvData[key].reverse()) {
-    if (isTxnCommitted(vv.transactionID)) {
-      return vv;
-    }
-  }
-  throw new Error(`No visible value for key ${key}`);
-}
-
 function doWrite(
   kvData: KVData,
   isTxnCommitted: (txnID: string) => boolean,
@@ -348,7 +326,7 @@ function doWrite(
     ...kvData,
     [key]: [...(kvData[key] || []), newVersionedValue],
   };
-  const oldValue = getVisibleValue(isTxnCommitted, kvData, key, null); // default?
+  const oldValue = getVisibleValue(isTxnCommitted, kvData, key);
   if (kvData[key]) {
     return [
       newKVData,

@@ -71,7 +71,9 @@ export function useLiveQuery(
     client.registerLiveQuery(id, query);
   }, [id]);
 
-  const results = runQuery(client.state.data, query);
+  const txnIsCommitted = (txnID: string) =>
+    client.state.transactions[txnID].state.type === "Committed";
+  const results = runQuery(txnIsCommitted, client.state.data, query);
   const queryMetadata = client.state.liveQueries[id];
   const status: QueryStatus = queryMetadata ? queryMetadata.status : "Loading";
   return [results, status];
