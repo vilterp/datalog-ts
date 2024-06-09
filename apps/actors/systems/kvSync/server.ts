@@ -18,7 +18,6 @@ import { filterMap, mapObj, randStep2, removeKey } from "../../../../util/util";
 import { Json, jsonEq } from "../../../../util/json";
 import { runMutation } from "./mutations/run";
 import { keyInQuery, runQuery } from "./query";
-import { InterpreterState } from "./mutations/builtins";
 
 export type ServerState = {
   type: "ServerState";
@@ -41,10 +40,12 @@ export function initialServerState(
     type: "ServerState",
     users: {},
     userSessions: {},
-    data: mapObj(initialKVPairs, (key, value) => ({
-      value,
-      transactionID: "0",
-    })),
+    data: mapObj(initialKVPairs, (key, value) => [
+      {
+        value,
+        transactionID: "0",
+      },
+    ]),
     liveQueries: [],
     transactionMetadata: {
       0: {
@@ -91,13 +92,15 @@ function runMutationOnServer(
   req: MutationRequest,
   clientID: string
 ): [ServerState, MutationResponse, LiveQueryUpdate[]] {
+  const isTxnCommitted = (txnID: string) => true;
   const [newData, resVal, newInterpState, outcome, trace] = runMutation(
     state.data,
     req.interpState,
     req.txnID,
     state.mutationDefns[req.invocation.name],
     req.invocation.args,
-    user
+    user,
+    isTxnCommitted
   );
   const txnTime = state.time;
   const newState: ServerState = {

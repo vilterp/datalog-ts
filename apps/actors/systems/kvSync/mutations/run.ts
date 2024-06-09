@@ -9,7 +9,8 @@ export function runMutation(
   transactionID: string,
   lambda: Lambda,
   args: Value[],
-  userID: string
+  userID: string,
+  isTxnCommitted: (txnID: string) => boolean
 ): [KVData, Value, InterpreterState, Outcome, Trace] {
   const scope: Scope = {
     ...pairsToObj(
@@ -26,7 +27,8 @@ export function runMutation(
     transactionID,
     [],
     scope,
-    lambda.body
+    lambda.body,
+    isTxnCommitted
   );
   // TODO: check out
   return [newKVState, resVal, state, outcome, trace];
@@ -38,7 +40,8 @@ function runMutationExpr(
   transactionID: string,
   traceSoFar: Trace,
   scope: Scope,
-  expr: Expr
+  expr: Expr,
+  isTxnCommitted: (txnID: string) => boolean
 ): [Value, Outcome, InterpreterState, KVData, Trace] {
   switch (expr.type) {
     case "Read": {
@@ -48,13 +51,19 @@ function runMutationExpr(
         transactionID,
         traceSoFar,
         scope,
-        expr.key
+        expr.key,
+        isTxnCommitted
       );
       if (outcome === "Abort") {
         return [keyRes, "Abort", newState, newKVData, newTrace];
       }
       // TODO: actually assert string
-      const val = kvData[keyRes as string];
+      const val = getVisibleValue(
+        isTxnCommitted,
+        kvData,
+        keyRes as string,
+        expr.default
+      );
       if (!val) {
         const newTrace2: Trace = [
           ...newTrace,
@@ -82,7 +91,8 @@ function runMutationExpr(
         transactionID,
         traceSoFar,
         scope,
-        expr.key
+        expr.key,
+        isTxnCommitted
       );
       if (keyOutcome === "Abort") {
         return [keyRes, "Abort", state1, data1, trace1];
@@ -94,7 +104,8 @@ function runMutationExpr(
         transactionID,
         trace1,
         scope,
-        expr.val
+        expr.val,
+        isTxnCommitted
       );
       if (valOutcome === "Abort") {
         return [valRes, "Abort", state2, data2, trace2];
@@ -103,6 +114,7 @@ function runMutationExpr(
 
       const [data3, writeDesc] = doWrite(
         data2,
+        isTxnCommitted,
         transactionID,
         keyRes as string,
         valRes
@@ -128,7 +140,8 @@ function runMutationExpr(
             transactionID,
             curTrace,
             scope,
-            step
+            step,
+            isTxnCommitted
           );
         curData = newData;
         curState = newState;
@@ -150,7 +163,8 @@ function runMutationExpr(
           transactionID,
           curTrace,
           newScope,
-          binding.val
+          binding.val,
+          isTxnCommitted
         );
         if (outcome === "Abort") {
           return [res, "Abort", newState, curData, curTrace];
@@ -166,7 +180,8 @@ function runMutationExpr(
         transactionID,
         curTrace,
         newScope,
-        expr.body
+        expr.body,
+        isTxnCommitted
       );
     }
     case "If": {
@@ -177,7 +192,8 @@ function runMutationExpr(
           transactionID,
           traceSoFar,
           scope,
-          expr.cond
+          expr.cond,
+          isTxnCommitted
         );
       if (condOutcome === "Abort") {
         return [condRes, "Abort", newState, clientState1, trace1];
@@ -188,7 +204,8 @@ function runMutationExpr(
         transactionID,
         trace1,
         scope,
-        condRes ? expr.ifTrue : expr.ifFalse
+        condRes ? expr.ifTrue : expr.ifFalse,
+        isTxnCommitted
       );
     }
     case "Abort": {
@@ -198,7 +215,8 @@ function runMutationExpr(
         transactionID,
         traceSoFar,
         scope,
-        expr.reason
+        expr.reason,
+        isTxnCommitted
       );
       return [abortReason, "Abort", state, kvData, traceSoFar];
     }
@@ -217,7 +235,8 @@ function runMutationExpr(
         transactionID,
         traceSoFar,
         scope,
-        expr.expr
+        expr.expr,
+        isTxnCommitted
       );
       if (typeof res === "object" && typeof res[expr.member] !== undefined) {
         return [res[expr.member], newOutcome, newState, newData, newTrace];
@@ -251,7 +270,8 @@ function runMutationExpr(
             transactionID,
             curTrace,
             scope,
-            arg
+            arg,
+            isTxnCommitted
           );
         curData = newData;
         curState = newState;
@@ -284,7 +304,8 @@ function runMutationExpr(
             transactionID,
             curTrace,
             scope,
-            valExpr
+            valExpr,
+            isTxnCommitted
           );
         curData = newData;
         curState = newState;
@@ -297,24 +318,44 @@ function runMutationExpr(
   }
 }
 
+function getVisibleValue(
+  isTxnCommitted: (txnID: string) => boolean,
+  kvData: KVData,
+  key: string,
+  defaultVal: Value
+): VersionedValue {
+  if (!kvData[key]) {
+    return { transactionID: "-1", value: defaultVal };
+  }
+
+  for (const vv of kvData[key].reverse()) {
+    if (isTxnCommitted(vv.transactionID)) {
+      return vv;
+    }
+  }
+  throw new Error(`No visible value for key ${key}`);
+}
+
 function doWrite(
   kvData: KVData,
+  isTxnCommitted: (txnID: string) => boolean,
   transactionID: string,
   key: string,
   value: Value
 ): [KVData, WriteOp] {
-  const versionedValue: VersionedValue = { transactionID, value };
+  const newVersionedValue: VersionedValue = { transactionID, value };
   const newKVData: KVData = {
     ...kvData,
-    [key]: versionedValue,
+    [key]: [...(kvData[key] || []), newVersionedValue],
   };
+  const oldValue = getVisibleValue(isTxnCommitted, kvData, key, null); // default?
   if (kvData[key]) {
     return [
       newKVData,
       {
         type: "Write",
         key,
-        desc: { type: "Update", before: kvData[key], after: versionedValue },
+        desc: { type: "Update", before: oldValue, after: newVersionedValue },
       },
     ];
   }
@@ -323,7 +364,7 @@ function doWrite(
     {
       type: "Write",
       key,
-      desc: { type: "Insert", after: versionedValue },
+      desc: { type: "Insert", after: newVersionedValue },
     },
   ];
 }

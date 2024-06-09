@@ -7,7 +7,9 @@ export type VersionedValue = {
   transactionID: string;
 };
 
-export type KVData = { [key: string]: VersionedValue };
+// For each key, keep a value at each transaction that updated that key,
+// ordered from first transaction that happened to last.
+export type KVData = { [key: string]: VersionedValue[] };
 
 export type UserInput =
   | { type: "Signup"; username: string; password: string }
