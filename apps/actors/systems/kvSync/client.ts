@@ -17,7 +17,7 @@ import {
   WriteOp,
 } from "./types";
 import * as effects from "../../effects";
-import { mapObj, pairsToObj, randStep } from "../../../../util/util";
+import { mapObj, randStep } from "../../../../util/util";
 import { runMutation } from "./mutations/run";
 import { InterpreterState } from "./mutations/builtins";
 
@@ -151,10 +151,7 @@ function runMutationOnClient(
     type: "InterpreterState",
     randSeed: randStep(randNum),
   };
-  const isTxnVisible = (txnID: string) => {
-    const txn = state.transactions[txnID];
-    return txn.fromMe || txn.state.type === "Committed";
-  };
+  const isVisible = (txnID) => isTxnVisible(state, txnID);
   const [data1, resVal, newInterpState, outcome, trace] = runMutation(
     state.data,
     initialInterpState,
@@ -162,7 +159,7 @@ function runMutationOnClient(
     state.mutationDefns[invocation.name],
     invocation.args,
     username,
-    isTxnVisible
+    isVisible
   );
   const state1: ClientState = {
     ...state,
@@ -205,6 +202,11 @@ function runMutationOnClient(
     trace: trace,
   };
   return [state2, req];
+}
+
+export function isTxnVisible(client: ClientState, txnID: string): boolean {
+  const txn = client.transactions[txnID];
+  return txn.fromMe || txn.state.type === "Committed";
 }
 
 function addTransaction(

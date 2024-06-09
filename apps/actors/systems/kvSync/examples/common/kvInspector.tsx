@@ -2,28 +2,53 @@ import React from "react";
 import { Client } from "../../hooks";
 import { Table } from "./table";
 import { VersionedValue } from "../../types";
-import { TxnState } from "./txnState";
+import { getVisibleValue } from "../../mutations/common";
+import { TransactionState, isTxnVisible } from "../../client";
 
 export function KVInspector(props: { client: Client }) {
+  const isVisible = (txnID: string) => isTxnVisible(props.client.state, txnID);
+
   return (
-    <Table<[string, VersionedValue]>
+    <Table<[string, VersionedValue[]]>
       data={Object.entries(props.client.state.data).sort(([k1, v1], [k2, v2]) =>
         k1.localeCompare(k2)
       )}
-      getKey={([key, vv]) => key}
+      getKey={([key, vvs]) => key}
       columns={[
-        { name: "Key", render: ([key, vv]) => <code>{key}</code> },
+        { name: "Key", render: ([key, vvs]) => <code>{key}</code> },
         {
           name: "Value",
-          render: ([key, vv]) => <code>{JSON.stringify(vv.value)}</code>,
+          render: ([key, vvs]) => (
+            <code>
+              {JSON.stringify(
+                getVisibleValue(isVisible, props.client.state.data, key)
+              )}
+            </code>
+          ),
         },
         {
-          name: "Status",
-          render: ([key, vv]) => (
-            <TxnState client={props.client} txnID={vv.transactionID} />
-          ),
+          name: "Statuses",
+          render: ([key, vvs]) =>
+            vvs
+              .map((vv) =>
+                iconForState(
+                  props.client.state.transactions[vv.transactionID].state
+                )
+              )
+              .join(""),
         },
       ]}
     />
   );
+}
+
+function iconForState(state: TransactionState) {
+  switch (state.type) {
+    case "Pending":
+      return "🟡";
+    case "Committed":
+      return "✅";
+    case "Aborted":
+      return "❌";
+  }
 }
