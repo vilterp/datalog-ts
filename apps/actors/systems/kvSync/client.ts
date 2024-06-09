@@ -119,7 +119,8 @@ function processLiveQueryUpdate(
   updateMsg: LiveQueryUpdate
 ): ClientState {
   const newData = { ...state.data };
-  for (const [key, update] of Object.entries(updateMsg.updates)) {
+  for (const update of updateMsg.updates) {
+    const key = update.key;
     switch (update.type) {
       case "Updated":
         newData[key] = [...(newData[key] || []), update.value];

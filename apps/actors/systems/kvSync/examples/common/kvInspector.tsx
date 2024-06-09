@@ -21,7 +21,7 @@ export function KVInspector(props: { client: Client }) {
           render: ([key, vvs]) => (
             <code>
               {JSON.stringify(
-                getVisibleValue(isVisible, props.client.state.data, key)
+                getVisibleValue(isVisible, props.client.state.data, key).value
               )}
             </code>
           ),
