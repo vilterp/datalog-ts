@@ -87,7 +87,7 @@ function ExploreForm(props: { onExplore: (steps: number) => void }) {
       <input
         type="number"
         min={0}
-        max={10_000}
+        max={3_000}
         value={steps}
         onChange={(evt) => setSteps(parseInt(evt.target.value))}
       />{" "}

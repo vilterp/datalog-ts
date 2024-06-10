@@ -20,6 +20,7 @@ import * as effects from "../../effects";
 import { mapObj, randStep } from "../../../../util/util";
 import { addNewVersion, runMutation } from "./mutations/run";
 import { InterpreterState } from "./mutations/builtins";
+import { garbageCollectTransactions } from "./gc";
 
 export type QueryStatus = "Loading" | "Online";
 
@@ -264,8 +265,7 @@ function processLiveQueryResponse(
   let newData = { ...state.data };
   for (const [key, value] of Object.entries(resp.results)) {
     // add latest transaction onto the end
-    // TODO: GC old transactions
-    newData[key] = [...newData[key], value];
+    newData[key] = addNewVersion(newData, key, value);
   }
 
   return {
@@ -294,7 +294,7 @@ export function updateClient(
     case "continue": {
       return {
         ...resp,
-        state: incrementTime(resp.state),
+        state: garbageCollectTransactions(incrementTime(resp.state)),
       };
     }
     default:

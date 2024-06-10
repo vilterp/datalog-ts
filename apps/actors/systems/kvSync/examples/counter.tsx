@@ -13,12 +13,24 @@ import { MutationDefns, MutationInvocation, UserInput } from "../types";
 import { KVApp } from "./types";
 import { UIProps } from "../../../types";
 import { ClientState } from "../client";
-import { makeClient, useLiveQuery } from "../hooks";
+import { Client, makeClient, useLiveQuery } from "../hooks";
 import { Inspector } from "../uiCommon/inspector";
 import { randomFromList } from "../../../../../util/util";
+import { LoginWrapper } from "../uiCommon/loginWrapper";
 
 function CounterUI(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
+
+  return (
+    <LoginWrapper
+      client={client}
+      loggedIn={(user) => <CounterUIInner client={client} user={user} />}
+    />
+  );
+}
+
+function CounterUIInner(props: { client: Client; user: string }) {
+  const client = props.client;
   const [queryResults, queryState] = useLiveQuery(client, "get-counter", {
     prefix: "counter",
   });
