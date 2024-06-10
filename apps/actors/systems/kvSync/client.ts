@@ -265,7 +265,7 @@ function processLiveQueryResponse(
   let newData = { ...state.data };
   for (const [key, value] of Object.entries(resp.results)) {
     // add latest transaction onto the end
-    newData[key] = [...newData[key], value];
+    newData[key] = addNewVersion(newData, key, value);
   }
 
   return {
