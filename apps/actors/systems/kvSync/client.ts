@@ -20,6 +20,7 @@ import * as effects from "../../effects";
 import { mapObj, randStep } from "../../../../util/util";
 import { addNewVersion, runMutation } from "./mutations/run";
 import { InterpreterState } from "./mutations/builtins";
+import { garbageCollectTransactions } from "./gc";
 
 export type QueryStatus = "Loading" | "Online";
 
@@ -294,7 +295,7 @@ export function updateClient(
     case "continue": {
       return {
         ...resp,
-        state: incrementTime(resp.state),
+        state: garbageCollectTransactions(incrementTime(resp.state)),
       };
     }
     default:
