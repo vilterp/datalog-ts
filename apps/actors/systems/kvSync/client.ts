@@ -18,9 +18,10 @@ import {
 } from "./types";
 import * as effects from "../../effects";
 import { mapObj, randStep } from "../../../../util/util";
-import { addNewVersion, runMutation } from "./mutations/run";
+import { runMutation } from "./mutations/run";
 import { InterpreterState } from "./mutations/builtins";
 import { garbageCollectTransactions } from "./gc";
+import { addNewVersion } from "./mvcc";
 
 export type QueryStatus = "Loading" | "Online";
 

@@ -1,10 +1,10 @@
 import React from "react";
 import { Client } from "../hooks";
 import { VersionedValue } from "../types";
-import { getVisibleValue } from "../mutations/common";
 import { TransactionState, isTxnVisible } from "../client";
 import { reversed } from "../../../../../util/util";
 import { Table } from "../../../../../uiCommon/generic/table";
+import { getVisibleValue } from "../mvcc";
 
 export function KVInspector(props: {
   client: Client;
