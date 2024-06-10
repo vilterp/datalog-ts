@@ -13,45 +13,16 @@ import { EXAMPLES } from "./examples";
 import { KVApp } from "./examples/types";
 import { hashString } from "../../../../util/util";
 
+export const KVSYNC_SYSTEMS = [
+  EXAMPLES.bank,
+  EXAMPLES.chat,
+  EXAMPLES.counter,
+  EXAMPLES.todoMVC,
+].map(makeActorSystem);
+
 export type KVSyncState = ServerState | ClientState | { type: "UserState" };
 
 export type KVSyncMsg = MsgToServer | MsgToClient;
-
-export function update(
-  state: KVSyncState,
-  init: LoadedTickInitiator<KVSyncState, KVSyncMsg>
-): ActorResp<KVSyncState, KVSyncMsg> {
-  switch (state.type) {
-    case "ClientState":
-      return updateClient(
-        state,
-        init as LoadedTickInitiator<ClientState, MsgToClient>
-      );
-    case "ServerState":
-      return updateServer(
-        state,
-        init as LoadedTickInitiator<ServerState, MsgToServer>
-      );
-    case "UserState":
-      return effects.updateState(state);
-  }
-}
-
-export const kvSyncBank: System<KVSyncState, KVSyncMsg> = makeActorSystem(
-  EXAMPLES.bank
-);
-
-export const kvSyncChat: System<KVSyncState, KVSyncMsg> = makeActorSystem(
-  EXAMPLES.chat
-);
-
-export const kvSyncCounter: System<KVSyncState, KVSyncMsg> = makeActorSystem(
-  EXAMPLES.counter
-);
-
-export const kvSyncTodoMVC: System<KVSyncState, KVSyncMsg> = makeActorSystem(
-  EXAMPLES.todoMVC
-);
 
 export function makeActorSystem(app: KVApp): System<KVSyncState, KVSyncMsg> {
   const randServerSeed = 1234; // TODO: pass this in
@@ -96,4 +67,24 @@ export function makeActorSystem(app: KVApp): System<KVSyncState, KVSyncMsg> {
       return [msg, nextRandomSeed];
     },
   };
+}
+
+export function update(
+  state: KVSyncState,
+  init: LoadedTickInitiator<KVSyncState, KVSyncMsg>
+): ActorResp<KVSyncState, KVSyncMsg> {
+  switch (state.type) {
+    case "ClientState":
+      return updateClient(
+        state,
+        init as LoadedTickInitiator<ClientState, MsgToClient>
+      );
+    case "ServerState":
+      return updateServer(
+        state,
+        init as LoadedTickInitiator<ServerState, MsgToServer>
+      );
+    case "UserState":
+      return effects.updateState(state);
+  }
 }
