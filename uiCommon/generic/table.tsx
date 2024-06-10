@@ -42,7 +42,7 @@ export function Table<T>(props: {
           </tr>
         ) : null}
         {props.data.map((row, rowIdx) => (
-          <tr key={props.getKey(row, rowIdx)}>
+          <tr key={props.getKey(row, rowIdx)} style={{ verticalAlign: "top" }}>
             {props.columns.map((colSpec, colIdx) => (
               <td
                 key={colSpec.name}
