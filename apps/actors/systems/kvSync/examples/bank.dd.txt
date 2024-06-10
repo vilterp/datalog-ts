@@ -5,7 +5,12 @@ runMutation{from: "0", name: "Deposit", args: [10]}.
 hop{}?
 ----
 application/datalog
-hop{from: tick{place: "user0", time: 12}, message: RunMutation{invocation: Invocation{args: ["foo","bar",5], name: "Transfer"}}, to: tick{place: "client0", time: 14}}.
-hop{from: tick{place: "user0", time: 3}, message: RunMutation{invocation: Invocation{args: ["foo",10], name: "Deposit"}}, to: tick{place: "client0", time: 5}}.
-hop{from: tick{place: "user0", time: 6}, message: RunMutation{invocation: Invocation{args: ["bar",10], name: "Deposit"}}, to: tick{place: "client0", time: 8}}.
-hop{from: tick{place: "user0", time: 9}, message: RunMutation{invocation: Invocation{args: ["foo","bar",5], name: "Transfer"}}, to: tick{place: "client0", time: 11}}.
+hop{from: tick{place: "client0", time: 12}, message: AuthenticatedRequest{request: MutationRequest{interpState: InterpreterState{randSeed: 2502798}, invocation: Invocation{args: [10], name: "Deposit"}, trace: [Read{key: "bob", transactionID: "-1"},Write{desc: Insert{after: {"transactionID": "10698", "value": 10}}, key: "bob"}], txnID: "10698"}, token: "0.009657739204967151"}, to: tick{place: "server", time: 14}}.
+hop{from: tick{place: "client0", time: 19}, message: AuthenticatedRequest{request: MutationRequest{interpState: InterpreterState{randSeed: 5046918}, invocation: Invocation{args: [10], name: "Deposit"}, trace: [Read{key: "bob", transactionID: "10698"},Write{desc: Update{after: {"transactionID": "4540893", "value": 20}, before: {"transactionID": "10698", "value": 10}}, key: "bob"}], txnID: "4540893"}, token: "0.009657739204967151"}, to: tick{place: "server", time: 21}}.
+hop{from: tick{place: "client0", time: 5}, message: SignupRequest{password: "foo", username: "bob"}, to: tick{place: "server", time: 7}}.
+hop{from: tick{place: "server", time: 14}, message: MutationResponse{payload: Accept{timestamp: 0}, txnID: "10698"}, to: tick{place: "client0", time: 16}}.
+hop{from: tick{place: "server", time: 21}, message: MutationResponse{payload: Accept{timestamp: 1}, txnID: "4540893"}, to: tick{place: "client0", time: 23}}.
+hop{from: tick{place: "server", time: 7}, message: SignupResponse{response: Success{token: "0.009657739204967151"}}, to: tick{place: "client0", time: 9}}.
+hop{from: tick{place: "user0", time: 10}, message: RunMutation{invocation: Invocation{args: [10], name: "Deposit"}}, to: tick{place: "client0", time: 12}}.
+hop{from: tick{place: "user0", time: 17}, message: RunMutation{invocation: Invocation{args: [10], name: "Deposit"}}, to: tick{place: "client0", time: 19}}.
+hop{from: tick{place: "user0", time: 3}, message: Signup{password: "foo", username: "bob"}, to: tick{place: "client0", time: 5}}.
