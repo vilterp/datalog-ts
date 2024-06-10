@@ -13,14 +13,14 @@ import { EXAMPLES } from "./examples";
 import { KVApp } from "./examples/types";
 import { hashString } from "../../../../util/util";
 
-export type State = ServerState | ClientState | { type: "UserState" };
+export type KVSyncState = ServerState | ClientState | { type: "UserState" };
 
-export type Msg = MsgToServer | MsgToClient;
+export type KVSyncMsg = MsgToServer | MsgToClient;
 
 export function update(
-  state: State,
-  init: LoadedTickInitiator<State, Msg>
-): ActorResp<State, Msg> {
+  state: KVSyncState,
+  init: LoadedTickInitiator<KVSyncState, KVSyncMsg>
+): ActorResp<KVSyncState, KVSyncMsg> {
   switch (state.type) {
     case "ClientState":
       return updateClient(
@@ -37,19 +37,23 @@ export function update(
   }
 }
 
-export const kvSyncBank: System<State, Msg> = makeActorSystem(EXAMPLES.bank);
+export const kvSyncBank: System<KVSyncState, KVSyncMsg> = makeActorSystem(
+  EXAMPLES.bank
+);
 
-export const kvSyncChat: System<State, Msg> = makeActorSystem(EXAMPLES.chat);
+export const kvSyncChat: System<KVSyncState, KVSyncMsg> = makeActorSystem(
+  EXAMPLES.chat
+);
 
-export const kvSyncCounter: System<State, Msg> = makeActorSystem(
+export const kvSyncCounter: System<KVSyncState, KVSyncMsg> = makeActorSystem(
   EXAMPLES.counter
 );
 
-export const kvSyncTodoMVC: System<State, Msg> = makeActorSystem(
+export const kvSyncTodoMVC: System<KVSyncState, KVSyncMsg> = makeActorSystem(
   EXAMPLES.todoMVC
 );
 
-export function makeActorSystem(app: KVApp): System<State, Msg> {
+export function makeActorSystem(app: KVApp): System<KVSyncState, KVSyncMsg> {
   const randServerSeed = 1234; // TODO: pass this in
   return {
     name: `KV: ${app.name}`,
