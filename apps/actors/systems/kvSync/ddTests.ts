@@ -1,4 +1,4 @@
-import { makeActorSystem, update } from ".";
+import { KVSyncState, makeActorSystem, update } from ".";
 import { parserTermToInternal } from "../../../../core/translateAST";
 import { Array, Rec, StringLit } from "../../../../core/types";
 import { parseRecord } from "../../../../languageWorkbench/languages/dl/parser";
@@ -13,6 +13,7 @@ import { UserInput } from "./types";
 import { fsLoader } from "../../../../core/fsLoader";
 import { SimpleInterpreter } from "../../../../core/simple/interpreter";
 import { ParseErrors } from "../../../../languageWorkbench/parserlib/types";
+import { Trace } from "../../types";
 
 export function kvSyncTests(writeResults: boolean): Suite {
   return [
@@ -37,8 +38,8 @@ function kvSyncTest(app: KVApp, testCases: string[]): TestOutput[] {
     // TODO: parse it as a program? idk
     const lines = testCase.split("\n");
     const query = lines[lines.length - 1];
-    const mutations = lines.slice(0, lines.length - 1);
-    mutations.forEach((line) => {
+    const actions = lines.slice(0, lines.length - 1);
+    actions.forEach((line) => {
       // slice off the `.`
       const [rawRec, errors] = parseRecord(line.slice(0, line.length - 1));
       if (errors.length > 0) {
@@ -46,6 +47,26 @@ function kvSyncTest(app: KVApp, testCases: string[]): TestOutput[] {
       }
       const record = parserTermToInternal(rawRec) as Rec;
       switch (record.relation) {
+        case "signUp": {
+          const clientID = (record.attrs.clientID as StringLit).val;
+          const msg: UserInput = {
+            type: "Signup",
+            username: (record.attrs.username as StringLit).val,
+            password: (record.attrs.password as StringLit).val,
+          };
+          trace = stepUserInput(trace, clientID, msg);
+          break;
+        }
+        case "logIn": {
+          const clientID = (record.attrs.clientID as StringLit).val;
+          const msg: UserInput = {
+            type: "Login",
+            username: (record.attrs.username as StringLit).val,
+            password: (record.attrs.password as StringLit).val,
+          };
+          trace = stepUserInput(trace, clientID, msg);
+          break;
+        }
         case "addClient": {
           // TODO: DRY this up with reducers.ts
           const clientID = (record.attrs.id as StringLit).val;
@@ -75,24 +96,33 @@ function kvSyncTest(app: KVApp, testCases: string[]): TestOutput[] {
               args: (record.attrs.args as Array).items.map((i) => dlToJson(i)),
             },
           };
-          const { newTrace: trace1, newMessageID } = insertUserInput(
-            trace,
-            clientID,
-            msg
-          );
-          trace = stepAll(trace1, update, [
-            {
-              from: `user${clientID}`,
-              to: `client${clientID}`,
-              init: {
-                type: "messageReceived",
-                messageID: newMessageID.toString(),
-              },
-            },
-          ]);
+          trace = stepUserInput(trace, clientID, msg);
+          break;
         }
       }
     });
     return datalogOut(trace.interp.queryStr(query).map((res) => res.term));
   });
+}
+
+function stepUserInput(
+  trace: Trace<KVSyncState>,
+  clientID: string,
+  msg: UserInput
+): Trace<KVSyncState> {
+  const { newTrace: trace1, newMessageID } = insertUserInput(
+    trace,
+    clientID,
+    msg
+  );
+  return stepAll(trace1, update, [
+    {
+      from: `user${clientID}`,
+      to: `client${clientID}`,
+      init: {
+        type: "messageReceived",
+        messageID: newMessageID.toString(),
+      },
+    },
+  ]);
 }
