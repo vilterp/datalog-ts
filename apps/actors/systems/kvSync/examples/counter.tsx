@@ -14,8 +14,8 @@ import { KVApp } from "./types";
 import { UIProps } from "../../../types";
 import { ClientState } from "../client";
 import { makeClient, useLiveQuery } from "../hooks";
-import { Inspector } from "./common/inspector";
-import { randStep2, randomFromList } from "../../../../../util/util";
+import { Inspector } from "../uiCommon/inspector";
+import { randomFromList } from "../../../../../util/util";
 
 function CounterUI(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);

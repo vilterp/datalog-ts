@@ -1,4 +1,4 @@
-import { MutationInvocation } from "../../types";
+import { MutationInvocation } from "../types";
 
 export function prettyPrintInvocation(invocation: MutationInvocation) {
   return `${invocation.name}(${invocation.args

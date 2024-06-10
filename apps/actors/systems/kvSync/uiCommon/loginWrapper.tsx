@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Client } from "../../hooks";
+import { Client } from "../hooks";
 
 export function LoginWrapper(props: {
   client: Client;

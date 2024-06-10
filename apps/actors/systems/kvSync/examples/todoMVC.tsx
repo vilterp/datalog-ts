@@ -17,9 +17,9 @@ import {
 } from "../mutations/types";
 import { mapObjToList } from "../../../../../util/util";
 import { Client, makeClient, useLiveQuery } from "../hooks";
-import { Inspector } from "./common/inspector";
-import { LoggedIn, LoginWrapper } from "./common/loginWrapper";
-import { Table } from "./common/table";
+import { Inspector } from "../uiCommon/inspector";
+import { LoggedIn, LoginWrapper } from "../uiCommon/loginWrapper";
+import { Table } from "../../../../../uiCommon/generic/table";
 
 function TodoMVC(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
