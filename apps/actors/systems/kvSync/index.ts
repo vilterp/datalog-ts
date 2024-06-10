@@ -14,10 +14,10 @@ import { KVApp } from "./examples/types";
 import { hashString } from "../../../../util/util";
 
 export const KVSYNC_SYSTEMS = [
-  EXAMPLES.bank,
-  EXAMPLES.chat,
   EXAMPLES.counter,
   EXAMPLES.todoMVC,
+  EXAMPLES.bank,
+  EXAMPLES.chat,
 ].map(makeActorSystem);
 
 export type KVSyncState = ServerState | ClientState | { type: "UserState" };
