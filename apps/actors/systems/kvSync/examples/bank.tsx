@@ -18,8 +18,8 @@ import {
 } from "../mutations/types";
 import { MutationDefns, MutationInvocation, UserInput } from "../types";
 import { KVApp } from "./types";
-import { Inspector } from "./common/inspector";
-import { LoggedIn, LoginWrapper } from "./common/loginWrapper";
+import { Inspector } from "../uiCommon/inspector";
+import { LoggedIn, LoginWrapper } from "../uiCommon/loginWrapper";
 
 function BankUI(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);

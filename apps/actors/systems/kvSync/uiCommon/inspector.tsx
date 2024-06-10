@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { Client } from "../../hooks";
-import { Tabs } from "../../../../../../uiCommon/generic/tabs";
+import { Client } from "../hooks";
+import { Tabs } from "../../../../../uiCommon/generic/tabs";
 import { TransactionList } from "./txnList";
 import { KVInspector } from "./kvInspector";
 import { LiveQueryInspector } from "./liveQueryInspector";
-import { Table } from "./table";
-import { TraceOp } from "../../types";
+import { TraceOp } from "../types";
+import { Table } from "../../../../../uiCommon/generic/table";
 
 export function Inspector(props: { client: Client }) {
   const [curTab, setTab] = useState("data");

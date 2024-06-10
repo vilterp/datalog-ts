@@ -15,11 +15,11 @@ import {
   write,
 } from "../mutations/types";
 import { MutationDefns, UserInput } from "../types";
-import { TxnState } from "./common/txnState";
+import { TxnState } from "../uiCommon/txnState";
 import { KVApp } from "./types";
-import { Table } from "./common/table";
-import { Inspector } from "./common/inspector";
-import { LoggedIn, LoginWrapper } from "./common/loginWrapper";
+import { Inspector } from "../uiCommon/inspector";
+import { LoggedIn, LoginWrapper } from "../uiCommon/loginWrapper";
+import { Table } from "../../../../../uiCommon/generic/table";
 
 type Message = {
   id: number;

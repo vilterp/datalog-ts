@@ -1,7 +1,7 @@
 import React from "react";
-import { Client } from "../../hooks";
-import { Table } from "./table";
-import { LiveQuery } from "../../client";
+import { Client } from "../hooks";
+import { LiveQuery } from "../client";
+import { Table } from "../../../../../uiCommon/generic/table";
 
 export function LiveQueryInspector(props: { client: Client }) {
   return (

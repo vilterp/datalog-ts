@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import { Client } from "../../hooks";
+import React from "react";
+import { Client } from "../hooks";
 import { TxnState } from "./txnState";
-import { prettyPrintInvocation } from "./pretty";
-import { TransactionRecord, TransactionState } from "../../client";
-import { Table } from "./table";
+import { prettyPrintInvocation } from "../mutations/pretty";
+import { TransactionRecord, TransactionState } from "../client";
+import { Table } from "../../../../../uiCommon/generic/table";
 
 export function TransactionList(props: {
   client: Client;

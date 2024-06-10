@@ -1,5 +1,5 @@
 import React from "react";
-import { Client } from "../../hooks";
+import { Client } from "../hooks";
 
 export function TxnState(props: { client: Client; txnID: string }) {
   const txnRecord = props.client.state.transactions[props.txnID];
