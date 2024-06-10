@@ -37,7 +37,7 @@ function Main() {
           }
           type="range"
           min={0}
-          max={10_000}
+          max={3_000}
         />
         {state.networkLatency}ms
       </p>
