@@ -2,7 +2,7 @@ import { pairsToObj } from "../../../../../util/util";
 import { Expr, Lambda, Outcome, Scope, Value } from "./types";
 import { KVData, Trace, VersionedValue, WriteOp } from "../types";
 import { BUILTINS, InterpreterState } from "./builtins";
-import { getVisibleValue } from "./common";
+import { addNewVersion, getVisibleValue } from "../mvcc";
 
 export function runMutation(
   kvData: KVData,
@@ -345,19 +345,4 @@ function doWrite(
       desc: { type: "Insert", after: newVersionedValue },
     },
   ];
-}
-
-export function addNewVersion(
-  kvData: KVData,
-  key: string,
-  newVersion: VersionedValue
-) {
-  const versions = kvData[key] || [];
-  // Check if the transactionID is already in the list
-  // This can result from overlapping live queries
-  // TODO: this is O(n) and could be O(1)
-  if (versions.some((v) => v.transactionID === newVersion.transactionID)) {
-    return versions;
-  }
-  return [...versions, newVersion];
 }

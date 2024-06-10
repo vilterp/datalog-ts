@@ -1,5 +1,5 @@
 import { QueryResults } from "./hooks";
-import { getVisibleValue } from "./mutations/common";
+import { getVisibleValue } from "./mvcc";
 import { KVData, Query } from "./types";
 
 export function keyInQuery(key: string, query: Query): boolean {
