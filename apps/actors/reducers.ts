@@ -143,6 +143,14 @@ function systemInstanceReducer<St extends Json, Msg extends Json>(
       const frame = explore(systemInstance, action.steps, randomSeed);
       return [frame.state, []];
     }
+    case "TimeTravelTo":
+      return [
+        {
+          ...systemInstance,
+          currentStateIdx: action.idx,
+        },
+        [],
+      ];
   }
 }
 

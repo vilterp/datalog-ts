@@ -70,7 +70,8 @@ export type SystemInstanceAction<St, Msg> =
     }
   | { type: "AllocateClientID" }
   | { type: "ExitClient"; clientID: string }
-  | { type: "Explore"; steps: number };
+  | { type: "Explore"; steps: number }
+  | { type: "TimeTravelTo"; idx: number };
 
 // === trace model ===
 
