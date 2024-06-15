@@ -6,6 +6,7 @@ import {
   System,
   SystemInstance,
   SystemInstanceAction,
+  SystemState,
   Trace,
   TraceAction,
   UpdateFn,
@@ -34,9 +35,14 @@ export function initialState<St, Msg>(
       );
       return {
         system,
-        trace: system.getInitialState(interp),
-        clientIDs: [],
-        nextClientID: 0,
+        currentStateIdx: 0,
+        stateHistory: [
+          {
+            trace: system.getInitialState(interp),
+            clientIDs: [],
+            nextClientID: 0,
+          },
+        ],
       };
     }),
   };
@@ -92,50 +98,86 @@ function systemInstanceReducer<St extends Json, Msg extends Json>(
   switch (action.type) {
     case "ExitClient":
       // TODO: mark it as exited in the trace
-      return [
+      return appendState(systemInstance, (latestState) => [
         {
-          ...systemInstance,
-          clientIDs: systemInstance.clientIDs.filter(
+          ...latestState,
+          clientIDs: latestState.clientIDs.filter(
             (id) => id !== action.clientID
           ),
         },
         [],
-      ];
+      ]);
     case "UpdateTrace": {
-      const [newTrace, promises] = traceReducer(
-        networkLatency,
-        systemInstance.trace,
-        systemInstance.system.update,
-        action.action
-      );
-      return [
-        {
-          ...systemInstance,
-          trace: newTrace,
-        },
-        promises.map((p) =>
-          p.then((action) => ({ type: "UpdateTrace", action }))
-        ),
-      ];
+      return appendState(systemInstance, (latestState) => {
+        const [newTrace, promises] = traceReducer(
+          networkLatency,
+          latestState.trace,
+          systemInstance.system.update,
+          action.action
+        );
+        return [
+          {
+            ...latestState,
+            trace: newTrace,
+          },
+          promises.map((p) =>
+            p.then((action) => ({ type: "UpdateTrace", action }))
+          ),
+        ];
+      });
     }
     case "AllocateClientID":
-      return [
+      return appendState(systemInstance, (latestState) => [
         {
-          ...systemInstance,
+          ...latestState,
           clientIDs: [
-            ...systemInstance.clientIDs,
-            systemInstance.nextClientID.toString(),
+            ...latestState.clientIDs,
+            latestState.nextClientID.toString(),
           ],
-          nextClientID: systemInstance.nextClientID + 1,
+          nextClientID: latestState.nextClientID + 1,
         },
         [],
-      ];
+      ]);
     case "Explore": {
       const randomSeed = new Date().getTime();
       const frame = explore(systemInstance, action.steps, randomSeed);
       return [frame.state, []];
     }
   }
+}
+
+function appendState<ActorState, Msg>(
+  systemInstance: SystemInstance<ActorState, Msg>,
+  step: (
+    currentState: SystemState<ActorState>
+  ) => [
+    SystemState<ActorState>,
+    Promise<SystemInstanceAction<ActorState, Msg>>[]
+  ]
+): [
+  SystemInstance<ActorState, Msg>,
+  Promise<SystemInstanceAction<ActorState, Msg>>[]
+] {
+  const latestState = history[systemInstance.currentStateIdx];
+  const [newState, promises] = step(latestState);
+
+  const atEnd =
+    systemInstance.currentStateIdx === systemInstance.stateHistory.length - 1;
+
+  // If we're at the end of history, append a new state
+  // If we've rewound to somewhere in the middle, branch off to a new timeline
+  const historyBase = atEnd
+    ? systemInstance.stateHistory
+    : systemInstance.stateHistory.slice(0, systemInstance.currentStateIdx + 1);
+
+  return [
+    {
+      ...systemInstance,
+      currentStateIdx: systemInstance.currentStateIdx + 1,
+      stateHistory: [...historyBase, newState],
+    },
+    promises,
+  ];
 }
 
 // TODO: returns traces that still need to be stepped...

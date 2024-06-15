@@ -11,6 +11,7 @@ import { SystemInstance, SystemInstanceAction } from "./types";
 import { useEffectfulReducer } from "../../uiCommon/generic/hooks";
 import { CollapsibleWithHeading } from "../../uiCommon/generic/collapsible";
 import { MultiClient } from "./ui/multiClient";
+import { lastItem } from "../../util/util";
 
 const initialSystemsState = initialState(SYSTEMS);
 
@@ -72,6 +73,8 @@ function SystemInstanceView<St extends Json, Msg extends Json>(props: {
   systemInstance: SystemInstance<St, Msg>;
   dispatch: (action: SystemInstanceAction<St, Msg>) => void;
 }) {
+  const curState = lastItem(props.systemInstance.stateHistory);
+
   return (
     <>
       <MultiClient
@@ -81,14 +84,12 @@ function SystemInstanceView<St extends Json, Msg extends Json>(props: {
 
       <CollapsibleWithHeading
         heading="Explorer"
-        content={
-          <Explorer interp={props.systemInstance.trace.interp} showViz={true} />
-        }
+        content={<Explorer interp={curState.trace.interp} showViz={true} />}
       />
 
       <h2>State</h2>
       <ReactJson
-        src={props.systemInstance.trace.latestStates}
+        src={curState.trace.latestStates}
         displayDataTypes={false}
         collapsed
       />

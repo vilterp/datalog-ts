@@ -53,6 +53,11 @@ export type UIProps<ClientState, UserInput> = {
 
 export type SystemInstance<ActorState, Msg> = {
   system: System<ActorState, Msg>;
+  currentStateIdx: number;
+  stateHistory: SystemState<ActorState>[];
+};
+
+export type SystemState<ActorState> = {
   trace: Trace<ActorState>;
   clientIDs: string[];
   nextClientID: number;
