@@ -166,7 +166,8 @@ function appendState<ActorState, Msg>(
   SystemInstance<ActorState, Msg>,
   Promise<SystemInstanceAction<ActorState, Msg>>[]
 ] {
-  const latestState = history[systemInstance.currentStateIdx];
+  const latestState =
+    systemInstance.stateHistory[systemInstance.currentStateIdx];
   const [newState, promises] = step(latestState);
 
   const atEnd =
