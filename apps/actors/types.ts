@@ -54,6 +54,7 @@ export type UIProps<ClientState, UserInput> = {
 export type SystemInstance<ActorState, Msg> = {
   system: System<ActorState, Msg>;
   currentStateIdx: number;
+  timelineID: number;
   stateHistory: SystemState<ActorState>[];
 };
 
@@ -63,6 +64,14 @@ export type SystemState<ActorState> = {
   nextClientID: number;
 };
 
+export type TimeTravelAction<St, Msg> =
+  | {
+      type: "Advance";
+      action: SystemInstanceAction<St, Msg>;
+      timelineID: number;
+    }
+  | { type: "TimeTravelTo"; idx: number };
+
 export type SystemInstanceAction<St, Msg> =
   | {
       type: "UpdateTrace";
@@ -70,8 +79,7 @@ export type SystemInstanceAction<St, Msg> =
     }
   | { type: "AllocateClientID" }
   | { type: "ExitClient"; clientID: string }
-  | { type: "Explore"; steps: number }
-  | { type: "TimeTravelTo"; idx: number };
+  | { type: "Explore"; steps: number };
 
 // === trace model ===
 

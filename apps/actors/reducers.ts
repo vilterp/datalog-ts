@@ -7,6 +7,7 @@ import {
   SystemInstance,
   SystemInstanceAction,
   SystemState,
+  TimeTravelAction,
   Trace,
   TraceAction,
   UpdateFn,
@@ -36,6 +37,7 @@ export function initialState<St, Msg>(
       return {
         system,
         currentStateIdx: 0,
+        timelineID: 0,
         stateHistory: [
           {
             trace: system.getInitialState(interp),
@@ -87,6 +89,18 @@ export function reducer(
         },
         [],
       ];
+  }
+}
+
+export function timeTravelReducer<St, Msg>(
+  state: SystemState<St>,
+  action: TimeTravelAction<St, Msg>
+): SystemState<St> {
+  switch (action.type) {
+    case "Advance":
+      return XXX;
+    case "TimeTravelTo":
+      return XXX;
   }
 }
 
@@ -175,13 +189,20 @@ function appendState<ActorState, Msg>(
 
   // If we're at the end of history, append a new state
   // If we've rewound to somewhere in the middle, branch off to a new timeline
-  const historyBase = atEnd
-    ? systemInstance.stateHistory
-    : systemInstance.stateHistory.slice(0, systemInstance.currentStateIdx + 1);
+  const [historyBase, newTimelineID] = atEnd
+    ? [systemInstance.stateHistory, systemInstance.timelineID]
+    : [
+        systemInstance.stateHistory.slice(
+          0,
+          systemInstance.currentStateIdx + 1
+        ),
+        systemInstance.timelineID + 1,
+      ];
 
   return [
     {
       ...systemInstance,
+      timelineID: newTimelineID,
       currentStateIdx: systemInstance.currentStateIdx + 1,
       stateHistory: [...historyBase, newState],
     },
