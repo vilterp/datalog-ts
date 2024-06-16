@@ -1,6 +1,11 @@
 import React from "react";
 import { Json } from "../../../util/json";
-import { SystemInstance, TimeTravelAction, TraceAction } from "../types";
+import {
+  SystemInstance,
+  SystemInstanceAction,
+  TimeTravelAction,
+  TraceAction,
+} from "../types";
 import { Window } from "./window";
 
 export function MultiClient<St extends Json, Msg extends Json>(props: {
@@ -10,7 +15,7 @@ export function MultiClient<St extends Json, Msg extends Json>(props: {
   const curState =
     props.systemInstance.stateHistory[props.systemInstance.currentStateIdx];
 
-  const advance = (action) => {
+  const advance = (action: SystemInstanceAction<St, Msg>) => {
     props.dispatch({ type: "Advance", action });
   };
 
@@ -80,7 +85,7 @@ export function MultiClient<St extends Json, Msg extends Json>(props: {
 
       {props.systemInstance.system.chooseNextMove ? (
         <ExploreForm
-          onExplore={(steps) => advance({ type: "Explore", steps })}
+          onExplore={(steps) => props.dispatch({ type: "Explore", steps })}
         />
       ) : null}
     </>

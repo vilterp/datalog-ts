@@ -66,7 +66,8 @@ export type SystemState<ActorState> = {
 export type TimeTravelAction<St, Msg> =
   | { type: "TimeTravelTo"; idx: number }
   | { type: "Advance"; action: SystemInstanceAction<St, Msg> }
-  | { type: "Branch" };
+  | { type: "Branch" }
+  | { type: "Explore"; steps: number };
 
 export type SystemInstanceAction<St, Msg> =
   | {
@@ -74,8 +75,7 @@ export type SystemInstanceAction<St, Msg> =
       action: TraceAction<St, Msg>;
     }
   | { type: "AllocateClientID" }
-  | { type: "ExitClient"; clientID: string }
-  | { type: "Explore"; steps: number };
+  | { type: "ExitClient"; clientID: string };
 
 // === trace model ===
 

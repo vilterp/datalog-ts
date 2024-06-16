@@ -146,6 +146,39 @@ function systemInstanceReducer<St extends Json, Msg extends Json>(
         },
         [],
       ];
+    case "Explore": {
+      // Explore
+      const randomSeed = new Date().getTime();
+      const frame = explore(
+        systemInstance.system,
+        latestState,
+        action.steps,
+        randomSeed
+      );
+
+      // Extract history
+      const exploreHistory = [];
+      let curFrame = frame;
+      while (curFrame.parent) {
+        exploreHistory.push(curFrame.state);
+        curFrame = curFrame.parent;
+      }
+
+      // Join histories
+      const newStateHistory = [
+        ...systemInstance.stateHistory,
+        ...exploreHistory.reverse(),
+      ];
+
+      return [
+        {
+          ...systemInstance,
+          currentStateIdx: newStateHistory.length - 1,
+          stateHistory: newStateHistory,
+        },
+        [],
+      ];
+    }
   }
 }
 
@@ -196,11 +229,6 @@ function systemStateReducer<St extends Json, Msg extends Json>(
         },
         [],
       ];
-    case "Explore": {
-      const randomSeed = new Date().getTime();
-      const frame = explore(system, latestState, action.steps, randomSeed);
-      return [frame.state, []];
-    }
   }
 }
 
