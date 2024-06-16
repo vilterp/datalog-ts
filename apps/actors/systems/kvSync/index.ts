@@ -11,7 +11,7 @@ import { initialServerState, ServerState, updateServer } from "./server";
 import { MsgToClient, MsgToServer } from "./types";
 import { EXAMPLES } from "./examples";
 import { KVApp } from "./examples/types";
-import { hashString } from "../../../../util/util";
+import { hashString, lastItem } from "../../../../util/util";
 
 export const KVSYNC_SYSTEMS = [
   EXAMPLES.counter,
@@ -43,9 +43,9 @@ export function makeActorSystem(app: KVApp): System<KVSyncState, KVSyncMsg> {
     initialClientState: (id: string) =>
       initialClientState(id, app.mutations, hashString(id)),
     initialUserState: { type: "UserState" },
-    chooseNextMove: (state, randomSeed) => {
+    chooseNextMove: (system, state, randomSeed) => {
       if (!app.choose) {
-        return;
+        return [null, randomSeed];
       }
       const clientStates: { [clientID: string]: ClientState } = {};
       for (const clientID of state.clientIDs) {

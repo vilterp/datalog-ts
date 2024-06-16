@@ -6,6 +6,8 @@ import {
   System,
   SystemInstance,
   SystemInstanceAction,
+  SystemState,
+  TimeTravelAction,
   Trace,
   TraceAction,
   UpdateFn,
@@ -15,8 +17,8 @@ import { stepTrace } from "./step";
 // @ts-ignore
 import patternsDL from "./patterns.dl";
 import { makeMemoryLoader } from "../../core/loaders";
-import { IncrementalInterpreter } from "../../core/incremental/interpreter";
 import { explore } from "./explore";
+import { SimpleInterpreter } from "../../core/simple/interpreter";
 
 export const INITIAL_NETWORK_LATENCY_MS = 1000;
 
@@ -26,7 +28,7 @@ export function initialState<St, Msg>(
   return {
     networkLatency: INITIAL_NETWORK_LATENCY_MS,
     systemInstances: systems.map((system) => {
-      const interp = new IncrementalInterpreter(
+      const interp = new SimpleInterpreter(
         ".",
         makeMemoryLoader({
           "patterns.dl": patternsDL,
@@ -34,9 +36,14 @@ export function initialState<St, Msg>(
       );
       return {
         system,
-        trace: system.getInitialState(interp),
-        clientIDs: [],
-        nextClientID: 0,
+        currentStateIdx: 0,
+        stateHistory: [
+          {
+            trace: system.getInitialState(interp),
+            clientIDs: [],
+            nextClientID: 0,
+          },
+        ],
       };
     }),
   };
@@ -69,7 +76,7 @@ export function reducer(
           p.then((action) => ({
             type: "UpdateSystemInstance",
             instanceID: instance.system.id,
-            action,
+            action: { type: "Advance", action },
           }))
         ),
       ];
@@ -84,18 +91,110 @@ export function reducer(
   }
 }
 
+// Time travel reducer?
 function systemInstanceReducer<St extends Json, Msg extends Json>(
   networkLatency: number,
   systemInstance: SystemInstance<St, Msg>,
-  action: SystemInstanceAction<St, Msg>
+  action: TimeTravelAction<St, Msg>
 ): [SystemInstance<St, Msg>, Promise<SystemInstanceAction<St, Msg>>[]] {
+  const latestState =
+    systemInstance.stateHistory[systemInstance.currentStateIdx];
+
+  switch (action.type) {
+    case "TimeTravelTo":
+      return [
+        {
+          ...systemInstance,
+          currentStateIdx: action.idx,
+        },
+        [],
+      ];
+    case "Advance": {
+      const atEnd =
+        systemInstance.stateHistory.length === 0 ||
+        systemInstance.currentStateIdx ===
+          systemInstance.stateHistory.length - 1;
+      if (!atEnd) {
+        // TODO: surface this to the user somehow
+        console.warn("action ignored because we haven't branched", action);
+        return [systemInstance, []];
+      }
+
+      const [newState, promises] = systemStateReducer(
+        networkLatency,
+        systemInstance.system,
+        latestState,
+        action.action
+      );
+      return [
+        {
+          ...systemInstance,
+          currentStateIdx: systemInstance.currentStateIdx + 1,
+          stateHistory: [...systemInstance.stateHistory, newState],
+        },
+        promises,
+      ];
+    }
+    case "Branch":
+      return [
+        {
+          ...systemInstance,
+          stateHistory: systemInstance.stateHistory.slice(
+            0,
+            systemInstance.currentStateIdx + 1
+          ),
+        },
+        [],
+      ];
+    case "Explore": {
+      // Explore
+      const randomSeed = new Date().getTime();
+      const frame = explore(
+        systemInstance.system,
+        latestState,
+        action.steps,
+        randomSeed
+      );
+
+      // Extract history
+      const exploreHistory = [];
+      let curFrame = frame;
+      while (curFrame.parent) {
+        exploreHistory.push(curFrame.state);
+        curFrame = curFrame.parent;
+      }
+
+      // Join histories
+      const newStateHistory = [
+        ...systemInstance.stateHistory,
+        ...exploreHistory.reverse(),
+      ];
+
+      return [
+        {
+          ...systemInstance,
+          currentStateIdx: newStateHistory.length - 1,
+          stateHistory: newStateHistory,
+        },
+        [],
+      ];
+    }
+  }
+}
+
+function systemStateReducer<St extends Json, Msg extends Json>(
+  networkLatency: number,
+  system: System<St, Msg>,
+  latestState: SystemState<St>,
+  action: SystemInstanceAction<St, Msg>
+): [SystemState<St>, Promise<SystemInstanceAction<St, Msg>>[]] {
   switch (action.type) {
     case "ExitClient":
       // TODO: mark it as exited in the trace
       return [
         {
-          ...systemInstance,
-          clientIDs: systemInstance.clientIDs.filter(
+          ...latestState,
+          clientIDs: latestState.clientIDs.filter(
             (id) => id !== action.clientID
           ),
         },
@@ -104,13 +203,13 @@ function systemInstanceReducer<St extends Json, Msg extends Json>(
     case "UpdateTrace": {
       const [newTrace, promises] = traceReducer(
         networkLatency,
-        systemInstance.trace,
-        systemInstance.system.update,
+        latestState.trace,
+        system.update,
         action.action
       );
       return [
         {
-          ...systemInstance,
+          ...latestState,
           trace: newTrace,
         },
         promises.map((p) =>
@@ -121,20 +220,15 @@ function systemInstanceReducer<St extends Json, Msg extends Json>(
     case "AllocateClientID":
       return [
         {
-          ...systemInstance,
+          ...latestState,
           clientIDs: [
-            ...systemInstance.clientIDs,
-            systemInstance.nextClientID.toString(),
+            ...latestState.clientIDs,
+            latestState.nextClientID.toString(),
           ],
-          nextClientID: systemInstance.nextClientID + 1,
+          nextClientID: latestState.nextClientID + 1,
         },
         [],
       ];
-    case "Explore": {
-      const randomSeed = new Date().getTime();
-      const frame = explore(systemInstance, action.steps, randomSeed);
-      return [frame.state, []];
-    }
   }
 }
 

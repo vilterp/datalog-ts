@@ -1,36 +1,47 @@
 import React from "react";
 import { Json } from "../../../util/json";
-import { SystemInstance, SystemInstanceAction } from "../types";
+import {
+  SystemInstance,
+  SystemInstanceAction,
+  TimeTravelAction,
+  TraceAction,
+} from "../types";
 import { Window } from "./window";
 
 export function MultiClient<St extends Json, Msg extends Json>(props: {
   systemInstance: SystemInstance<St, Msg>;
-  dispatch: (action: SystemInstanceAction<St, Msg>) => void;
+  dispatch: (action: TimeTravelAction<St, Msg>) => void;
 }) {
+  const curState =
+    props.systemInstance.stateHistory[props.systemInstance.currentStateIdx];
+
+  const advance = (action: SystemInstanceAction<St, Msg>) => {
+    props.dispatch({ type: "Advance", action });
+  };
+
+  const updateTrace = (action: TraceAction<St, Msg>) => {
+    advance({ type: "UpdateTrace", action });
+  };
+
   const sendInput = (clientID: string, input: Msg) => {
-    props.dispatch({
-      type: "UpdateTrace",
-      action: {
-        type: "SendUserInput",
-        clientID,
-        input,
-      },
+    updateTrace({
+      type: "SendUserInput",
+      clientID,
+      input,
     });
   };
 
   const addClient = () => {
-    props.dispatch({ type: "AllocateClientID" });
+    advance({ type: "AllocateClientID" });
     // TODO: DRY this up with other place client id is constructed
-    const clientID = `client${props.systemInstance.nextClientID}`;
-    props.dispatch({
-      type: "UpdateTrace",
-      action: {
-        type: "SpawnClient",
-        id: props.systemInstance.nextClientID.toString(),
-        initialUserState: props.systemInstance.system.initialUserState,
-        initialClientState:
-          props.systemInstance.system.initialClientState(clientID),
-      },
+    const clientID = `client${curState.nextClientID}`;
+
+    updateTrace({
+      type: "SpawnClient",
+      id: curState.nextClientID.toString(),
+      initialUserState: props.systemInstance.system.initialUserState,
+      initialClientState:
+        props.systemInstance.system.initialClientState(clientID),
     });
   };
 
@@ -43,16 +54,15 @@ export function MultiClient<St extends Json, Msg extends Json>(props: {
           alignItems: "flex-start",
         }}
       >
-        {props.systemInstance.clientIDs.map((clientID) => {
-          const clientState =
-            props.systemInstance.trace.latestStates[`client${clientID}`];
+        {curState.clientIDs.map((clientID) => {
+          const clientState = curState.trace.latestStates[`client${clientID}`];
 
           return (
             <Window
               key={clientID}
               name={`Client ${clientID}`}
               onClose={() => {
-                props.dispatch({ type: "ExitClient", clientID });
+                advance({ type: "ExitClient", clientID });
               }}
             >
               {clientState ? (
@@ -66,6 +76,12 @@ export function MultiClient<St extends Json, Msg extends Json>(props: {
         })}
         <AddClientButton onClick={() => addClient()} />
       </div>
+
+      <TimeTravelSlider<St, Msg>
+        curIdx={props.systemInstance.currentStateIdx}
+        historyLength={props.systemInstance.stateHistory.length}
+        dispatch={(evt) => props.dispatch(evt)}
+      />
 
       {props.systemInstance.system.chooseNextMove ? (
         <ExploreForm
@@ -93,6 +109,40 @@ function ExploreForm(props: { onExplore: (steps: number) => void }) {
       />{" "}
       steps
     </form>
+  );
+}
+
+function TimeTravelSlider<St, Msg>(props: {
+  curIdx: number;
+  historyLength: number;
+  dispatch: (action: TimeTravelAction<St, Msg>) => void;
+}) {
+  const atEnd =
+    props.historyLength === 0 || props.curIdx === props.historyLength - 1;
+
+  return (
+    <div>
+      <input
+        type="range"
+        min={0}
+        max={props.historyLength - 1}
+        value={props.curIdx}
+        onChange={(evt) => {
+          props.dispatch({
+            type: "TimeTravelTo",
+            idx: parseInt(evt.target.value),
+          });
+        }}
+        style={{ width: 500 }}
+      />{" "}
+      {props.curIdx}/{props.historyLength - 1}{" "}
+      <button
+        disabled={atEnd}
+        onClick={() => props.dispatch({ type: "Branch" })}
+      >
+        Branch
+      </button>
+    </div>
   );
 }
 

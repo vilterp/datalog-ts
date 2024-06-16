@@ -8,11 +8,10 @@ export type State<St, Msg> = {
   systemInstances: SystemInstance<St, Msg>[];
 };
 
-// TODO: only one action... is this reducer even necessary?
 export type Action<St, Msg> =
   | {
       type: "UpdateSystemInstance";
-      action: SystemInstanceAction<St, Msg>;
+      action: TimeTravelAction<St, Msg>;
       instanceID: string;
     }
   | { type: "ChangeNetworkLatency"; newLatency: number };
@@ -30,7 +29,8 @@ export type MessageToClient<Msg> = {
 };
 
 export type ChooseFn<ActorState, Msg> = (
-  state: SystemInstance<ActorState, Msg>,
+  system: System<ActorState, Msg>,
+  state: SystemState<ActorState>,
   randomSeed: number
 ) => [MessageToClient<Msg> | null, number];
 
@@ -53,10 +53,21 @@ export type UIProps<ClientState, UserInput> = {
 
 export type SystemInstance<ActorState, Msg> = {
   system: System<ActorState, Msg>;
+  currentStateIdx: number;
+  stateHistory: SystemState<ActorState>[];
+};
+
+export type SystemState<ActorState> = {
   trace: Trace<ActorState>;
   clientIDs: string[];
   nextClientID: number;
 };
+
+export type TimeTravelAction<St, Msg> =
+  | { type: "TimeTravelTo"; idx: number }
+  | { type: "Advance"; action: SystemInstanceAction<St, Msg> }
+  | { type: "Branch" }
+  | { type: "Explore"; steps: number };
 
 export type SystemInstanceAction<St, Msg> =
   | {
@@ -64,8 +75,7 @@ export type SystemInstanceAction<St, Msg> =
       action: TraceAction<St, Msg>;
     }
   | { type: "AllocateClientID" }
-  | { type: "ExitClient"; clientID: string }
-  | { type: "Explore"; steps: number };
+  | { type: "ExitClient"; clientID: string };
 
 // === trace model ===
 
