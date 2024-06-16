@@ -130,6 +130,19 @@ function TimeTravelSlider<St, Msg>(props: {
 
   return (
     <div ref={ref}>
+      <input
+        type="range"
+        min={0}
+        max={props.historyLength - 1}
+        value={props.curIdx}
+        style={{ width: width - 40 }}
+        onChange={(evt) =>
+          props.dispatch({
+            type: "TimeTravelTo",
+            idx: parseInt(evt.target.value),
+          })
+        }
+      />
       <SequenceDiagram
         interp={props.interp}
         id={"sequence"}
