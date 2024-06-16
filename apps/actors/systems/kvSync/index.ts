@@ -43,11 +43,10 @@ export function makeActorSystem(app: KVApp): System<KVSyncState, KVSyncMsg> {
     initialClientState: (id: string) =>
       initialClientState(id, app.mutations, hashString(id)),
     initialUserState: { type: "UserState" },
-    chooseNextMove: (systemInstance, randomSeed) => {
+    chooseNextMove: (system, state, randomSeed) => {
       if (!app.choose) {
         return;
       }
-      const state = lastItem(systemInstance.stateHistory);
       const clientStates: { [clientID: string]: ClientState } = {};
       for (const clientID of state.clientIDs) {
         const clientState = state.trace.latestStates[`client${clientID}`];

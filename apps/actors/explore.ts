@@ -4,27 +4,31 @@ import { stepTrace } from "./step";
 import {
   AddressedTickInitiator,
   ChooseFn,
-  SystemInstance,
+  System,
+  SystemState,
   TraceAction,
 } from "./types";
 
 type Frame<ActorState, Msg> = {
   parent: Frame<ActorState, Msg> | null;
   action: TraceAction<ActorState, Msg> | { type: "ExploreStart" };
-  state: SystemInstance<ActorState, Msg>;
+  system: System<ActorState, Msg>;
+  state: SystemState<ActorState>;
   messages: AddressedTickInitiator<ActorState>[];
   randomSeed: number;
 };
 
 // TODO: stopping condition
 export function explore<ActorState extends Json, Msg extends Json>(
-  systemInstance: SystemInstance<ActorState, Msg>,
+  system: System<ActorState, Msg>,
+  initialState: SystemState<ActorState>,
   stepLimit: number,
   randomSeed: number
 ): Frame<ActorState, Msg> {
   let step = 0;
   const generator = exploreGenerator(
-    systemInstance,
+    system,
+    initialState,
     NEW_USER_INPUT_PROB,
     randomSeed
   );
@@ -55,11 +59,11 @@ function runToQuiescence<ActorState extends Json, Msg extends Json>(
 // TODO:
 // - stopping condition
 function* exploreGenerator<ActorState extends Json, Msg extends Json>(
-  systemInstance: SystemInstance<ActorState, Msg>,
+  system: System<ActorState, Msg>,
+  initialState: SystemState<ActorState>,
   newUserInputProbability: number,
   randomSeed: number
 ): Generator<Frame<ActorState, Msg>> {
-  const system = systemInstance.system;
   if (!system.chooseNextMove) {
     return;
   }
@@ -70,7 +74,8 @@ function* exploreGenerator<ActorState extends Json, Msg extends Json>(
       action: { type: "ExploreStart" },
       randomSeed,
       messages: [],
-      state: systemInstance,
+      system,
+      state: initialState,
     },
   ];
 
@@ -96,7 +101,7 @@ function exploreStep<ActorState extends Json, Msg extends Json>(
     remainingInits: remainingInits,
     randomSeed: nextRandSeed,
   } = getNextTraceAction(
-    frame.state.system.chooseNextMove,
+    frame.system.chooseNextMove,
     frame,
     newUserInputProbability,
     frame.randomSeed
@@ -108,13 +113,14 @@ function exploreStep<ActorState extends Json, Msg extends Json>(
 
   const [nextTrace, newInits] = stepTrace(
     frame.state.trace,
-    frame.state.system.update,
+    frame.system.update,
     traceAction
   );
 
   return {
     parent: frame,
     action: traceAction,
+    system: frame.system,
     state: {
       ...frame.state,
       trace: nextTrace,
@@ -142,6 +148,7 @@ function getNextTraceAction<ActorState, Msg>(
     // SendUserInput
 
     const [messageToClient, randomSeed2] = chooseNextMove(
+      frame.system,
       frame.state,
       randomSeed1
     );

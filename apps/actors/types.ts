@@ -8,11 +8,10 @@ export type State<St, Msg> = {
   systemInstances: SystemInstance<St, Msg>[];
 };
 
-// TODO: only one action... is this reducer even necessary?
 export type Action<St, Msg> =
   | {
       type: "UpdateSystemInstance";
-      action: SystemInstanceAction<St, Msg>;
+      action: TimeTravelAction<St, Msg>;
       instanceID: string;
     }
   | { type: "ChangeNetworkLatency"; newLatency: number };
@@ -30,7 +29,8 @@ export type MessageToClient<Msg> = {
 };
 
 export type ChooseFn<ActorState, Msg> = (
-  state: SystemInstance<ActorState, Msg>,
+  system: System<ActorState, Msg>,
+  state: SystemState<ActorState>,
   randomSeed: number
 ) => [MessageToClient<Msg> | null, number];
 
@@ -63,6 +63,11 @@ export type SystemState<ActorState> = {
   nextClientID: number;
 };
 
+export type TimeTravelAction<St, Msg> =
+  | { type: "TimeTravelTo"; idx: number }
+  | { type: "Advance"; action: SystemInstanceAction<St, Msg> }
+  | { type: "Branch" };
+
 export type SystemInstanceAction<St, Msg> =
   | {
       type: "UpdateTrace";
@@ -70,8 +75,7 @@ export type SystemInstanceAction<St, Msg> =
     }
   | { type: "AllocateClientID" }
   | { type: "ExitClient"; clientID: string }
-  | { type: "Explore"; steps: number }
-  | { type: "TimeTravelTo"; idx: number };
+  | { type: "Explore"; steps: number };
 
 // === trace model ===
 

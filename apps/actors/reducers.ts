@@ -7,6 +7,7 @@ import {
   SystemInstance,
   SystemInstanceAction,
   SystemState,
+  TimeTravelAction,
   Trace,
   TraceAction,
   UpdateFn,
@@ -75,7 +76,7 @@ export function reducer(
           p.then((action) => ({
             type: "UpdateSystemInstance",
             instanceID: instance.system.id,
-            action,
+            action: { type: "Advance", action },
           }))
         ),
       ];
@@ -90,15 +91,73 @@ export function reducer(
   }
 }
 
+// Time travel reducer?
 function systemInstanceReducer<St extends Json, Msg extends Json>(
   networkLatency: number,
   systemInstance: SystemInstance<St, Msg>,
-  action: SystemInstanceAction<St, Msg>
+  action: TimeTravelAction<St, Msg>
 ): [SystemInstance<St, Msg>, Promise<SystemInstanceAction<St, Msg>>[]] {
+  const latestState =
+    systemInstance.stateHistory[systemInstance.currentStateIdx];
+
+  switch (action.type) {
+    case "TimeTravelTo":
+      return [
+        {
+          ...systemInstance,
+          currentStateIdx: action.idx,
+        },
+        [],
+      ];
+    case "Advance": {
+      // TODO: don't advance if we're at the end of history
+      const atEnd =
+        systemInstance.currentStateIdx ===
+        systemInstance.stateHistory.length - 1;
+      if (atEnd) {
+        // TODO: surface this to the user somehow
+        console.warn("action ignored because we haven't branched", action);
+        return [systemInstance, []];
+      }
+
+      const [newState, promises] = systemStateReducer(
+        networkLatency,
+        systemInstance.system,
+        latestState,
+        action.action
+      );
+      return [
+        {
+          ...systemInstance,
+          stateHistory: [...systemInstance.stateHistory, newState],
+        },
+        promises,
+      ];
+    }
+    case "Branch":
+      return [
+        {
+          ...systemInstance,
+          stateHistory: systemInstance.stateHistory.slice(
+            0,
+            systemInstance.currentStateIdx + 1
+          ),
+        },
+        [],
+      ];
+  }
+}
+
+function systemStateReducer<St extends Json, Msg extends Json>(
+  networkLatency: number,
+  system: System<St, Msg>,
+  latestState: SystemState<St>,
+  action: SystemInstanceAction<St, Msg>
+): [SystemState<St>, Promise<SystemInstanceAction<St, Msg>>[]] {
   switch (action.type) {
     case "ExitClient":
       // TODO: mark it as exited in the trace
-      return appendState(systemInstance, (latestState) => [
+      return [
         {
           ...latestState,
           clientIDs: latestState.clientIDs.filter(
@@ -106,28 +165,26 @@ function systemInstanceReducer<St extends Json, Msg extends Json>(
           ),
         },
         [],
-      ]);
+      ];
     case "UpdateTrace": {
-      return appendState(systemInstance, (latestState) => {
-        const [newTrace, promises] = traceReducer(
-          networkLatency,
-          latestState.trace,
-          systemInstance.system.update,
-          action.action
-        );
-        return [
-          {
-            ...latestState,
-            trace: newTrace,
-          },
-          promises.map((p) =>
-            p.then((action) => ({ type: "UpdateTrace", action }))
-          ),
-        ];
-      });
+      const [newTrace, promises] = traceReducer(
+        networkLatency,
+        latestState.trace,
+        system.update,
+        action.action
+      );
+      return [
+        {
+          ...latestState,
+          trace: newTrace,
+        },
+        promises.map((p) =>
+          p.then((action) => ({ type: "UpdateTrace", action }))
+        ),
+      ];
     }
     case "AllocateClientID":
-      return appendState(systemInstance, (latestState) => [
+      return [
         {
           ...latestState,
           clientIDs: [
@@ -137,56 +194,13 @@ function systemInstanceReducer<St extends Json, Msg extends Json>(
           nextClientID: latestState.nextClientID + 1,
         },
         [],
-      ]);
+      ];
     case "Explore": {
       const randomSeed = new Date().getTime();
-      const frame = explore(systemInstance, action.steps, randomSeed);
+      const frame = explore(system, latestState, action.steps, randomSeed);
       return [frame.state, []];
     }
-    case "TimeTravelTo":
-      return [
-        {
-          ...systemInstance,
-          currentStateIdx: action.idx,
-        },
-        [],
-      ];
   }
-}
-
-function appendState<ActorState, Msg>(
-  systemInstance: SystemInstance<ActorState, Msg>,
-  step: (
-    currentState: SystemState<ActorState>
-  ) => [
-    SystemState<ActorState>,
-    Promise<SystemInstanceAction<ActorState, Msg>>[]
-  ]
-): [
-  SystemInstance<ActorState, Msg>,
-  Promise<SystemInstanceAction<ActorState, Msg>>[]
-] {
-  const latestState =
-    systemInstance.stateHistory[systemInstance.currentStateIdx];
-  const [newState, promises] = step(latestState);
-
-  const atEnd =
-    systemInstance.currentStateIdx === systemInstance.stateHistory.length - 1;
-
-  // If we're at the end of history, append a new state
-  // If we've rewound to somewhere in the middle, branch off to a new timeline
-  const historyBase = atEnd
-    ? systemInstance.stateHistory
-    : systemInstance.stateHistory.slice(0, systemInstance.currentStateIdx + 1);
-
-  return [
-    {
-      ...systemInstance,
-      currentStateIdx: systemInstance.currentStateIdx + 1,
-      stateHistory: [...historyBase, newState],
-    },
-    promises,
-  ];
 }
 
 // TODO: returns traces that still need to be stepped...

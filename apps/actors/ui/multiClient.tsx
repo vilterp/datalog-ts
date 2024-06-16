@@ -1,17 +1,21 @@
-import React, { useState } from "react";
+import React from "react";
 import { Json } from "../../../util/json";
-import { SystemInstance, SystemInstanceAction, TraceAction } from "../types";
+import { SystemInstance, TimeTravelAction, TraceAction } from "../types";
 import { Window } from "./window";
 
 export function MultiClient<St extends Json, Msg extends Json>(props: {
   systemInstance: SystemInstance<St, Msg>;
-  dispatch: (action: SystemInstanceAction<St, Msg>) => void;
+  dispatch: (action: TimeTravelAction<St, Msg>) => void;
 }) {
   const curState =
     props.systemInstance.stateHistory[props.systemInstance.currentStateIdx];
 
+  const advance = (action) => {
+    props.dispatch({ type: "Advance", action });
+  };
+
   const updateTrace = (action: TraceAction<St, Msg>) => {
-    props.dispatch({ type: "UpdateTrace", action });
+    advance({ type: "UpdateTrace", action });
   };
 
   const sendInput = (clientID: string, input: Msg) => {
@@ -23,7 +27,7 @@ export function MultiClient<St extends Json, Msg extends Json>(props: {
   };
 
   const addClient = () => {
-    props.dispatch({ type: "AllocateClientID" });
+    advance({ type: "AllocateClientID" });
     // TODO: DRY this up with other place client id is constructed
     const clientID = `client${curState.nextClientID}`;
 
@@ -53,7 +57,7 @@ export function MultiClient<St extends Json, Msg extends Json>(props: {
               key={clientID}
               name={`Client ${clientID}`}
               onClose={() => {
-                props.dispatch({ type: "ExitClient", clientID });
+                advance({ type: "ExitClient", clientID });
               }}
             >
               {clientState ? (
@@ -68,17 +72,15 @@ export function MultiClient<St extends Json, Msg extends Json>(props: {
         <AddClientButton onClick={() => addClient()} />
       </div>
 
-      <TimeTravelSlider
+      <TimeTravelSlider<St, Msg>
         curIdx={props.systemInstance.currentStateIdx}
         historyLength={props.systemInstance.stateHistory.length}
-        onChange={(newIdx) =>
-          props.dispatch({ type: "TimeTravelTo", idx: newIdx })
-        }
+        dispatch={(evt) => props.dispatch(evt)}
       />
 
       {props.systemInstance.system.chooseNextMove ? (
         <ExploreForm
-          onExplore={(steps) => props.dispatch({ type: "Explore", steps })}
+          onExplore={(steps) => advance({ type: "Explore", steps })}
         />
       ) : null}
     </>
@@ -105,10 +107,10 @@ function ExploreForm(props: { onExplore: (steps: number) => void }) {
   );
 }
 
-function TimeTravelSlider(props: {
+function TimeTravelSlider<St, Msg>(props: {
   curIdx: number;
   historyLength: number;
-  onChange: (newIdx: number) => void;
+  dispatch: (action: TimeTravelAction<St, Msg>) => void;
 }) {
   return (
     <div>
@@ -118,10 +120,14 @@ function TimeTravelSlider(props: {
         max={props.historyLength - 1}
         value={props.curIdx}
         onChange={(evt) => {
-          props.onChange(parseInt(evt.target.value));
+          props.dispatch({
+            type: "TimeTravelTo",
+            idx: parseInt(evt.target.value),
+          });
         }}
       />
       {props.curIdx}/ {props.historyLength - 1}
+      <button onClick={() => props.dispatch({ type: "Branch" })}>Branch</button>
     </div>
   );
 }
