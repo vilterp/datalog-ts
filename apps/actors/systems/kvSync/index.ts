@@ -45,7 +45,7 @@ export function makeActorSystem(app: KVApp): System<KVSyncState, KVSyncMsg> {
     initialUserState: { type: "UserState" },
     chooseNextMove: (system, state, randomSeed) => {
       if (!app.choose) {
-        return;
+        return [null, randomSeed];
       }
       const clientStates: { [clientID: string]: ClientState } = {};
       for (const clientID of state.clientIDs) {
