@@ -20,6 +20,7 @@ import { flatMap, uniqBy } from "../../util/util";
 import { jsonEq } from "../../util/json";
 import { termEq } from "../../core/unify";
 import { ppt } from "../../core/pretty";
+import { linearInterpolate } from "../../util/diagrams/util";
 
 export const sequence: VizTypeSpec = {
   name: "Sequence Diagram",
@@ -27,7 +28,7 @@ export const sequence: VizTypeSpec = {
   component: SequenceDiagram,
 };
 
-export function SequenceDiagram(props: VizArgs) {
+export function SequenceDiagram(props: VizArgs & { width: number }) {
   try {
     const actors = props.interp.queryRec(props.spec.attrs.actors as Rec);
     const hops = props.interp.queryRec(props.spec.attrs.hops as Rec);
@@ -43,7 +44,7 @@ export function SequenceDiagram(props: VizArgs) {
     return (
       <div>
         <Diagram<Term>
-          diagram={sequenceDiagram(spec, props.highlightedTerm)}
+          diagram={sequenceDiagram(spec, props.highlightedTerm, props.width)}
           onMouseOver={(term) => props.setHighlightedTerm?.(term)}
         />
       </div>
@@ -141,18 +142,26 @@ interface Tick {
   color: string;
 }
 
-function yForTime(t: Time): number {
-  return t * 10;
+function yForTime(maxTime: number, maxWidth: number, t: Time): number {
+  return linearInterpolate([0, maxTime], [0, maxWidth], t);
 }
 
-function sequenceDiagram(seq: Sequence, highlight: Term): Diag<Term> {
+const X_OFFSET = 20;
+
+function sequenceDiagram(
+  seq: Sequence,
+  highlight: Term,
+  width: number
+): Diag<Term> {
   const maxTime = seq.hops.reduce(
     (prev, hop) => Math.max(prev, hop.to.time, hop.from.time),
     0
   );
 
+  const maxWidth = width - X_OFFSET;
+
   const locationLines: Diag<Term> = AbsPos(
-    { x: 20, y: 20 },
+    { x: X_OFFSET, y: 20 },
     VLayout(
       seq.locations.map((loc) =>
         HLayout([
@@ -170,12 +179,12 @@ function sequenceDiagram(seq: Sequence, highlight: Term): Diag<Term> {
               width: 1,
               stroke: "black",
               start: ORIGIN,
-              end: { y: 0, x: yForTime(maxTime) + 20 },
+              end: { y: 0, x: yForTime(maxTime, maxWidth, maxTime) + 20 },
             }),
             ...pointsForLocation(loc.loc, seq.hops).map((tp) => {
               const highlighted = jsonEq(tp.term, highlight);
               return AbsPos(
-                { y: 0, x: yForTime(tp.time) },
+                { y: 0, x: yForTime(maxTime, maxWidth, tp.time) },
                 Tag(
                   tp.term,
                   Circle({

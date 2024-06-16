@@ -10,6 +10,7 @@ import { Window } from "./window";
 import { SequenceDiagram } from "../../../uiCommon/visualizations/sequence";
 import { AbstractInterpreter } from "../../../core/abstractInterpreter";
 import { rec, varr } from "../../../core/types";
+import useResizeObserver from "use-resize-observer";
 
 export function MultiClient<St extends Json, Msg extends Json>(props: {
   systemInstance: SystemInstance<St, Msg>;
@@ -122,11 +123,13 @@ function TimeTravelSlider<St, Msg>(props: {
   historyLength: number;
   dispatch: (action: TimeTravelAction<St, Msg>) => void;
 }) {
+  const { ref, width } = useResizeObserver();
+
   const atEnd =
     props.historyLength === 0 || props.curIdx === props.historyLength - 1;
 
   return (
-    <div>
+    <div ref={ref}>
       <SequenceDiagram
         interp={props.interp}
         id={"sequence"}
@@ -134,6 +137,7 @@ function TimeTravelSlider<St, Msg>(props: {
           actors: rec("actor", { id: varr("ID") }),
           hops: rec("hop", { from: varr("FromTick"), to: varr("ToTick") }),
         })}
+        width={width}
         highlightedTerm={null}
         setHighlightedTerm={() => {
           throw new Error("Function not implemented.");
