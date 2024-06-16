@@ -2,6 +2,7 @@ import { spawnInitialActors } from "../../step";
 import * as effects from "../../effects";
 import {
   ActorResp,
+  ChooseFn,
   LoadedTickInitiator,
   MessageToClient,
   System,
@@ -43,29 +44,33 @@ export function makeActorSystem(app: KVApp): System<KVSyncState, KVSyncMsg> {
     initialClientState: (id: string) =>
       initialClientState(id, app.mutations, hashString(id)),
     initialUserState: { type: "UserState" },
-    chooseNextMove: (system, state, randomSeed) => {
-      if (!app.choose) {
-        return [null, randomSeed];
-      }
-      const clientStates: { [clientID: string]: ClientState } = {};
-      for (const clientID of state.clientIDs) {
-        const clientState = state.trace.latestStates[`client${clientID}`];
-        clientStates[clientID] = clientState as ClientState;
-      }
-      const [mutation, nextRandomSeed] = app.choose(clientStates, randomSeed);
-      if (mutation === null) {
-        return [null, nextRandomSeed];
-      }
+    chooseNextMove: app.choose ? kvSyncChooseMove(app) : undefined,
+  };
+}
 
-      const msg: MessageToClient<MsgToClient> = {
-        clientID: mutation.clientID,
-        message: {
-          type: "RunMutation",
-          invocation: mutation.invocation,
-        },
-      };
-      return [msg, nextRandomSeed];
-    },
+function kvSyncChooseMove(app: KVApp): ChooseFn<KVSyncState, KVSyncMsg> {
+  return (system, state, randomSeed) => {
+    if (!app.choose) {
+      return [null, randomSeed];
+    }
+    const clientStates: { [clientID: string]: ClientState } = {};
+    for (const clientID of state.clientIDs) {
+      const clientState = state.trace.latestStates[`client${clientID}`];
+      clientStates[clientID] = clientState as ClientState;
+    }
+    const [mutation, nextRandomSeed] = app.choose(clientStates, randomSeed);
+    if (mutation === null) {
+      return [null, nextRandomSeed];
+    }
+
+    const msg: MessageToClient<MsgToClient> = {
+      clientID: mutation.clientID,
+      message: {
+        type: "RunMutation",
+        invocation: mutation.invocation,
+      },
+    };
+    return [msg, nextRandomSeed];
   };
 }
 

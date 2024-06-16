@@ -88,23 +88,27 @@ export function MultiClient<St extends Json, Msg extends Json>(props: {
         dispatch={(evt) => props.dispatch(evt)}
       />
 
-      {props.systemInstance.system.chooseNextMove ? (
-        <ExploreForm
-          onExplore={(steps) => props.dispatch({ type: "Explore", steps })}
-        />
-      ) : null}
+      <ExploreForm
+        disabled={props.systemInstance.system.chooseNextMove === undefined}
+        onExplore={(steps) => props.dispatch({ type: "Explore", steps })}
+      />
     </>
   );
 }
 
 const DEFAULT_STEP_LIMIT = 100;
 
-function ExploreForm(props: { onExplore: (steps: number) => void }) {
+function ExploreForm(props: {
+  disabled: boolean;
+  onExplore: (steps: number) => void;
+}) {
   const [steps, setSteps] = React.useState(DEFAULT_STEP_LIMIT);
 
   return (
     <form onSubmit={() => props.onExplore(steps)}>
-      <button type="submit">Explore</button>{" "}
+      <button type="submit" disabled={props.disabled}>
+        Explore
+      </button>{" "}
       <input
         type="number"
         min={0}
