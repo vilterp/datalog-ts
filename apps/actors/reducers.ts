@@ -114,7 +114,6 @@ function systemInstanceReducer<St extends Json, Msg extends Json>(
         systemInstance.stateHistory.length === 0 ||
         systemInstance.currentStateIdx ===
           systemInstance.stateHistory.length - 1;
-      console.log("atEnd", systemInstance, action, atEnd);
       if (!atEnd) {
         // TODO: surface this to the user somehow
         console.warn("action ignored because we haven't branched", action);
