@@ -110,11 +110,12 @@ function systemInstanceReducer<St extends Json, Msg extends Json>(
         [],
       ];
     case "Advance": {
-      // TODO: don't advance if we're at the end of history
       const atEnd =
+        systemInstance.stateHistory.length === 0 ||
         systemInstance.currentStateIdx ===
-        systemInstance.stateHistory.length - 1;
-      if (atEnd) {
+          systemInstance.stateHistory.length - 1;
+      console.log("atEnd", systemInstance, action, atEnd);
+      if (!atEnd) {
         // TODO: surface this to the user somehow
         console.warn("action ignored because we haven't branched", action);
         return [systemInstance, []];
@@ -129,6 +130,7 @@ function systemInstanceReducer<St extends Json, Msg extends Json>(
       return [
         {
           ...systemInstance,
+          currentStateIdx: systemInstance.currentStateIdx + 1,
           stateHistory: [...systemInstance.stateHistory, newState],
         },
         promises,

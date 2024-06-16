@@ -125,8 +125,9 @@ function TimeTravelSlider<St, Msg>(props: {
             idx: parseInt(evt.target.value),
           });
         }}
-      />
-      {props.curIdx}/ {props.historyLength - 1}
+        style={{ width: 500 }}
+      />{" "}
+      {props.curIdx}/{props.historyLength - 1}{" "}
       <button onClick={() => props.dispatch({ type: "Branch" })}>Branch</button>
     </div>
   );
