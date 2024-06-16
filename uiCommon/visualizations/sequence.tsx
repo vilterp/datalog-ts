@@ -27,7 +27,7 @@ export const sequence: VizTypeSpec = {
   component: SequenceDiagram,
 };
 
-function SequenceDiagram(props: VizArgs) {
+export function SequenceDiagram(props: VizArgs) {
   try {
     const actors = props.interp.queryRec(props.spec.attrs.actors as Rec);
     const hops = props.interp.queryRec(props.spec.attrs.hops as Rec);
@@ -145,7 +145,7 @@ function yForTime(t: Time): number {
   return t * 10;
 }
 
-export function sequenceDiagram(seq: Sequence, highlight: Term): Diag<Term> {
+function sequenceDiagram(seq: Sequence, highlight: Term): Diag<Term> {
   const maxTime = seq.hops.reduce(
     (prev, hop) => Math.max(prev, hop.to.time, hop.from.time),
     0

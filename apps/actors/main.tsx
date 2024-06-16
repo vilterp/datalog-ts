@@ -12,6 +12,8 @@ import { useEffectfulReducer } from "../../uiCommon/generic/hooks";
 import { CollapsibleWithHeading } from "../../uiCommon/generic/collapsible";
 import { MultiClient } from "./ui/multiClient";
 import { lastItem } from "../../util/util";
+import { SequenceDiagram } from "../../uiCommon/visualizations/sequence";
+import { Term, Statement, rec, varr } from "../../core/types";
 
 const initialSystemsState = initialState(SYSTEMS);
 
@@ -80,6 +82,22 @@ function SystemInstanceView<St extends Json, Msg extends Json>(props: {
       <MultiClient
         systemInstance={props.systemInstance}
         dispatch={props.dispatch}
+      />
+
+      <SequenceDiagram
+        interp={curState.trace.interp}
+        id={"sequence"}
+        spec={rec("sequence", {
+          actors: rec("actor", { id: varr("ID") }),
+          hops: rec("hop", { from: varr("FromTick"), to: varr("ToTick") }),
+        })}
+        highlightedTerm={null}
+        setHighlightedTerm={function (t: Term): void {
+          throw new Error("Function not implemented.");
+        }}
+        runStatements={function (stmts: Statement[]): void {
+          throw new Error("Function not implemented.");
+        }}
       />
 
       <CollapsibleWithHeading
