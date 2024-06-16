@@ -112,6 +112,9 @@ function TimeTravelSlider<St, Msg>(props: {
   historyLength: number;
   dispatch: (action: TimeTravelAction<St, Msg>) => void;
 }) {
+  const atEnd =
+    props.historyLength === 0 || props.curIdx === props.historyLength - 1;
+
   return (
     <div>
       <input
@@ -128,7 +131,12 @@ function TimeTravelSlider<St, Msg>(props: {
         style={{ width: 500 }}
       />{" "}
       {props.curIdx}/{props.historyLength - 1}{" "}
-      <button onClick={() => props.dispatch({ type: "Branch" })}>Branch</button>
+      <button
+        disabled={atEnd}
+        onClick={() => props.dispatch({ type: "Branch" })}
+      >
+        Branch
+      </button>
     </div>
   );
 }
