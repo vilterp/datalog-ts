@@ -71,7 +71,7 @@ export function dimensions<T>(d: Diag<T>): Dimensions {
       };
     case "TEXT":
       // TODO: actually measure text somehow
-      return { height: d.fontSize, width: 50 };
+      return { height: d.fontSize, width: 30 };
     case "TAG":
       return dimensions(d.diag);
   }

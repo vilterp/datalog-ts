@@ -158,7 +158,7 @@ function sequenceDiagram(
     0
   );
 
-  const maxWidth = width - X_OFFSET;
+  const maxWidth = width - X_OFFSET - 60; // padding
 
   const locationLines: Diag<Term> = AbsPos(
     { x: X_OFFSET, y: 20 },
@@ -179,7 +179,7 @@ function sequenceDiagram(
               width: 1,
               stroke: "black",
               start: ORIGIN,
-              end: { y: 0, x: yForTime(maxTime, maxWidth, maxTime) + 20 },
+              end: { y: 0, x: yForTime(maxTime, maxWidth, maxTime) },
             }),
             ...pointsForLocation(loc.loc, seq.hops).map((tp) => {
               const highlighted = jsonEq(tp.term, highlight);
