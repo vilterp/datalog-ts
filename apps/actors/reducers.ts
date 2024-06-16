@@ -17,8 +17,8 @@ import { stepTrace } from "./step";
 // @ts-ignore
 import patternsDL from "./patterns.dl";
 import { makeMemoryLoader } from "../../core/loaders";
-import { IncrementalInterpreter } from "../../core/incremental/interpreter";
 import { explore } from "./explore";
+import { SimpleInterpreter } from "../../core/simple/interpreter";
 
 export const INITIAL_NETWORK_LATENCY_MS = 1000;
 
@@ -28,7 +28,7 @@ export function initialState<St, Msg>(
   return {
     networkLatency: INITIAL_NETWORK_LATENCY_MS,
     systemInstances: systems.map((system) => {
-      const interp = new IncrementalInterpreter(
+      const interp = new SimpleInterpreter(
         ".",
         makeMemoryLoader({
           "patterns.dl": patternsDL,
