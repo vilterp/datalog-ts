@@ -84,22 +84,6 @@ function SystemInstanceView<St extends Json, Msg extends Json>(props: {
         dispatch={props.dispatch}
       />
 
-      <SequenceDiagram
-        interp={curState.trace.interp}
-        id={"sequence"}
-        spec={rec("sequence", {
-          actors: rec("actor", { id: varr("ID") }),
-          hops: rec("hop", { from: varr("FromTick"), to: varr("ToTick") }),
-        })}
-        highlightedTerm={null}
-        setHighlightedTerm={function (t: Term): void {
-          throw new Error("Function not implemented.");
-        }}
-        runStatements={function (stmts: Statement[]): void {
-          throw new Error("Function not implemented.");
-        }}
-      />
-
       <CollapsibleWithHeading
         heading="Explorer"
         content={<Explorer interp={curState.trace.interp} showViz={true} />}

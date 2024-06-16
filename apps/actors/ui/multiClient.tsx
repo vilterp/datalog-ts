@@ -7,6 +7,9 @@ import {
   TraceAction,
 } from "../types";
 import { Window } from "./window";
+import { SequenceDiagram } from "../../../uiCommon/visualizations/sequence";
+import { AbstractInterpreter } from "../../../core/abstractInterpreter";
+import { rec, varr } from "../../../core/types";
 
 export function MultiClient<St extends Json, Msg extends Json>(props: {
   systemInstance: SystemInstance<St, Msg>;
@@ -78,6 +81,7 @@ export function MultiClient<St extends Json, Msg extends Json>(props: {
       </div>
 
       <TimeTravelSlider<St, Msg>
+        interp={curState.trace.interp}
         curIdx={props.systemInstance.currentStateIdx}
         historyLength={props.systemInstance.stateHistory.length}
         dispatch={(evt) => props.dispatch(evt)}
@@ -113,6 +117,7 @@ function ExploreForm(props: { onExplore: (steps: number) => void }) {
 }
 
 function TimeTravelSlider<St, Msg>(props: {
+  interp: AbstractInterpreter;
   curIdx: number;
   historyLength: number;
   dispatch: (action: TimeTravelAction<St, Msg>) => void;
@@ -122,19 +127,21 @@ function TimeTravelSlider<St, Msg>(props: {
 
   return (
     <div>
-      <input
-        type="range"
-        min={0}
-        max={props.historyLength - 1}
-        value={props.curIdx}
-        onChange={(evt) => {
-          props.dispatch({
-            type: "TimeTravelTo",
-            idx: parseInt(evt.target.value),
-          });
+      <SequenceDiagram
+        interp={props.interp}
+        id={"sequence"}
+        spec={rec("sequence", {
+          actors: rec("actor", { id: varr("ID") }),
+          hops: rec("hop", { from: varr("FromTick"), to: varr("ToTick") }),
+        })}
+        highlightedTerm={null}
+        setHighlightedTerm={() => {
+          throw new Error("Function not implemented.");
         }}
-        style={{ width: 500 }}
-      />{" "}
+        runStatements={() => {
+          throw new Error("Function not implemented.");
+        }}
+      />
       {props.curIdx}/{props.historyLength - 1}{" "}
       <button
         disabled={atEnd}
