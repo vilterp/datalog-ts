@@ -152,10 +152,10 @@ export function sequenceDiagram(seq: Sequence, highlight: Term): Diag<Term> {
   );
 
   const locationLines: Diag<Term> = AbsPos(
-    { x: 40, y: 20 },
-    HLayout(
+    { x: 20, y: 20 },
+    VLayout(
       seq.locations.map((loc) =>
-        VLayout([
+        HLayout([
           Tag(
             loc.term,
             // TODO: cursor: pointer
@@ -170,12 +170,12 @@ export function sequenceDiagram(seq: Sequence, highlight: Term): Diag<Term> {
               width: 1,
               stroke: "black",
               start: ORIGIN,
-              end: { x: 0, y: yForTime(maxTime) + 20 },
+              end: { y: 0, x: yForTime(maxTime) + 20 },
             }),
             ...pointsForLocation(loc.loc, seq.hops).map((tp) => {
               const highlighted = jsonEq(tp.term, highlight);
               return AbsPos(
-                { x: 0, y: yForTime(tp.time) },
+                { y: 0, x: yForTime(tp.time) },
                 Tag(
                   tp.term,
                   Circle({
