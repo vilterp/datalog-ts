@@ -142,11 +142,18 @@ interface Tick {
   color: string;
 }
 
-function yForTime(maxTime: number, maxWidth: number, t: Time): number {
-  return linearInterpolate([0, maxTime], [0, maxWidth], t);
-}
-
+// TODO: make these props
+const DEFAULT_STEP = 7;
 const X_OFFSET = 20;
+const HOP_LINE_WIDTH = 1.5;
+const LOC_LINE_WIDTH = 1;
+const CIRCLE_RADIUS = 3;
+
+function yForTime(maxTime: number, maxWidth: number, t: Time): number {
+  const defaultValue = t * DEFAULT_STEP;
+  const lerpValue = linearInterpolate([0, maxTime], [0, maxWidth], t);
+  return Math.min(defaultValue, lerpValue);
+}
 
 function sequenceDiagram(
   seq: Sequence,
@@ -176,10 +183,10 @@ function sequenceDiagram(
           ),
           ZLayout([
             Line({
-              width: 1,
+              width: LOC_LINE_WIDTH,
               stroke: "black",
               start: ORIGIN,
-              end: { y: 0, x: yForTime(maxTime, maxWidth, maxTime) },
+              end: { y: 0, x: maxWidth },
             }),
             ...pointsForLocation(loc.loc, seq.hops).map((tp) => {
               const highlighted = jsonEq(tp.term, highlight);
@@ -188,7 +195,7 @@ function sequenceDiagram(
                 Tag(
                   tp.term,
                   Circle({
-                    radius: 5,
+                    radius: CIRCLE_RADIUS,
                     fill: highlighted ? TICK_HIGHLIGHT_COLOR : tp.color,
                   })
                 )
@@ -211,7 +218,7 @@ function sequenceDiagram(
         hop.term,
         Line({
           stroke: highlighted ? HOP_HIGHLIGHT_COLOR : hop.color,
-          width: 3,
+          width: HOP_LINE_WIDTH,
           start: fromCoords,
           end: toCoords,
         })
