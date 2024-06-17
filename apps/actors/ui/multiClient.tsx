@@ -84,41 +84,14 @@ export function MultiClient<St extends Json, Msg extends Json>(props: {
 
       <TimeTravelSlider<St, Msg>
         interp={lastState.trace.interp}
+        exploreEnabled={
+          props.systemInstance.system.chooseNextMove === undefined
+        }
         curIdx={props.systemInstance.currentStateIdx}
         historyLength={props.systemInstance.stateHistory.length}
         dispatch={(evt) => props.dispatch(evt)}
       />
-
-      <ExploreForm
-        disabled={props.systemInstance.system.chooseNextMove === undefined}
-        onExplore={(steps) => props.dispatch({ type: "Explore", steps })}
-      />
     </>
-  );
-}
-
-const DEFAULT_STEP_LIMIT = 100;
-
-function ExploreForm(props: {
-  disabled: boolean;
-  onExplore: (steps: number) => void;
-}) {
-  const [steps, setSteps] = React.useState(DEFAULT_STEP_LIMIT);
-
-  return (
-    <form onSubmit={() => props.onExplore(steps)}>
-      <button type="submit" disabled={props.disabled}>
-        Explore
-      </button>{" "}
-      <input
-        type="number"
-        min={0}
-        max={3_000}
-        value={steps}
-        onChange={(evt) => setSteps(parseInt(evt.target.value))}
-      />{" "}
-      steps
-    </form>
   );
 }
 

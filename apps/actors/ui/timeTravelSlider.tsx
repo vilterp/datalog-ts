@@ -9,6 +9,7 @@ export function TimeTravelSlider<St, Msg>(props: {
   interp: AbstractInterpreter;
   curIdx: number;
   historyLength: number;
+  exploreEnabled: boolean;
   dispatch: (action: TimeTravelAction<St, Msg>) => void;
 }) {
   const { ref, width } = useResizeObserver();
@@ -47,13 +48,45 @@ export function TimeTravelSlider<St, Msg>(props: {
           throw new Error("Function not implemented.");
         }}
       />
-      {props.curIdx}/{props.historyLength - 1}{" "}
-      <button
-        disabled={atEnd}
-        onClick={() => props.dispatch({ type: "Branch" })}
-      >
-        Branch
-      </button>
+      {/* controls */}
+      <div>
+        {props.curIdx}/{props.historyLength - 1}{" "}
+        <button
+          disabled={atEnd}
+          onClick={() => props.dispatch({ type: "Branch" })}
+        >
+          Branch
+        </button>{" "}
+        <ExploreForm
+          disabled={props.exploreEnabled}
+          onExplore={(steps) => props.dispatch({ type: "Explore", steps })}
+        />
+      </div>
     </div>
+  );
+}
+
+const DEFAULT_STEP_LIMIT = 100;
+
+function ExploreForm(props: {
+  disabled: boolean;
+  onExplore: (steps: number) => void;
+}) {
+  const [steps, setSteps] = React.useState(DEFAULT_STEP_LIMIT);
+
+  return (
+    <form onSubmit={() => props.onExplore(steps)}>
+      <button type="submit" disabled={props.disabled}>
+        Explore
+      </button>{" "}
+      <input
+        type="number"
+        min={0}
+        max={3_000}
+        value={steps}
+        onChange={(evt) => setSteps(parseInt(evt.target.value))}
+      />{" "}
+      steps
+    </form>
   );
 }
