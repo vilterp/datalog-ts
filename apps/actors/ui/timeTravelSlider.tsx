@@ -61,6 +61,7 @@ export function TimeTravelSlider<St, Msg>(props: {
             to: varr("ToTick"),
           }),
         })}
+        markerLine={props.curIdx}
         width={width}
         highlightedTerm={null}
         setHighlightedTerm={() => {}}

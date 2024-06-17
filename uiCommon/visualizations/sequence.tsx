@@ -28,7 +28,9 @@ export const sequence: VizTypeSpec = {
   component: SequenceDiagram,
 };
 
-export function SequenceDiagram(props: VizArgs & { width: number }) {
+export function SequenceDiagram(
+  props: VizArgs & { width: number; markerLine?: number }
+) {
   try {
     const actors = props.interp.queryRec(props.spec.attrs.actors as Rec);
     const hops = props.interp.queryRec(props.spec.attrs.hops as Rec);
@@ -45,7 +47,12 @@ export function SequenceDiagram(props: VizArgs & { width: number }) {
     return (
       <div>
         <Diagram<Term>
-          diagram={sequenceDiagram(spec, props.highlightedTerm, props.width)}
+          diagram={sequenceDiagram(
+            spec,
+            props.highlightedTerm,
+            props.width,
+            props.markerLine
+          )}
           onMouseOver={(term) => props.setHighlightedTerm?.(term)}
         />
       </div>
@@ -161,6 +168,7 @@ interface Tick {
 // TODO: make these props
 const DEFAULT_STEP = 7;
 const X_OFFSET = 20;
+const Y_OFFSET = 20;
 const HOP_LINE_WIDTH = 1.5;
 const LOC_LINE_WIDTH = 1;
 const CIRCLE_RADIUS = 3;
@@ -174,7 +182,8 @@ function yForTime(maxTime: number, maxWidth: number, t: Time): number {
 function sequenceDiagram(
   seq: Sequence,
   highlight: Term,
-  width: number
+  width: number,
+  markerLineIdx?: number
 ): Diag<Term> {
   const maxTime = seq.ticks.reduce(
     (prev, tick) => Math.max(prev, tick.time),
@@ -183,44 +192,63 @@ function sequenceDiagram(
 
   const maxWidth = width - X_OFFSET - 60; // padding
 
+  const markerX = yForTime(maxTime, maxWidth, markerLineIdx) + 30;
+  const markerLine = markerLineIdx
+    ? Line({
+        stroke: "black",
+        width: 2,
+        start: {
+          x: markerX,
+          y: 0,
+        },
+        end: {
+          x: markerX,
+          y: seq.locations.length * 20,
+        },
+      })
+    : EMPTY_DIAGRAM;
+
   const locationLines: Diag<Term> = AbsPos(
-    { x: X_OFFSET, y: 20 },
-    VLayout(
-      seq.locations.map((loc) =>
-        HLayout([
-          Tag(
-            loc.term,
-            // TODO: cursor: pointer
-            Text({
-              text: loc.loc,
-              fontSize: 10,
-              fontWeight: termEq(loc.term, highlight) ? "bold" : "normal",
-            })
-          ),
-          ZLayout([
-            Line({
-              width: LOC_LINE_WIDTH,
-              stroke: "black",
-              start: ORIGIN,
-              end: { y: 0, x: maxWidth },
-            }),
-            ...pointsForLocation(loc.loc, seq.ticks).map((tp) => {
-              const highlighted = jsonEq(tp.term, highlight);
-              return AbsPos(
-                { y: 0, x: yForTime(maxTime, maxWidth, tp.time) },
-                Tag(
-                  tp.term,
-                  Circle({
-                    radius: CIRCLE_RADIUS,
-                    fill: highlighted ? TICK_HIGHLIGHT_COLOR : tp.color,
-                  })
-                )
-              );
-            }),
-          ]),
-        ])
-      )
-    )
+    { x: X_OFFSET, y: Y_OFFSET },
+    ZLayout([
+      markerLine,
+      VLayout(
+        seq.locations.map((loc) =>
+          HLayout([
+            Tag(
+              loc.term,
+              // TODO: cursor: pointer
+              Text({
+                text: loc.loc,
+                fontSize: 10,
+                fontWeight: termEq(loc.term, highlight) ? "bold" : "normal",
+              })
+            ),
+            ZLayout([
+              Line({
+                width: LOC_LINE_WIDTH,
+                stroke: "black",
+                start: ORIGIN,
+                end: { y: 0, x: maxWidth },
+              }),
+              ...pointsForLocation(loc.loc, seq.ticks).map((tp) => {
+                const highlighted = jsonEq(tp.term, highlight);
+                return AbsPos(
+                  { y: 0, x: yForTime(maxTime, maxWidth, tp.time) },
+                  Tag(
+                    tp.term,
+                    Circle({
+                      radius: CIRCLE_RADIUS,
+                      fill: highlighted ? TICK_HIGHLIGHT_COLOR : tp.color,
+                    })
+                  )
+                );
+              }),
+            ]),
+          ])
+        )
+      ),
+    ])
   );
   const hops = ZLayout(
     seq.hops.map((hop) => {
@@ -241,6 +269,7 @@ function sequenceDiagram(
       );
     })
   );
+
   return ZLayout<Term>([hops, locationLines]);
 }
 
