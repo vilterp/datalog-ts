@@ -17,6 +17,7 @@ import { Client, makeClient, useLiveQuery } from "../hooks";
 import { Inspector } from "../uiCommon/inspector";
 import { randomFromList } from "../../../../../util/util";
 import { LoginWrapper } from "../uiCommon/loginWrapper";
+import { LoggedInHeader } from "../uiCommon/loggedInHeader";
 
 function CounterUI(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
@@ -47,7 +48,10 @@ function CounterUIInner(props: { client: Client; user: string }) {
 
   return (
     <div style={{ margin: 10 }}>
-      <h2>Counter</h2>
+      <LoggedInHeader user={props.user} client={client}>
+        <h2>Counter</h2>
+      </LoggedInHeader>
+
       <span
         style={{
           color:
