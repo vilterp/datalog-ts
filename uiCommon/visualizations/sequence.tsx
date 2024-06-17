@@ -32,6 +32,7 @@ export function SequenceDiagram(props: VizArgs & { width: number }) {
   try {
     const actors = props.interp.queryRec(props.spec.attrs.actors as Rec);
     const hops = props.interp.queryRec(props.spec.attrs.hops as Rec);
+    const ticks = props.interp.queryRec(props.spec.attrs.ticks as Rec);
     const tickColors = props.spec.attrs.tickColor
       ? props.interp.queryRec(props.spec.attrs.tickColor as Rec)
       : [];
@@ -39,7 +40,7 @@ export function SequenceDiagram(props: VizArgs & { width: number }) {
       ? props.interp.queryRec(props.spec.attrs.hopColor as Rec)
       : [];
 
-    const spec = makeSequenceSpec(actors, hops, tickColors, hopColors);
+    const spec = makeSequenceSpec(actors, ticks, hops, tickColors, hopColors);
 
     return (
       <div>
@@ -69,6 +70,7 @@ const TICK_HIGHLIGHT_COLOR = "orange";
 //   or not
 function makeSequenceSpec(
   actors: Res[],
+  ticks: Res[],
   hops: Res[],
   tickColors: Res[],
   hopColors: Res[]
@@ -91,27 +93,34 @@ function makeSequenceSpec(
       loc: (actor.bindings.ID as StringLit).val,
       term: actor.term,
     })),
+    ticks: ticks.map((tick) => {
+      return {
+        time: (tick.bindings.Time as Int).val,
+        place: (tick.bindings.Place as StringLit).val,
+        term: tick.term,
+        color: colorByTick[ppt(tick.term)] || DEFAULT_TICK_COLOR,
+      };
+    }),
     hops: hops.map((hop) => {
       const fromTickRec = hop.bindings.FromTick as Rec;
-      const fromTick: Tick = {
+      const fromTick: Coord = {
         time: (fromTickRec.attrs.time as Int).val,
         place: (fromTickRec.attrs.place as StringLit).val,
-        term: fromTickRec,
-        color: colorByTick[ppt(fromTickRec)] || DEFAULT_TICK_COLOR,
+        tickTerm: fromTickRec,
       };
       const toTickRec = hop.bindings.ToTick as Rec;
-      const toTick: Tick = {
+      const toTick: Coord = {
         time: (toTickRec.attrs.time as Int).val,
         place: (toTickRec.attrs.place as StringLit).val,
-        term: toTickRec,
-        color: colorByTick[ppt(toTickRec)] || DEFAULT_TICK_COLOR,
+        tickTerm: toTickRec,
       };
-      return {
+      const outHop: Hop = {
         term: hop.term,
         from: fromTick,
         to: toTick,
         color: colorByHop[pptHop(hop)] || DEFAULT_HOP_COLOR,
       };
+      return outHop;
     }),
   };
 }
@@ -125,13 +134,20 @@ export type Time = number;
 
 export interface Sequence {
   locations: { loc: Location; term: Term }[];
+  ticks: Tick[];
   hops: Hop[];
 }
 
+type Coord = {
+  time: Time;
+  place: Location;
+  tickTerm: Term;
+};
+
 export interface Hop {
+  from: Coord;
+  to: Coord;
   term: Term;
-  from: Tick;
-  to: Tick;
   color: string;
 }
 
@@ -188,7 +204,7 @@ function sequenceDiagram(
               start: ORIGIN,
               end: { y: 0, x: maxWidth },
             }),
-            ...pointsForLocation(loc.loc, seq.hops).map((tp) => {
+            ...pointsForLocation(loc.loc, seq.ticks).map((tp) => {
               const highlighted = jsonEq(tp.term, highlight);
               return AbsPos(
                 { y: 0, x: yForTime(maxTime, maxWidth, tp.time) },
@@ -208,8 +224,8 @@ function sequenceDiagram(
   );
   const hops = ZLayout(
     seq.hops.map((hop) => {
-      const fromCoords = getCoords(locationLines, hop.from.term);
-      const toCoords = getCoords(locationLines, hop.to.term);
+      const fromCoords = getCoords(locationLines, hop.from.tickTerm);
+      const toCoords = getCoords(locationLines, hop.to.tickTerm);
       if (fromCoords === null || toCoords === null) {
         return EMPTY_DIAGRAM;
       }
@@ -228,14 +244,15 @@ function sequenceDiagram(
   return ZLayout<Term>([hops, locationLines]);
 }
 
-function pointsForLocation(loc: Location, hops: Hop[]): Tick[] {
-  return flatMap(hops, (hop) => {
+// TODO: change to some sort of group by
+function pointsForLocation(loc: Location, ticks: Tick[]): Tick[] {
+  return flatMap(ticks, (tick) => {
     const out: Tick[] = [];
-    if (hop.to.place === loc) {
-      out.push(hop.to);
+    if (tick.place === loc) {
+      out.push(tick);
     }
-    if (hop.from.place === loc) {
-      out.push(hop.from);
+    if (tick.place === loc) {
+      out.push(tick);
     }
     return out;
   });
