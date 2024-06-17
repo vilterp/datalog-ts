@@ -131,7 +131,7 @@ function exploreStep<ActorState extends Json, Msg extends Json>(
 }
 
 // TODO: param in UI
-const NEW_USER_INPUT_PROB = 0.1;
+const NEW_USER_INPUT_PROB = 0.3;
 
 function getNextTraceAction<ActorState, Msg>(
   chooseNextMove: ChooseFn<ActorState, Msg>,
