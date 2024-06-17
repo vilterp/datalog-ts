@@ -20,13 +20,17 @@ export function TimeTravelSlider<St, Msg>(props: {
   return (
     <div ref={ref}>
       <div style={{ display: "flex", flexDirection: "row" }}>
-        {props.curIdx}/{props.historyLength - 1}{" "}
+        <Stepper
+          dispatch={props.dispatch}
+          curIdx={props.curIdx}
+          historyLength={props.historyLength}
+        />
         <input
           type="range"
           min={0}
           max={props.historyLength - 1}
           value={props.curIdx}
-          style={{ width: width - 40 }}
+          style={{ width: width - 150 }}
           onChange={(evt) =>
             props.dispatch({
               type: "TimeTravelTo",
@@ -65,6 +69,40 @@ export function TimeTravelSlider<St, Msg>(props: {
         disabled={props.exploreEnabled}
         onExplore={(steps) => props.dispatch({ type: "Explore", steps })}
       />
+    </div>
+  );
+}
+
+function Stepper<St, Msg>(props: {
+  curIdx: number;
+  historyLength: number;
+  dispatch: (action: TimeTravelAction<St, Msg>) => void;
+}) {
+  return (
+    <div>
+      <button
+        disabled={props.curIdx === 0}
+        onClick={() =>
+          props.dispatch({
+            type: "TimeTravelTo",
+            idx: props.curIdx - 1,
+          })
+        }
+      >
+        {"<"}
+      </button>{" "}
+      {props.curIdx}/{props.historyLength - 1}{" "}
+      <button
+        disabled={props.curIdx === props.historyLength - 1}
+        onClick={() =>
+          props.dispatch({
+            type: "TimeTravelTo",
+            idx: props.curIdx + 1,
+          })
+        }
+      >
+        {">"}
+      </button>
     </div>
   );
 }
