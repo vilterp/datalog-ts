@@ -20,6 +20,7 @@ import { Client, makeClient, useLiveQuery } from "../hooks";
 import { Inspector } from "../uiCommon/inspector";
 import { LoggedIn, LoginWrapper } from "../uiCommon/loginWrapper";
 import { Table } from "../../../../../uiCommon/generic/table";
+import { LoggedInHeader } from "../uiCommon/loggedInHeader";
 
 function TodoMVC(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
@@ -44,17 +45,10 @@ function TodoMVCInner(props: { client: Client; user: string }) {
 
   return (
     <div style={{ margin: 10 }}>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
+      <LoggedInHeader user={props.user} client={client}>
         <h2>TodoMVC</h2>
-        <LoggedIn user={props.user} client={client} />
-      </div>
+      </LoggedInHeader>
+
       <input
         type="text"
         value={newTodo}

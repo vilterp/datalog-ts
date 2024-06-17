@@ -22,13 +22,14 @@ requestResponse{
   message{id: RespID, fromTickID: RespondTick, toActorID: ClientActor, payload: Resp} &
   tick{id: HandleResponseTick, actorID: ClientActor, initiator: messageReceived{messageID: RespID}}.
 
-internal.visualization{
-  name: "Sequence",
-  spec: sequence{
-    actors: clientServerActor{id: ID},
-    hops: clientServerHop{from: FromTick, to: ToTick},
-  }
-}.
+# internal.visualization{
+#   name: "Sequence",
+#   spec: sequence{
+#     actors: clientServerActor{id: ID},
+#     hops: clientServerHop{from: FromTick, to: ToTick},
+#     ticks: clientServerTick{time: TickID, place: ActorID},
+#   }
+# }.
 
 messageFromActor{id: ID, fromActorID: FromActor, toActorID: ToActor, payload: Payload} :-
   message{id: ID, fromTickID: FromTick, toActorID: ToActor, payload: Payload} &

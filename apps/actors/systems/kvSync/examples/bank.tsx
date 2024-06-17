@@ -19,7 +19,8 @@ import {
 import { MutationDefns, MutationInvocation, UserInput } from "../types";
 import { KVApp } from "./types";
 import { Inspector } from "../uiCommon/inspector";
-import { LoggedIn, LoginWrapper } from "../uiCommon/loginWrapper";
+import { LoginWrapper } from "../uiCommon/loginWrapper";
+import { LoggedInHeader } from "../uiCommon/loggedInHeader";
 
 function BankUI(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
@@ -29,17 +30,9 @@ function BankUI(props: UIProps<ClientState, UserInput>) {
       client={client}
       loggedIn={(user) => (
         <div style={{ margin: 10 }}>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
+          <LoggedInHeader user={user} client={client}>
             <h3>MyBank</h3>
-            <LoggedIn user={user} client={client} />
-          </div>
+          </LoggedInHeader>
           <InnerContent client={client} />
         </div>
       )}
