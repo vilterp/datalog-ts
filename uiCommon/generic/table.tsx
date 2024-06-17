@@ -1,4 +1,4 @@
-import React from "react";
+import React, { CSSProperties } from "react";
 
 type ColumnSpec<T> = {
   render: (row: T) => React.ReactNode;
@@ -10,6 +10,7 @@ export function Table<T>(props: {
   data: T[];
   columns: ColumnSpec<T>[];
   getKey: (row: T, idx: number) => string;
+  getRowStyle?: (row: T) => CSSProperties;
 }) {
   return (
     <table style={{ borderCollapse: "collapse", width: "100%" }}>
@@ -41,25 +42,31 @@ export function Table<T>(props: {
             </td>
           </tr>
         ) : null}
-        {props.data.map((row, rowIdx) => (
-          <tr key={props.getKey(row, rowIdx)} style={{ verticalAlign: "top" }}>
-            {props.columns.map((colSpec, colIdx) => (
-              <td
-                key={colSpec.name}
-                style={{
-                  paddingLeft: 5,
-                  paddingRight: 5,
-                  borderRight:
-                    colIdx === props.columns.length - 1
-                      ? "none"
-                      : "1px solid lightgray",
-                }}
-              >
-                {colSpec.render(row)}
-              </td>
-            ))}
-          </tr>
-        ))}
+        {props.data.map((row, rowIdx) => {
+          const rowStyleRes = props.getRowStyle ? props.getRowStyle(row) : {};
+          return (
+            <tr
+              key={props.getKey(row, rowIdx)}
+              style={{ ...rowStyleRes, verticalAlign: "top" }}
+            >
+              {props.columns.map((colSpec, colIdx) => (
+                <td
+                  key={colSpec.name}
+                  style={{
+                    paddingLeft: 5,
+                    paddingRight: 5,
+                    borderRight:
+                      colIdx === props.columns.length - 1
+                        ? "none"
+                        : "1px solid lightgray",
+                  }}
+                >
+                  {colSpec.render(row)}
+                </td>
+              ))}
+            </tr>
+          );
+        })}
       </tbody>
     </table>
   );

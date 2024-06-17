@@ -72,6 +72,9 @@ function TodoMVCInner(props: { client: Client; user: string }) {
             <Table<Todo>
               data={todos}
               getKey={(row) => row.id}
+              getRowStyle={(todo) =>
+                todo.state.type === "Pending" && { color: "grey" }
+              }
               columns={[
                 {
                   name: "Done",
