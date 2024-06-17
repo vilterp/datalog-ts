@@ -57,6 +57,7 @@ export function MultiClient<St extends Json, Msg extends Json>(props: {
           display: "flex",
           flexDirection: "row",
           alignItems: "flex-start",
+          overflow: "scroll",
         }}
       >
         {curState.clientIDs.map((clientID) => {
