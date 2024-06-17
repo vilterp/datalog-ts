@@ -34,7 +34,7 @@ messageFromActor{id: ID, fromActorID: FromActor, toActorID: ToActor, payload: Pa
   message{id: ID, fromTickID: FromTick, toActorID: ToActor, payload: Payload} &
   tick{id: FromTick, actorID: FromActor}.
 
-clientServerTick{id: TickID, actorID: ActorID} :-
+clientServerTick{time: TickID, place: ActorID} :-
   tick{id: TickID, actorID: ActorID} &
   clientServerActor{id: ActorID}.
 
@@ -43,8 +43,8 @@ clientServerActor{id: ID} :-
   Type != "user".
 
 clientServerHop{
-  from: tick{time: FromTickID, place: FromActorID},
-  to: tick{time: ToTickID, place: ToActorID},
+  from: clientServerTick{time: FromTickID, place: FromActorID},
+  to: clientServerTick{time: ToTickID, place: ToActorID},
   message: Payload,
 } :-
   hop{

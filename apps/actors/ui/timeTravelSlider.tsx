@@ -47,8 +47,8 @@ export function TimeTravelSlider<St, Msg>(props: {
         spec={rec("sequence", {
           actors: rec("clientServerActor", { id: varr("ID") }),
           ticks: rec("clientServerTick", {
-            id: varr("Time"),
-            actorID: varr("Place"),
+            time: varr("Time"),
+            place: varr("Place"),
           }),
           hops: rec("clientServerHop", {
             from: varr("FromTick"),
