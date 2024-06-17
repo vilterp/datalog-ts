@@ -207,9 +207,16 @@ function runMutationOnClient(
   return [state2, req];
 }
 
-export function isTxnVisible(client: ClientState, txnID: string): boolean {
+export function isTxnVisible(
+  client: ClientState,
+  txnID: string,
+  includeAbortedIfFromMe: boolean = false
+): boolean {
   const txn = client.transactions[txnID];
-  return txn.fromMe || txn.state.type === "Committed";
+  if (includeAbortedIfFromMe) {
+    return txn.fromMe || txn.state.type === "Committed";
+  }
+  return txn.state.type === "Committed";
 }
 
 function addTransaction(
