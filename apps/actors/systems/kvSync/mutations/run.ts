@@ -327,7 +327,7 @@ function doWrite(
     [key]: addNewVersion(kvData, key, newVersionedValue),
   };
   const oldValue = getVisibleValue(isTxnCommitted, kvData, key);
-  if (kvData[key]) {
+  if (kvData[key] !== undefined) {
     return [
       newKVData,
       {
