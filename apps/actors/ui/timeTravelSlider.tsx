@@ -45,17 +45,16 @@ export function TimeTravelSlider<St, Msg>(props: {
         interp={props.interp}
         id={"sequence"}
         spec={rec("sequence", {
-          actors: rec("actor", { id: varr("ID") }),
-          hops: rec("hop", { from: varr("FromTick"), to: varr("ToTick") }),
+          actors: rec("clientServerActor", { id: varr("ID") }),
+          hops: rec("clientServerHop", {
+            from: varr("FromTick"),
+            to: varr("ToTick"),
+          }),
         })}
         width={width}
         highlightedTerm={null}
-        setHighlightedTerm={() => {
-          throw new Error("Function not implemented.");
-        }}
-        runStatements={() => {
-          throw new Error("Function not implemented.");
-        }}
+        setHighlightedTerm={() => {}}
+        runStatements={() => {}}
       />
       {/* controls */}
       <ExploreForm

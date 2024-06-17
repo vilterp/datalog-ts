@@ -25,14 +25,31 @@ requestResponse{
 internal.visualization{
   name: "Sequence",
   spec: sequence{
-    actors: actor{id: ID},
-    hops: hop{from: FromTick, to: ToTick},
+    actors: clientServerActor{id: ID},
+    hops: clientServerHop{from: FromTick, to: ToTick},
   }
 }.
 
 messageFromActor{id: ID, fromActorID: FromActor, toActorID: ToActor, payload: Payload} :-
   message{id: ID, fromTickID: FromTick, toActorID: ToActor, payload: Payload} &
   tick{id: FromTick, actorID: FromActor}.
+
+clientServerActor{id: ID} :-
+  actor{id: ID, type: Type} &
+  Type != "user".
+
+clientServerHop{
+  from: tick{time: FromTickID, place: FromActorID},
+  to: tick{time: ToTickID, place: ToActorID},
+  message: Payload,
+} :-
+  hop{
+    from: tick{time: FromTickID, place: FromActorID},
+    to: tick{time: ToTickID, place: ToActorID},
+    message: Payload
+  } & 
+  actor{id: FromActorID, type: FromActorType} &
+  FromActorType != "user".
 
 hop{
   from: tick{time: FromTickID, place: FromActorID},
