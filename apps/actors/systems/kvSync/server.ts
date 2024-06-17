@@ -212,6 +212,13 @@ export function updateServer(
       const msg = init.payload;
       switch (msg.type) {
         case "SignupRequest": {
+          if (state.users[msg.username]) {
+            return effects.reply(init, state, {
+              type: "SignupResponse",
+              response: { type: "Failure", msg: "User already exists" },
+            });
+          }
+
           const [token, newSeed] = randStep2(state.randSeed);
           const newState: ServerState = {
             ...state,

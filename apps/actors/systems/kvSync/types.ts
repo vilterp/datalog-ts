@@ -58,7 +58,9 @@ type SignupRequest = {
 
 type SignupResponse = {
   type: "SignupResponse";
-  response: { type: "Success"; token: string } | { type: "Failure" };
+  response:
+    | { type: "Success"; token: string }
+    | { type: "Failure"; msg: string };
 };
 
 type LogInRequest = {
