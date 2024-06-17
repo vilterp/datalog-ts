@@ -7,6 +7,7 @@ import {
   TraceAction,
 } from "../types";
 import { Window } from "./window";
+import { TimeTravelSlider } from "./timeTravelSlider";
 
 export function MultiClient<St extends Json, Msg extends Json>(props: {
   systemInstance: SystemInstance<St, Msg>;
@@ -14,6 +15,10 @@ export function MultiClient<St extends Json, Msg extends Json>(props: {
 }) {
   const curState =
     props.systemInstance.stateHistory[props.systemInstance.currentStateIdx];
+  const lastState =
+    props.systemInstance.stateHistory[
+      props.systemInstance.stateHistory.length - 1
+    ];
 
   const advance = (action: SystemInstanceAction<St, Msg>) => {
     props.dispatch({ type: "Advance", action });
@@ -78,71 +83,15 @@ export function MultiClient<St extends Json, Msg extends Json>(props: {
       </div>
 
       <TimeTravelSlider<St, Msg>
+        interp={lastState.trace.interp}
+        exploreEnabled={
+          props.systemInstance.system.chooseNextMove === undefined
+        }
         curIdx={props.systemInstance.currentStateIdx}
         historyLength={props.systemInstance.stateHistory.length}
         dispatch={(evt) => props.dispatch(evt)}
       />
-
-      {props.systemInstance.system.chooseNextMove ? (
-        <ExploreForm
-          onExplore={(steps) => props.dispatch({ type: "Explore", steps })}
-        />
-      ) : null}
     </>
-  );
-}
-
-const DEFAULT_STEP_LIMIT = 100;
-
-function ExploreForm(props: { onExplore: (steps: number) => void }) {
-  const [steps, setSteps] = React.useState(DEFAULT_STEP_LIMIT);
-
-  return (
-    <form onSubmit={() => props.onExplore(steps)}>
-      <button type="submit">Explore</button>{" "}
-      <input
-        type="number"
-        min={0}
-        max={3_000}
-        value={steps}
-        onChange={(evt) => setSteps(parseInt(evt.target.value))}
-      />{" "}
-      steps
-    </form>
-  );
-}
-
-function TimeTravelSlider<St, Msg>(props: {
-  curIdx: number;
-  historyLength: number;
-  dispatch: (action: TimeTravelAction<St, Msg>) => void;
-}) {
-  const atEnd =
-    props.historyLength === 0 || props.curIdx === props.historyLength - 1;
-
-  return (
-    <div>
-      <input
-        type="range"
-        min={0}
-        max={props.historyLength - 1}
-        value={props.curIdx}
-        onChange={(evt) => {
-          props.dispatch({
-            type: "TimeTravelTo",
-            idx: parseInt(evt.target.value),
-          });
-        }}
-        style={{ width: 500 }}
-      />{" "}
-      {props.curIdx}/{props.historyLength - 1}{" "}
-      <button
-        disabled={atEnd}
-        onClick={() => props.dispatch({ type: "Branch" })}
-      >
-        Branch
-      </button>
-    </div>
   );
 }
 

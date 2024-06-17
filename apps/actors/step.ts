@@ -98,6 +98,7 @@ export function step<ActorState extends Json, Msg extends Json>(
         id: str(nextInitiator.to),
         spawningTickID: int(nextInitiator.init.spawningTickID),
         initialState: jsonToDL(spawn.initialState),
+        type: str(getActorType(nextInitiator.to)),
       })
     );
   }
@@ -164,6 +165,19 @@ export function step<ActorState extends Json, Msg extends Json>(
   }
 
   return { newTrace, newInits: newMessages };
+}
+
+// TODO: pass this through directly from system
+function getActorType(actorID: string): string {
+  if (actorID.startsWith("user")) {
+    return "user";
+  } else if (actorID.startsWith("client")) {
+    return "client";
+  } else if (actorID === "server") {
+    return "server";
+  } else {
+    throw new Error(`Unknown actor type for actorID: ${actorID}`);
+  }
 }
 
 export function spawnInitialActors<ActorState extends Json, Msg extends Json>(

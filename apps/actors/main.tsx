@@ -12,6 +12,8 @@ import { useEffectfulReducer } from "../../uiCommon/generic/hooks";
 import { CollapsibleWithHeading } from "../../uiCommon/generic/collapsible";
 import { MultiClient } from "./ui/multiClient";
 import { lastItem } from "../../util/util";
+import { SequenceDiagram } from "../../uiCommon/visualizations/sequence";
+import { Term, Statement, rec, varr } from "../../core/types";
 
 const initialSystemsState = initialState(SYSTEMS);
 
