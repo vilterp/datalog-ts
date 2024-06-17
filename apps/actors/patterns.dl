@@ -34,8 +34,8 @@ messageFromActor{id: ID, fromActorID: FromActor, toActorID: ToActor, payload: Pa
   message{id: ID, fromTickID: FromTick, toActorID: ToActor, payload: Payload} &
   tick{id: FromTick, actorID: FromActor}.
 
-clientServerTick{time: Time, place: ActorID} :-
-  tick{time: Time, place: ActorID} &
+clientServerTick{id: TickID, actorID: ActorID} :-
+  tick{id: TickID, actorID: ActorID} &
   clientServerActor{id: ActorID}.
 
 clientServerActor{id: ID} :-
