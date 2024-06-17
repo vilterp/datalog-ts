@@ -176,8 +176,8 @@ function sequenceDiagram(
   highlight: Term,
   width: number
 ): Diag<Term> {
-  const maxTime = seq.hops.reduce(
-    (prev, hop) => Math.max(prev, hop.to.time, hop.from.time),
+  const maxTime = seq.ticks.reduce(
+    (prev, tick) => Math.max(prev, tick.time),
     0
   );
 
