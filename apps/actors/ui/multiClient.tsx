@@ -18,6 +18,10 @@ export function MultiClient<St extends Json, Msg extends Json>(props: {
 }) {
   const curState =
     props.systemInstance.stateHistory[props.systemInstance.currentStateIdx];
+  const lastState =
+    props.systemInstance.stateHistory[
+      props.systemInstance.stateHistory.length - 1
+    ];
 
   const advance = (action: SystemInstanceAction<St, Msg>) => {
     props.dispatch({ type: "Advance", action });
@@ -82,7 +86,7 @@ export function MultiClient<St extends Json, Msg extends Json>(props: {
       </div>
 
       <TimeTravelSlider<St, Msg>
-        interp={curState.trace.interp}
+        interp={lastState.trace.interp}
         curIdx={props.systemInstance.currentStateIdx}
         historyLength={props.systemInstance.stateHistory.length}
         dispatch={(evt) => props.dispatch(evt)}
