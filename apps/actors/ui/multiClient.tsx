@@ -82,7 +82,7 @@ export function MultiClient<St extends Json, Msg extends Json>(props: {
       </div>
 
       <TimeTravelSlider<St, Msg>
-        interp={curState.trace.interp}
+        interp={props.systemInstance.interp}
         curIdx={props.systemInstance.currentStateIdx}
         historyLength={props.systemInstance.stateHistory.length}
         dispatch={(evt) => props.dispatch(evt)}

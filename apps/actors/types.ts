@@ -54,6 +54,7 @@ export type UIProps<ClientState, UserInput> = {
 export type SystemInstance<ActorState, Msg> = {
   system: System<ActorState, Msg>;
   currentStateIdx: number;
+  interp: AbstractInterpreter;
   stateHistory: SystemState<ActorState>[];
 };
 
@@ -92,21 +93,15 @@ export type TraceAction<ActorState, Msg> =
 
 export type Trace<ActorState> = {
   nextID: number;
-  interp: AbstractInterpreter;
-
   // TODO: these two can be derived from the DB, which would be more elegant...
   //  putting them here is easier for now.
   latestStates: { [actorID: string]: ActorState };
 };
 
-export function initialTrace<ActorState>(
-  interp: AbstractInterpreter
-): Trace<ActorState> {
-  const interp2 = interp.doLoad("patterns.dl");
+export function initialTrace<ActorState>(): Trace<ActorState> {
   return {
     latestStates: {},
     nextID: 0,
-    interp: interp2,
   };
 }
 

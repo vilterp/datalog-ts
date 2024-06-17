@@ -31,10 +31,11 @@ export function stepAll<ActorState extends Json, Msg extends Json>(
 }
 
 export function stepTrace<St extends Json, Msg extends Json>(
+  interp: AbstractInterpreter,
   trace: Trace<St>,
   update: UpdateFn<St, Msg>,
   action: TraceAction<St, Msg>
-): [Trace<St>, AddressedTickInitiator<St>[]] {
+): [Trace<St>, AbstractInterpreter, AddressedTickInitiator<St>[]] {
   switch (action.type) {
     case "SendUserInput": {
       const { newTrace: trace2, newMessageID } = insertUserInput(
@@ -42,7 +43,11 @@ export function stepTrace<St extends Json, Msg extends Json>(
         action.clientID,
         action.input
       );
-      const { newTrace: trace3, newInits } = step(trace2, update, {
+      const {
+        newTrace: trace3,
+        newInterp: interp2,
+        newInits,
+      } = step(trace2, interp, update, {
         from: `user${action.clientID}`,
         to: `client${action.clientID}`,
         init: {
@@ -51,53 +56,71 @@ export function stepTrace<St extends Json, Msg extends Json>(
         },
       });
       // console.log("traceReducer", "dispatchInits", newInits);
-      return [trace3, newInits];
+      return [trace3, interp2, newInits];
     }
     case "SpawnClient": {
-      const { newTrace: trace2, newInits: newInits1 } = step(
+      const {
+        newTrace: trace2,
+        newInterp: interp2,
+        newInits: newInits1,
+      } = step(
         trace,
+        interp,
         update,
         spawnInitiator(`user${action.id}`, action.initialUserState)
       );
-      const { newTrace: trace3, newInits: newInits2 } = step(
+      const {
+        newTrace: trace3,
+        newInterp: interp3,
+        newInits: newInits2,
+      } = step(
         trace2,
+        interp2,
         update,
         spawnInitiator(`client${action.id}`, action.initialClientState)
       );
-      return [trace3, [...newInits1, ...newInits2]];
+      return [trace3, interp3, [...newInits1, ...newInits2]];
     }
     case "Step": {
-      const { newTrace, newInits } = step(trace, update, action.init);
-      return [newTrace, newInits];
+      const { newTrace, newInterp, newInits } = step(
+        trace,
+        interp,
+        update,
+        action.init
+      );
+      return [newTrace, newInterp, newInits];
     }
   }
 }
 
 export function step<ActorState extends Json, Msg extends Json>(
   trace: Trace<ActorState>,
+  interp: AbstractInterpreter,
   update: UpdateFn<ActorState, Msg>,
   nextInitiator: AddressedTickInitiator<ActorState>
 ): {
   newTrace: Trace<ActorState>;
+  newInterp: AbstractInterpreter;
   newInits: AddressedTickInitiator<ActorState>[];
 } {
   const newTrace: Trace<ActorState> = {
     nextID: trace.nextID,
-    interp: trace.interp,
     latestStates: {
       ...trace.latestStates,
     },
   };
+  let newInterp = interp;
   const newMessages: AddressedTickInitiator<ActorState>[] = [];
 
   if (nextInitiator.init.type === "spawned") {
     const spawn = nextInitiator.init;
     newTrace.latestStates[nextInitiator.to] = spawn.initialState;
-    newTrace.interp = newTrace.interp.insert(
+    newInterp = newInterp.insert(
       rec("actor", {
         id: str(nextInitiator.to),
         spawningTickID: int(nextInitiator.init.spawningTickID),
         initialState: jsonToDL(spawn.initialState),
+        // TODO: actor type
       })
     );
   }
@@ -111,7 +134,7 @@ export function step<ActorState extends Json, Msg extends Json>(
 
   const newTickID = newTrace.nextID;
   newTrace.nextID++;
-  newTrace.interp = newTrace.interp.insert(
+  newInterp = newInterp.insert(
     rec("tick", {
       id: int(newTickID),
       actorID: str(curActorID),
@@ -129,7 +152,7 @@ export function step<ActorState extends Json, Msg extends Json>(
         // record this message
         const newMessageID = newTrace.nextID;
         newTrace.nextID++;
-        newTrace.interp = newTrace.interp.insert(
+        newInterp = newInterp.insert(
           rec("message", {
             id: str(newMessageID.toString()),
             toActorID: str(outgoingMsg.to),
@@ -155,7 +178,7 @@ export function step<ActorState extends Json, Msg extends Json>(
     case "sleep":
       const newTimeoutID = trace.nextID;
       newTrace.nextID++;
-      newTrace.interp = trace.interp.insert(
+      newInterp = newInterp.insert(
         rec("timeout", {
           id: str(newTimeoutID.toString()),
           durationMS: int(actorResp.durationMS),
@@ -163,18 +186,17 @@ export function step<ActorState extends Json, Msg extends Json>(
       );
   }
 
-  return { newTrace, newInits: newMessages };
+  return { newTrace, newInterp, newInits: newMessages };
 }
 
 export function spawnInitialActors<ActorState extends Json, Msg extends Json>(
   update: UpdateFn<ActorState, Msg>,
-  interp: AbstractInterpreter,
   initialStates: { [actorID: string]: ActorState }
 ): Trace<ActorState> {
   return Object.entries(initialStates).reduce(
     (trace, [actorID, actorState]) =>
       spawnSync(trace, update, actorID, actorState),
-    initialTrace<ActorState>(interp)
+    initialTrace<ActorState>()
   );
 }
 
