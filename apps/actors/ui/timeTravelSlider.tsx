@@ -19,19 +19,28 @@ export function TimeTravelSlider<St, Msg>(props: {
 
   return (
     <div ref={ref}>
-      <input
-        type="range"
-        min={0}
-        max={props.historyLength - 1}
-        value={props.curIdx}
-        style={{ width: width - 40 }}
-        onChange={(evt) =>
-          props.dispatch({
-            type: "TimeTravelTo",
-            idx: parseInt(evt.target.value),
-          })
-        }
-      />
+      <div style={{ display: "flex", flexDirection: "row" }}>
+        {props.curIdx}/{props.historyLength - 1}{" "}
+        <input
+          type="range"
+          min={0}
+          max={props.historyLength - 1}
+          value={props.curIdx}
+          style={{ width: width - 40 }}
+          onChange={(evt) =>
+            props.dispatch({
+              type: "TimeTravelTo",
+              idx: parseInt(evt.target.value),
+            })
+          }
+        />
+        <button
+          disabled={atEnd}
+          onClick={() => props.dispatch({ type: "Branch" })}
+        >
+          Branch
+        </button>{" "}
+      </div>
       <SequenceDiagram
         interp={props.interp}
         id={"sequence"}
@@ -49,19 +58,10 @@ export function TimeTravelSlider<St, Msg>(props: {
         }}
       />
       {/* controls */}
-      <div>
-        {props.curIdx}/{props.historyLength - 1}{" "}
-        <button
-          disabled={atEnd}
-          onClick={() => props.dispatch({ type: "Branch" })}
-        >
-          Branch
-        </button>{" "}
-        <ExploreForm
-          disabled={props.exploreEnabled}
-          onExplore={(steps) => props.dispatch({ type: "Explore", steps })}
-        />
-      </div>
+      <ExploreForm
+        disabled={props.exploreEnabled}
+        onExplore={(steps) => props.dispatch({ type: "Explore", steps })}
+      />
     </div>
   );
 }
