@@ -34,7 +34,7 @@ export function KVInspector(props: {
         {
           name: "Statuses",
           render: ([key, vvs]) =>
-            reversed(vvs).map((vv) => (
+            vvs.map((vv) => (
               // TODO: clicking on this should show the txn trace
               <span
                 title={vv.transactionID}
