@@ -71,10 +71,13 @@ export function useEffectfulReducer<S, A>(
       }
     }
   };
-  const [effRedState, innerDispatch] = useReducer(myReducer, {
-    state: initialState,
-    nextPromiseID: 0,
-    promises: {},
+  const [effRedState, innerDispatch] = useReducer(myReducer, null, () => {
+    console.warn("recreating initial state");
+    return {
+      state: initialState,
+      nextPromiseID: 0,
+      promises: {},
+    };
   });
   const outerDispatch = (action: A) => {
     innerDispatch({ type: "OutsideAction", action });
