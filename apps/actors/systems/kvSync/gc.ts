@@ -12,6 +12,9 @@ export function garbageCollectTransactions(state: ClientState): ClientState {
     const outputVVs: VersionedValue[] = [];
     let foundCommittedTxn = false;
     for (const vv of reversed(vvs)) {
+      if (foundCommittedTxn) {
+        break;
+      }
       const txn = state.transactions[vv.transactionID];
       switch (txn.state.type) {
         case "Pending":
