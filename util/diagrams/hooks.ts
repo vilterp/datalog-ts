@@ -2,12 +2,12 @@ import { Ref, useEffect, useReducer, useRef } from "react";
 
 export type ZoomState = {
   focusPos: number; // [0, 1] ?
-  percentage: number; // [0, 1]
+  zoomAbs: number; // [0, infinity]
 };
 
 const initialScrollState: ZoomState = {
   focusPos: 0.5,
-  percentage: 1,
+  zoomAbs: 0,
 };
 
 export function useZoom(): [Ref<SVGSVGElement>, ZoomState] {
@@ -48,7 +48,7 @@ type ZoomEvt = {
 
 function reducer(state: ZoomState, evt: ZoomEvt): ZoomState {
   return {
-    focusPos: evt.pos, // ?
-    percentage: Math.max(1, state.percentage * evt.delta * 0.1), // ?
+    focusPos: evt.pos, // need to map from scroll space back to world space
+    zoomAbs: Math.max(0, state.zoomAbs - evt.delta),
   };
 }
