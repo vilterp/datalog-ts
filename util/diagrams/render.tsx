@@ -9,7 +9,15 @@ export function Diagram<T>(props: {
   const dims = dimensions(props.diagram);
   const svgNode = render(props.diagram, props.onMouseOver);
   return (
-    <svg width={dims.width} height={dims.height}>
+    <svg
+      width={dims.width}
+      height={dims.height}
+      onWheel={(evt) => {
+        evt.preventDefault();
+        evt.stopPropagation();
+        console.log("scroll", evt);
+      }}
+    >
       {svgNode}
     </svg>
   );
