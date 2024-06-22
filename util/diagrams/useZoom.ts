@@ -4,6 +4,7 @@ import { linearInterpolate } from "./util";
 export type ZoomState = {
   focusPos: number;
   zoomPct: number;
+  viewWidth: number;
 };
 
 type ZoomStateInternal = {
@@ -26,6 +27,7 @@ export function useZoom(): [Ref<SVGSVGElement>, ZoomState] {
   const zoomState: ZoomState = {
     focusPos: state.focusPos,
     zoomPct: zoomPercentage(state.zoomAbs),
+    viewWidth: state.viewWidth,
   };
 
   useEffect(() => {
@@ -88,10 +90,11 @@ function reducer(state: ZoomStateInternal, evt: ZoomEvt): ZoomStateInternal {
       const zoomState: ZoomState = {
         focusPos: state.focusPos,
         zoomPct: zoomPercentage(state.zoomAbs),
+        viewWidth: state.viewWidth,
       };
       return {
         ...state,
-        focusPos: viewToWorld(zoomState, state.viewWidth, evt.pos),
+        focusPos: viewToWorld(zoomState, evt.pos),
         zoomAbs: Math.max(0, state.zoomAbs - evt.delta),
       };
     }
@@ -106,23 +109,14 @@ function zoomPercentage(zoomAbs: number): number {
   return (1 / (1 + Math.exp(SENSITIVITY * zoomAbs))) * 2;
 }
 
-// where 'world space' is [0, 1]
-export function worldToView(
-  state: ZoomState,
-  viewWidth: number,
-  point: number
-): number {
+export function worldToView(state: ZoomState, point: number): number {
   const worldRange = visibleWorldSpaceRange(state);
-  return linearInterpolate(worldRange, [0, viewWidth], point);
+  return linearInterpolate(worldRange, [0, state.viewWidth], point);
 }
 
-export function viewToWorld(
-  state: ZoomState,
-  viewWidth: number,
-  point: number
-): number {
+export function viewToWorld(state: ZoomState, point: number): number {
   const worldRange = visibleWorldSpaceRange(state);
-  return linearInterpolate([0, viewWidth], worldRange, point);
+  return linearInterpolate([0, state.viewWidth], worldRange, point);
 }
 
 function visibleWorldSpaceRange(zoomState: ZoomState): [number, number] {
@@ -130,5 +124,13 @@ function visibleWorldSpaceRange(zoomState: ZoomState): [number, number] {
   return [
     zoomState.focusPos - halfVisibleWidth,
     zoomState.focusPos + halfVisibleWidth,
+  ];
+}
+
+export function visibleViewSpaceRange(zoomState: ZoomState): [number, number] {
+  const [worldLeft, worldRight] = visibleWorldSpaceRange(zoomState);
+  return [
+    worldToView(zoomState, worldLeft),
+    worldToView(zoomState, worldRight),
   ];
 }
