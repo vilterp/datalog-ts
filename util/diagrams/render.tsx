@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Diag } from "./types";
-import { useZoom } from "./hooks";
+import { useZoom } from "./useZoom";
 import { ScrollBar } from "./scrollBar";
 
 export function Diagram<T>(props: {

@@ -1,5 +1,5 @@
 import React from "react";
-import { ZoomState } from "./hooks";
+import { ZoomState } from "./useZoom";
 
 export function ScrollBar(props: { width: number; zoomState: ZoomState }) {
   const barWidth = props.zoomState.zoomPct * props.width;
