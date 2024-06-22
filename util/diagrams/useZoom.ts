@@ -1,5 +1,6 @@
 import { Ref, useEffect, useReducer, useRef } from "react";
 import { linearInterpolate } from "./util";
+import { average, clamp } from "../util";
 
 export type ZoomState = {
   focusPos: number;
@@ -92,9 +93,17 @@ function reducer(state: ZoomStateInternal, evt: ZoomEvt): ZoomStateInternal {
         zoomPct: zoomPercentage(state.zoomAbs),
         viewWidth: state.viewWidth,
       };
+      const [worldLeft, worldRight] = visibleWorldSpaceRange(zoomState);
+      const focusPosRaw = linearInterpolate(
+        [0, state.viewWidth],
+        [clamp(worldLeft, [0, 1]), clamp(worldRight, [0, 1])],
+        evt.pos
+      );
+      const focusPos = clamp(focusPosRaw, [0, 1]);
+      console.log("zoom at focus pos", focusPos);
       return {
         ...state,
-        focusPos: viewToWorld(zoomState, evt.pos),
+        focusPos: average([state.focusPos, focusPos]),
         zoomAbs: Math.max(0, state.zoomAbs - evt.delta),
       };
     }
@@ -121,10 +130,12 @@ export function viewToWorld(state: ZoomState, viewPoint: number): number {
   return res;
 }
 
+const WORLD_SPACE_RANGE: [number, number] = [0, 1];
+
 export function visibleWorldSpaceRange(zoomState: ZoomState): [number, number] {
   const halfVisibleWidth = zoomState.zoomPct / 2;
   return [
-    Math.max(0, zoomState.focusPos - halfVisibleWidth),
-    Math.min(zoomState.focusPos + halfVisibleWidth, 1),
+    clamp(zoomState.focusPos - halfVisibleWidth, WORLD_SPACE_RANGE),
+    clamp(zoomState.focusPos + halfVisibleWidth, WORLD_SPACE_RANGE),
   ];
 }

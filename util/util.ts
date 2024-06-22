@@ -488,3 +488,11 @@ export function hashString(str: string): number {
 export function identity<T>(item: T): T {
   return item;
 }
+
+export function average(nums: number[]): number {
+  let total = 0;
+  for (const num of nums) {
+    total += num;
+  }
+  return total / nums.length;
+}
