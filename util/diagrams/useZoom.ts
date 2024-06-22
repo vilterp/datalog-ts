@@ -21,6 +21,11 @@ export function useZoom(): [Ref<SVGSVGElement>, ZoomState] {
 
   const [state, dispatch] = useReducer(reducer, initialScrollState);
 
+  const zoomState: ZoomState = {
+    focusPos: state.focusPos,
+    zoomPct: zoomPercentage(state.zoomAbs),
+  };
+
   useEffect(() => {
     const svgElement = svgRef.current;
     const handleWheel = (evt: WheelEvent) => {
@@ -28,7 +33,7 @@ export function useZoom(): [Ref<SVGSVGElement>, ZoomState] {
       evt.stopPropagation();
       dispatch({
         delta: evt.deltaY,
-        pos: evt.clientX, // ???
+        pos: evt.clientX,
       });
     };
 
@@ -43,22 +48,17 @@ export function useZoom(): [Ref<SVGSVGElement>, ZoomState] {
     };
   }, []);
 
-  const zoomState: ZoomState = {
-    focusPos: state.focusPos,
-    zoomPct: zoomPercentage(state.zoomAbs),
-  };
-
   return [svgRef, zoomState];
 }
 
 type ZoomEvt = {
-  pos: number;
+  pos: number; // in view space
   delta: number;
 };
 
 function reducer(state: ZoomStateInternal, evt: ZoomEvt): ZoomStateInternal {
   return {
-    focusPos: evt.pos, // need to map from scroll space back to world space
+    focusPos: viewToWorld(state, viewWidth, evt.pos),
     zoomAbs: Math.max(0, state.zoomAbs - evt.delta),
   };
 }
@@ -77,7 +77,8 @@ export function worldToView(
   viewWidth: number,
   point: number
 ): number {
-  return linearInterpolate([0, 1], [0, viewWidth], point);
+  const worldRange = visibleWorldSpaceRange(state);
+  return linearInterpolate(worldRange, [0, viewWidth], point);
 }
 
 export function viewToWorld(
@@ -85,5 +86,14 @@ export function viewToWorld(
   viewWidth: number,
   point: number
 ): number {
-  return linearInterpolate([0, viewWidth], [0, 1], point);
+  const worldRange = visibleWorldSpaceRange(state);
+  return linearInterpolate([0, viewWidth], worldRange, point);
+}
+
+function visibleWorldSpaceRange(zoomState: ZoomState): [number, number] {
+  const halfVisibleWidth = zoomState.zoomPct / 2;
+  return [
+    zoomState.focusPos - halfVisibleWidth,
+    zoomState.focusPos + halfVisibleWidth,
+  ];
 }
