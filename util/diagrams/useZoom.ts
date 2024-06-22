@@ -7,13 +7,15 @@ export type ZoomState = {
 };
 
 type ZoomStateInternal = {
-  focusPos: number; // [0, 1] ?
+  focusPos: number; // [0, 1]
   zoomAbs: number; // [0, infinity]
+  viewWidth: number;
 };
 
 const initialScrollState: ZoomStateInternal = {
   focusPos: 0.5,
   zoomAbs: 0,
+  viewWidth: 0, // get initial somehow?
 };
 
 export function useZoom(): [Ref<SVGSVGElement>, ZoomState] {
@@ -28,22 +30,36 @@ export function useZoom(): [Ref<SVGSVGElement>, ZoomState] {
 
   useEffect(() => {
     const svgElement = svgRef.current;
+
+    // Wheel element handler
     const handleWheel = (evt: WheelEvent) => {
       evt.preventDefault();
       evt.stopPropagation();
       dispatch({
+        type: "Zoom",
         delta: evt.deltaY,
         pos: evt.clientX,
       });
     };
 
+    // ResizeObserver
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        const { width } = entry.contentRect;
+        dispatch({ type: "Resize", newWidth: width });
+      }
+    });
+
+    // Install
     if (svgElement) {
       svgElement.addEventListener("wheel", handleWheel, { passive: false });
+      resizeObserver.observe(svgElement);
     }
 
     return () => {
       if (svgElement) {
         svgElement.removeEventListener("wheel", handleWheel);
+        resizeObserver.disconnect();
       }
     };
   }, []);
@@ -51,19 +67,38 @@ export function useZoom(): [Ref<SVGSVGElement>, ZoomState] {
   return [svgRef, zoomState];
 }
 
-type ZoomEvt = {
-  pos: number; // in view space
-  delta: number;
-};
+type ZoomEvt =
+  | {
+      type: "Zoom";
+      pos: number; // in view space
+      delta: number;
+    }
+  | { type: "Resize"; newWidth: number };
 
 function reducer(state: ZoomStateInternal, evt: ZoomEvt): ZoomStateInternal {
-  return {
-    focusPos: viewToWorld(state, viewWidth, evt.pos),
-    zoomAbs: Math.max(0, state.zoomAbs - evt.delta),
-  };
+  switch (evt.type) {
+    case "Resize": {
+      return {
+        ...state,
+        viewWidth: evt.newWidth,
+      };
+    }
+    case "Zoom": {
+      // TODO: avoid this allocation
+      const zoomState: ZoomState = {
+        focusPos: state.focusPos,
+        zoomPct: zoomPercentage(state.zoomAbs),
+      };
+      return {
+        ...state,
+        focusPos: viewToWorld(zoomState, state.viewWidth, evt.pos),
+        zoomAbs: Math.max(0, state.zoomAbs - evt.delta),
+      };
+    }
+  }
 }
 
-// computations
+// ==== Computations ===
 
 const SENSITIVITY = 0.001;
 

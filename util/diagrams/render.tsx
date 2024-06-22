@@ -7,12 +7,10 @@ export function Diagram<T>(props: {
   diagram: Diag<T>;
   onMouseOver?: (tag: T | null) => void;
 }) {
-  const [svgRef, zoomState] = useZoom();
-
   const dims = dimensions(props.diagram);
   const svgNode = render(props.diagram, props.onMouseOver);
 
-  console.log("dims", dims);
+  const [svgRef, zoomState] = useZoom();
 
   return (
     <div>
