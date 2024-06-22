@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Diag } from "./types";
 import { useZoom } from "./hooks";
+import { ScrollBar } from "./scrollBar";
 
 export function Diagram<T>(props: {
   diagram: Diag<T>;
@@ -11,12 +12,15 @@ export function Diagram<T>(props: {
   const dims = dimensions(props.diagram);
   const svgNode = render(props.diagram, props.onMouseOver);
 
+  console.log("dims", dims);
+
   return (
     <div>
       <svg ref={svgRef} width={dims.width} height={dims.height}>
         {svgNode}
       </svg>
       <code>{JSON.stringify(zoomState)}</code>
+      <ScrollBar width={dims.width} zoomState={zoomState} />
     </div>
   );
 }
