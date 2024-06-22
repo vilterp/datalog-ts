@@ -100,7 +100,6 @@ function reducer(state: ZoomStateInternal, evt: ZoomEvt): ZoomStateInternal {
         evt.pos
       );
       const focusPos = clamp(focusPosRaw, [0, 1]);
-      console.log("zoom at focus pos", focusPos);
       return {
         ...state,
         focusPos: average([state.focusPos, focusPos]),
@@ -126,7 +125,6 @@ export function worldToView(state: ZoomState, worldPoint: number): number {
 export function viewToWorld(state: ZoomState, viewPoint: number): number {
   const worldRange = visibleWorldSpaceRange(state);
   const res = linearInterpolate([0, state.viewWidth], worldRange, viewPoint);
-  console.log("view to world", { worldRange, viewPoint, res });
   return res;
 }
 
