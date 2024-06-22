@@ -102,10 +102,12 @@ function reducer(state: ZoomStateInternal, evt: ZoomEvt): ZoomStateInternal {
         ],
         evt.pos
       );
-      const focusPos = clamp(focusPosRaw, WORLD_SPACE_RANGE);
+      const mouseFocusPos = clamp(focusPosRaw, WORLD_SPACE_RANGE);
+      const oldFocusPos = state.focusPos;
+      const newFocusPos = average([oldFocusPos, mouseFocusPos]);
       return {
         ...state,
-        focusPos: average([state.focusPos, focusPos]),
+        focusPos: newFocusPos,
         zoomAbs: Math.max(0, state.zoomAbs - evt.delta),
       };
     }

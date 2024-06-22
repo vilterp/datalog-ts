@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { VizArgs, VizTypeSpec } from "./typeSpec";
 import { Int, Rec, Res, StringLit, Term } from "../../core/types";
 import {
@@ -30,17 +30,7 @@ export const sequence: VizTypeSpec = {
 
 export function SequenceDiagram(props: VizArgs & { width: number }) {
   try {
-    const actors = props.interp.queryRec(props.spec.attrs.actors as Rec);
-    const hops = props.interp.queryRec(props.spec.attrs.hops as Rec);
-    const ticks = props.interp.queryRec(props.spec.attrs.ticks as Rec);
-    const tickColors = props.spec.attrs.tickColor
-      ? props.interp.queryRec(props.spec.attrs.tickColor as Rec)
-      : [];
-    const hopColors = props.spec.attrs.hopColor
-      ? props.interp.queryRec(props.spec.attrs.hopColor as Rec)
-      : [];
-
-    const spec = makeSequenceSpec(actors, ticks, hops, tickColors, hopColors);
+    const spec = useMemo(() => getSpec(props), [props]);
 
     return (
       <div>
@@ -60,6 +50,20 @@ export function SequenceDiagram(props: VizArgs & { width: number }) {
   }
 }
 
+function getSpec(props: VizArgs): SequenceSpec {
+  const actors = props.interp.queryRec(props.spec.attrs.actors as Rec);
+  const hops = props.interp.queryRec(props.spec.attrs.hops as Rec);
+  const ticks = props.interp.queryRec(props.spec.attrs.ticks as Rec);
+  const tickColors = props.spec.attrs.tickColor
+    ? props.interp.queryRec(props.spec.attrs.tickColor as Rec)
+    : [];
+  const hopColors = props.spec.attrs.hopColor
+    ? props.interp.queryRec(props.spec.attrs.hopColor as Rec)
+    : [];
+
+  return makeSequenceSpec(actors, ticks, hops, tickColors, hopColors);
+}
+
 const DEFAULT_TICK_COLOR = "lightblue";
 const DEFAULT_HOP_COLOR = "blue";
 
@@ -74,7 +78,7 @@ function makeSequenceSpec(
   hops: Res[],
   tickColors: Res[],
   hopColors: Res[]
-): Sequence {
+): SequenceSpec {
   const locations = uniqBy((res) => ppt(res.bindings.ID), actors);
   // color by tick
   const colorByTick = {};
@@ -132,7 +136,7 @@ function pptHop(hop: Res): string {
 export type Location = string;
 export type Time = number;
 
-export interface Sequence {
+export interface SequenceSpec {
   locations: { loc: Location; term: Term }[];
   ticks: Tick[];
   hops: Hop[];
@@ -172,7 +176,7 @@ function yForTime(maxTime: number, maxWidth: number, t: Time): number {
 }
 
 function sequenceDiagram(
-  seq: Sequence,
+  seq: SequenceSpec,
   highlight: Term,
   width: number
 ): Diag<Term> {

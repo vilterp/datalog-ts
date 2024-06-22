@@ -1,5 +1,5 @@
 import React from "react";
-import { ZoomState, worldToView } from "./useZoom";
+import { ZoomState } from "./useZoom";
 import { linearInterpolate } from "./util";
 
 export function ScrollBar(props: { width: number; zoomState: ZoomState }) {
