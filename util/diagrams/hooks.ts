@@ -20,7 +20,6 @@ export function useZoom(): [Ref<SVGSVGElement>, ZoomState] {
     const handleWheel = (evt: WheelEvent) => {
       evt.preventDefault();
       evt.stopPropagation();
-      console.log("scroll", evt);
       dispatch({
         delta: evt.deltaY,
         pos: evt.clientX, // ???
@@ -39,6 +38,12 @@ export function useZoom(): [Ref<SVGSVGElement>, ZoomState] {
   }, []);
 
   return [svgRef, state];
+}
+
+const SENSITIVITY = 0.001;
+
+export function zoomPercentage(state: ZoomState): number {
+  return (1 / (1 + Math.exp(SENSITIVITY * state.zoomAbs))) * 2;
 }
 
 type ZoomEvt = {

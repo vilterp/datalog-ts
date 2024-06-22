@@ -1,13 +1,12 @@
 import * as React from "react";
 import { Diag } from "./types";
-import { useZoom } from "./hooks";
+import { useZoom, zoomPercentage } from "./hooks";
 
 export function Diagram<T>(props: {
   diagram: Diag<T>;
   onMouseOver?: (tag: T | null) => void;
 }) {
-  const [svgRef, scrollState] = useZoom();
-  console.log("scrollState", scrollState);
+  const [svgRef, zoomState] = useZoom();
 
   const dims = dimensions(props.diagram);
   const svgNode = render(props.diagram, props.onMouseOver);
@@ -17,7 +16,9 @@ export function Diagram<T>(props: {
       <svg ref={svgRef} width={dims.width} height={dims.height}>
         {svgNode}
       </svg>
-      <code>{JSON.stringify(scrollState)}</code>
+      <code>
+        {JSON.stringify({ ...zoomState, pct: zoomPercentage(zoomState) })}
+      </code>
     </div>
   );
 }
