@@ -109,28 +109,39 @@ function zoomPercentage(zoomAbs: number): number {
   return (1 / (1 + Math.exp(SENSITIVITY * zoomAbs))) * 2;
 }
 
-export function worldToView(state: ZoomState, point: number): number {
+export function worldToView(state: ZoomState, worldPoint: number): number {
   const worldRange = visibleWorldSpaceRange(state);
-  return linearInterpolate(worldRange, [0, state.viewWidth], point);
+  return linearInterpolate(worldRange, [0, state.viewWidth], worldPoint);
 }
 
-export function viewToWorld(state: ZoomState, point: number): number {
+export function viewToWorld(state: ZoomState, viewPoint: number): number {
   const worldRange = visibleWorldSpaceRange(state);
-  return linearInterpolate([0, state.viewWidth], worldRange, point);
+  const res = linearInterpolate([0, state.viewWidth], worldRange, viewPoint);
+  console.log("view to world", { worldRange, viewPoint, res });
+  return res;
 }
 
 function visibleWorldSpaceRange(zoomState: ZoomState): [number, number] {
   const halfVisibleWidth = zoomState.zoomPct / 2;
   return [
-    zoomState.focusPos - halfVisibleWidth,
-    zoomState.focusPos + halfVisibleWidth,
+    Math.max(0, zoomState.focusPos - halfVisibleWidth),
+    Math.min(zoomState.focusPos + halfVisibleWidth, 1),
   ];
 }
 
 export function visibleViewSpaceRange(zoomState: ZoomState): [number, number] {
   const [worldLeft, worldRight] = visibleWorldSpaceRange(zoomState);
-  return [
+  const res: [number, number] = [
     worldToView(zoomState, worldLeft),
     worldToView(zoomState, worldRight),
   ];
+  console.log(
+    "view range",
+    zoomState,
+    "=>",
+    [worldLeft, worldRight],
+    "=>",
+    res
+  );
+  return res;
 }
