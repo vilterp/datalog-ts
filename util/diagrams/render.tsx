@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Diag } from "./types";
-import { useZoom, zoomPercentage } from "./hooks";
+import { useZoom } from "./hooks";
 
 export function Diagram<T>(props: {
   diagram: Diag<T>;
@@ -16,9 +16,7 @@ export function Diagram<T>(props: {
       <svg ref={svgRef} width={dims.width} height={dims.height}>
         {svgNode}
       </svg>
-      <code>
-        {JSON.stringify({ ...zoomState, pct: zoomPercentage(zoomState) })}
-      </code>
+      <code>{JSON.stringify(zoomState)}</code>
     </div>
   );
 }
