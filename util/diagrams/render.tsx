@@ -1,16 +1,18 @@
 import * as React from "react";
+import { Ref } from "react";
 import { Diag } from "./types";
 
 export function Diagram<T>(props: {
   diagram: Diag<T>;
   onMouseOver?: (tag: T | null) => void;
+  svgRef: Ref<SVGSVGElement>;
 }) {
   const dims = dimensions(props.diagram);
   const svgNode = render(props.diagram, props.onMouseOver);
 
   return (
     <div>
-      <svg width={dims.width} height={dims.height}>
+      <svg ref={props.svgRef} width={dims.width} height={dims.height}>
         {svgNode}
       </svg>
     </div>

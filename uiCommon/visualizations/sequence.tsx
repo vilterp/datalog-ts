@@ -21,6 +21,8 @@ import { jsonEq } from "../../util/json";
 import { termEq } from "../../core/unify";
 import { ppt } from "../../core/pretty";
 import { linearInterpolate } from "../../util/diagrams/util";
+import { ScrollBar } from "../../util/diagrams/scrollBar";
+import { useZoom } from "../../util/diagrams/useZoom";
 
 export const sequence: VizTypeSpec = {
   name: "Sequence Diagram",
@@ -31,13 +33,17 @@ export const sequence: VizTypeSpec = {
 export function SequenceDiagram(props: VizArgs & { width: number }) {
   try {
     const spec = useMemo(() => getSpec(props), [props]);
+    const [svgRef, zoomState] = useZoom();
 
     return (
       <div>
         <Diagram<Term>
+          svgRef={svgRef}
           diagram={sequenceDiagram(spec, props.highlightedTerm, props.width)}
           onMouseOver={(term) => props.setHighlightedTerm?.(term)}
         />
+
+        <ScrollBar zoomState={zoomState} width={props.width} />
       </div>
     );
   } catch (e) {
