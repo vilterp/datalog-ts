@@ -1,16 +1,16 @@
 import { Ref, useEffect, useReducer, useRef } from "react";
 
-export type ScrollState = {
+export type ZoomState = {
   focusPos: number; // [0, 1] ?
   percentage: number; // [0, 1]
 };
 
-const initialScrollState: ScrollState = {
+const initialScrollState: ZoomState = {
   focusPos: 0.5,
   percentage: 1,
 };
 
-export function useScroll(): [Ref<SVGSVGElement>, ScrollState] {
+export function useZoom(): [Ref<SVGSVGElement>, ZoomState] {
   const svgRef = useRef<SVGSVGElement>(null);
 
   const [state, dispatch] = useReducer(reducer, initialScrollState);
@@ -41,14 +41,14 @@ export function useScroll(): [Ref<SVGSVGElement>, ScrollState] {
   return [svgRef, state];
 }
 
-type ScrollEvt = {
+type ZoomEvt = {
   pos: number;
   delta: number;
 };
 
-function reducer(state: ScrollState, evt: ScrollEvt): ScrollState {
+function reducer(state: ZoomState, evt: ZoomEvt): ZoomState {
   return {
     focusPos: evt.pos, // ?
-    percentage: state.percentage * evt.delta * 0.1, // ?
+    percentage: Math.max(1, state.percentage * evt.delta * 0.1), // ?
   };
 }

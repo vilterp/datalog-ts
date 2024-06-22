@@ -1,21 +1,24 @@
 import * as React from "react";
 import { Diag } from "./types";
-import { useScroll } from "./hooks";
+import { useZoom } from "./hooks";
 
 export function Diagram<T>(props: {
   diagram: Diag<T>;
   onMouseOver?: (tag: T | null) => void;
 }) {
-  const [svgRef, scrollState] = useScroll();
+  const [svgRef, scrollState] = useZoom();
   console.log("scrollState", scrollState);
 
   const dims = dimensions(props.diagram);
   const svgNode = render(props.diagram, props.onMouseOver);
 
   return (
-    <svg ref={svgRef} width={dims.width} height={dims.height}>
-      {svgNode}
-    </svg>
+    <div>
+      <svg ref={svgRef} width={dims.width} height={dims.height}>
+        {svgNode}
+      </svg>
+      <code>{JSON.stringify(scrollState)}</code>
+    </div>
   );
 }
 export interface Dimensions {
