@@ -3,7 +3,7 @@ import { parserTermToInternal } from "../../../../core/translateAST";
 import { Array, Int, Rec, StringLit } from "../../../../core/types";
 import { parseRecord } from "../../../../languageWorkbench/languages/dl/parser";
 import { runDDTestAtPath, TestOutput } from "../../../../util/ddTest";
-import { datalogOut } from "../../../../util/ddTest/types";
+import { datalogOut, jsonOut } from "../../../../util/ddTest/types";
 import { dlToJson } from "../../../../util/json2dl";
 import { Suite } from "../../../../util/testBench/testing";
 import { insertUserInput, spawnInitiator, step, stepAll } from "../../step";
@@ -15,6 +15,7 @@ import { SimpleInterpreter } from "../../../../core/simple/interpreter";
 import { ParseErrors } from "../../../../languageWorkbench/parserlib/types";
 import { System, SystemState, Trace } from "../../types";
 import { explore } from "../../explore";
+import { mapObj } from "../../../../util/util";
 
 export function kvSyncTests(writeResults: boolean): Suite {
   return [
@@ -55,9 +56,25 @@ function kvSyncTest(app: KVApp, testCases: string[]): TestOutput[] {
       const record = parserTermToInternal(rawRec) as Rec;
       systemState = reducer(system, systemState, record);
     });
+    if (query === ".jsonState") {
+      return jsonOut(justStates(systemState));
+    }
     return datalogOut(
       systemState.trace.interp.queryStr(query).map((res) => res.term)
     );
+  });
+}
+
+function justStates(state: SystemState<KVSyncState>) {
+  return mapObj(state.trace.latestStates, (k, v) => {
+    switch (v.type) {
+      case "ClientState":
+        return v.data;
+      case "ServerState":
+        return v.data;
+      case "UserState":
+        return {};
+    }
   });
 }
 

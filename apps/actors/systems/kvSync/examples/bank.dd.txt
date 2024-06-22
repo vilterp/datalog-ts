@@ -37,3 +37,151 @@ tickState{actorID: "user0", state: UserState{}, tickID: 10}.
 tickState{actorID: "user0", state: UserState{}, tickID: 17}.
 tickState{actorID: "user0", state: UserState{}, tickID: 1}.
 tickState{actorID: "user0", state: UserState{}, tickID: 3}.
+
+addClient{id: "0"}.
+signUp{clientID: "0", username: "bob", password: "foo"}.
+runMutation{from: "0", name: "Deposit", args: [10]}.
+runMutation{from: "0", name: "Deposit", args: [10]}.
+explore{seed: 123548762349586, steps: 100}.
+.jsonState
+----
+application/json
+{
+  "server": {
+    "bob": [
+      {
+        "transactionID": "10698",
+        "value": 10
+      },
+      {
+        "transactionID": "4540893",
+        "value": 20
+      },
+      {
+        "transactionID": "3045903",
+        "value": 0
+      },
+      {
+        "transactionID": "1418433",
+        "value": 88
+      },
+      {
+        "transactionID": "2583933",
+        "value": 78
+      },
+      {
+        "transactionID": "2943483",
+        "value": 73
+      },
+      {
+        "transactionID": "2573133",
+        "value": 103
+      },
+      {
+        "transactionID": "3162498",
+        "value": 90
+      }
+    ]
+  },
+  "user0": {},
+  "client0": {
+    "bob": [
+      {
+        "transactionID": "3162498",
+        "value": 90
+      },
+      {
+        "transactionID": "4320618",
+        "value": 112
+      },
+      {
+        "transactionID": "3695523",
+        "value": 152
+      },
+      {
+        "transactionID": "4090893",
+        "value": 149
+      },
+      {
+        "transactionID": "5191188",
+        "value": 87
+      },
+      {
+        "transactionID": "394413",
+        "value": 42
+      },
+      {
+        "transactionID": "3454773",
+        "value": 31
+      },
+      {
+        "transactionID": "3955983",
+        "value": 57
+      },
+      {
+        "transactionID": "5004033",
+        "value": 50
+      },
+      {
+        "transactionID": "3164523",
+        "value": 10
+      },
+      {
+        "transactionID": "25908",
+        "value": 48
+      },
+      {
+        "transactionID": "885588",
+        "value": 16
+      },
+      {
+        "transactionID": "2199228",
+        "value": 76
+      },
+      {
+        "transactionID": "4702623",
+        "value": 0
+      },
+      {
+        "transactionID": "682323",
+        "value": 3
+      },
+      {
+        "transactionID": "3054273",
+        "value": 3
+      },
+      {
+        "transactionID": "4351173",
+        "value": 7
+      },
+      {
+        "transactionID": "4240743",
+        "value": 75
+      },
+      {
+        "transactionID": "1497948",
+        "value": 38
+      },
+      {
+        "transactionID": "4984908",
+        "value": 110
+      },
+      {
+        "transactionID": "3007023",
+        "value": 118
+      },
+      {
+        "transactionID": "3656148",
+        "value": 202
+      },
+      {
+        "transactionID": "4998453",
+        "value": 130
+      },
+      {
+        "transactionID": "1270833",
+        "value": 149
+      }
+    ]
+  }
+}
