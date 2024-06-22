@@ -5,24 +5,36 @@ export function Diagram<T>(props: {
   diagram: Diag<T>;
   onMouseOver?: (tag: T | null) => void;
 }) {
-  // console.log(props.diagram);
+  const svgRef = React.useRef<SVGSVGElement>(null);
+
+  React.useEffect(() => {
+    const svgElement = svgRef.current;
+    const handleWheel = (evt: WheelEvent) => {
+      evt.preventDefault();
+      evt.stopPropagation();
+      console.log("scroll", evt);
+    };
+
+    if (svgElement) {
+      svgElement.addEventListener("wheel", handleWheel, { passive: false });
+    }
+
+    return () => {
+      if (svgElement) {
+        svgElement.removeEventListener("wheel", handleWheel);
+      }
+    };
+  }, []);
+
   const dims = dimensions(props.diagram);
   const svgNode = render(props.diagram, props.onMouseOver);
+
   return (
-    <svg
-      width={dims.width}
-      height={dims.height}
-      onWheel={(evt) => {
-        evt.preventDefault();
-        evt.stopPropagation();
-        console.log("scroll", evt);
-      }}
-    >
+    <svg ref={svgRef} width={dims.width} height={dims.height}>
       {svgNode}
     </svg>
   );
 }
-
 export interface Dimensions {
   width: number;
   height: number;
