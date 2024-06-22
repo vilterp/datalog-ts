@@ -1,30 +1,13 @@
 import * as React from "react";
 import { Diag } from "./types";
+import { useScroll } from "./hooks";
 
 export function Diagram<T>(props: {
   diagram: Diag<T>;
   onMouseOver?: (tag: T | null) => void;
 }) {
-  const svgRef = React.useRef<SVGSVGElement>(null);
-
-  React.useEffect(() => {
-    const svgElement = svgRef.current;
-    const handleWheel = (evt: WheelEvent) => {
-      evt.preventDefault();
-      evt.stopPropagation();
-      console.log("scroll", evt);
-    };
-
-    if (svgElement) {
-      svgElement.addEventListener("wheel", handleWheel, { passive: false });
-    }
-
-    return () => {
-      if (svgElement) {
-        svgElement.removeEventListener("wheel", handleWheel);
-      }
-    };
-  }, []);
+  const [svgRef, scrollState] = useScroll();
+  console.log("scrollState", scrollState);
 
   const dims = dimensions(props.diagram);
   const svgNode = render(props.diagram, props.onMouseOver);
