@@ -1,12 +1,23 @@
 import React from "react";
-import { ZoomState, visibleViewSpaceRange } from "./useZoom";
+import { ZoomState, worldToView } from "./useZoom";
+import { linearInterpolate } from "./util";
 
 export function ScrollBar(props: { width: number; zoomState: ZoomState }) {
-  const [leftX, rightX] = visibleViewSpaceRange(props.zoomState);
+  const barMiddleX = linearInterpolate(
+    [0, 1],
+    [0, props.width],
+    props.zoomState.focusPos
+  );
+  const barWidth = props.width * props.zoomState.zoomPct;
 
   return (
     <svg width={props.width} height={10}>
-      <rect height={10} fill="grey" x={leftX} width={rightX - leftX} />
+      <rect
+        height={10}
+        fill="grey"
+        x={barMiddleX - barWidth / 2}
+        width={barWidth}
+      />
     </svg>
   );
 }

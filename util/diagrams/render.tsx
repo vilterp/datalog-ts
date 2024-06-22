@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Diag } from "./types";
-import { useZoom } from "./useZoom";
+import { useZoom, visibleWorldSpaceRange } from "./useZoom";
 import { ScrollBar } from "./scrollBar";
 
 export function Diagram<T>(props: {
@@ -17,7 +17,13 @@ export function Diagram<T>(props: {
       <svg ref={svgRef} width={dims.width} height={dims.height}>
         {svgNode}
       </svg>
-      <code>{JSON.stringify(zoomState)}</code>
+      <p>
+        <code>{JSON.stringify(zoomState)}</code>
+      </p>
+      <p>
+        World range:{" "}
+        <code>{JSON.stringify(visibleWorldSpaceRange(zoomState))}</code>
+      </p>
       <ScrollBar width={dims.width} zoomState={zoomState} />
     </div>
   );

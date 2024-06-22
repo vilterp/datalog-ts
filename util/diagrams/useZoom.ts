@@ -121,27 +121,10 @@ export function viewToWorld(state: ZoomState, viewPoint: number): number {
   return res;
 }
 
-function visibleWorldSpaceRange(zoomState: ZoomState): [number, number] {
+export function visibleWorldSpaceRange(zoomState: ZoomState): [number, number] {
   const halfVisibleWidth = zoomState.zoomPct / 2;
   return [
     Math.max(0, zoomState.focusPos - halfVisibleWidth),
     Math.min(zoomState.focusPos + halfVisibleWidth, 1),
   ];
-}
-
-export function visibleViewSpaceRange(zoomState: ZoomState): [number, number] {
-  const [worldLeft, worldRight] = visibleWorldSpaceRange(zoomState);
-  const res: [number, number] = [
-    worldToView(zoomState, worldLeft),
-    worldToView(zoomState, worldRight),
-  ];
-  console.log(
-    "view range",
-    zoomState,
-    "=>",
-    [worldLeft, worldRight],
-    "=>",
-    res
-  );
-  return res;
 }
