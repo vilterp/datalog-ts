@@ -96,10 +96,13 @@ function reducer(state: ZoomStateInternal, evt: ZoomEvt): ZoomStateInternal {
       const [worldLeft, worldRight] = visibleWorldSpaceRange(zoomState);
       const focusPosRaw = linearInterpolate(
         [0, state.viewWidth],
-        [clamp(worldLeft, [0, 1]), clamp(worldRight, [0, 1])],
+        [
+          clamp(worldLeft, WORLD_SPACE_RANGE),
+          clamp(worldRight, WORLD_SPACE_RANGE),
+        ],
         evt.pos
       );
-      const focusPos = clamp(focusPosRaw, [0, 1]);
+      const focusPos = clamp(focusPosRaw, WORLD_SPACE_RANGE);
       return {
         ...state,
         focusPos: average([state.focusPos, focusPos]),
