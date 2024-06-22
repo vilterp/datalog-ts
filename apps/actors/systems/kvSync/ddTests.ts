@@ -1,9 +1,9 @@
-import { KVSyncState, makeActorSystem, update } from ".";
+import { KVSyncMsg, KVSyncState, makeActorSystem, update } from ".";
 import { parserTermToInternal } from "../../../../core/translateAST";
-import { Array, Rec, StringLit } from "../../../../core/types";
+import { Array, Int, Rec, StringLit } from "../../../../core/types";
 import { parseRecord } from "../../../../languageWorkbench/languages/dl/parser";
 import { runDDTestAtPath, TestOutput } from "../../../../util/ddTest";
-import { datalogOut } from "../../../../util/ddTest/types";
+import { datalogOut, jsonOut } from "../../../../util/ddTest/types";
 import { dlToJson } from "../../../../util/json2dl";
 import { Suite } from "../../../../util/testBench/testing";
 import { insertUserInput, spawnInitiator, step, stepAll } from "../../step";
@@ -13,7 +13,9 @@ import { UserInput } from "./types";
 import { fsLoader } from "../../../../core/fsLoader";
 import { SimpleInterpreter } from "../../../../core/simple/interpreter";
 import { ParseErrors } from "../../../../languageWorkbench/parserlib/types";
-import { Trace } from "../../types";
+import { System, SystemState, Trace } from "../../types";
+import { explore } from "../../explore";
+import { mapObj } from "../../../../util/util";
 
 export function kvSyncTests(writeResults: boolean): Suite {
   return [
@@ -34,75 +36,123 @@ function kvSyncTest(app: KVApp, testCases: string[]): TestOutput[] {
   const system = makeActorSystem(app);
   return testCases.map((testCase) => {
     const interp = new SimpleInterpreter("apps/actors", fsLoader);
-    let trace = system.getInitialState(interp);
+    let systemState: SystemState<KVSyncState> = {
+      trace: system.getInitialState(interp),
+      clientIDs: [],
+      nextClientID: 0,
+    };
     // TODO: parse it as a program? idk
     const lines = testCase.split("\n");
     const query = lines[lines.length - 1];
     const actions = lines.slice(0, lines.length - 1);
     actions.forEach((line) => {
+      // TODO: DRY up with reducers?
+
       // slice off the `.`
       const [rawRec, errors] = parseRecord(line.slice(0, line.length - 1));
       if (errors.length > 0) {
         throw new ParseErrors(errors);
       }
       const record = parserTermToInternal(rawRec) as Rec;
-      switch (record.relation) {
-        case "signUp": {
-          const clientID = (record.attrs.clientID as StringLit).val;
-          const msg: UserInput = {
-            type: "Signup",
-            username: (record.attrs.username as StringLit).val,
-            password: (record.attrs.password as StringLit).val,
-          };
-          trace = stepUserInput(trace, clientID, msg);
-          break;
-        }
-        case "logIn": {
-          const clientID = (record.attrs.clientID as StringLit).val;
-          const msg: UserInput = {
-            type: "Login",
-            username: (record.attrs.username as StringLit).val,
-            password: (record.attrs.password as StringLit).val,
-          };
-          trace = stepUserInput(trace, clientID, msg);
-          break;
-        }
-        case "addClient": {
-          // TODO: DRY this up with reducers.ts
-          const clientID = (record.attrs.id as StringLit).val;
-          const { newTrace: trace2, newInits: newInits1 } = step(
-            trace,
-            update,
-            spawnInitiator(`user${clientID}`, system.initialUserState)
-          );
-          const { newTrace: trace3, newInits: newInits2 } = step(
-            trace2,
-            update,
-            spawnInitiator(
-              `client${clientID}`,
-              system.initialClientState(clientID)
-            )
-          );
-          trace = stepAll(trace3, update, [...newInits1, ...newInits2]);
-          break;
-        }
-        case "runMutation": {
-          const clientID = (record.attrs.from as StringLit).val;
-          const msg: UserInput = {
-            type: "RunMutation",
-            invocation: {
-              type: "Invocation",
-              name: (record.attrs.name as StringLit).val,
-              args: (record.attrs.args as Array).items.map((i) => dlToJson(i)),
-            },
-          };
-          trace = stepUserInput(trace, clientID, msg);
-          break;
-        }
-      }
+      systemState = reducer(system, systemState, record);
     });
-    return datalogOut(trace.interp.queryStr(query).map((res) => res.term));
+    if (query === ".jsonState") {
+      return jsonOut(justStates(systemState));
+    }
+    return datalogOut(
+      systemState.trace.interp.queryStr(query).map((res) => res.term)
+    );
   });
+}
+
+function justStates(state: SystemState<KVSyncState>) {
+  return mapObj(state.trace.latestStates, (k, v) => {
+    switch (v.type) {
+      case "ClientState":
+        return v.data;
+      case "ServerState":
+        return v.data;
+      case "UserState":
+        return {};
+    }
+  });
+}
+
+function reducer(
+  system: System<KVSyncState, KVSyncMsg>,
+  systemState: SystemState<KVSyncState>,
+  record: Rec
+): SystemState<KVSyncState> {
+  switch (record.relation) {
+    case "signUp": {
+      const clientID = (record.attrs.clientID as StringLit).val;
+      const msg: UserInput = {
+        type: "Signup",
+        username: (record.attrs.username as StringLit).val,
+        password: (record.attrs.password as StringLit).val,
+      };
+      const newTrace = stepUserInput(systemState.trace, clientID, msg);
+      return {
+        ...systemState,
+        trace: newTrace,
+      };
+    }
+    case "logIn": {
+      const clientID = (record.attrs.clientID as StringLit).val;
+      const msg: UserInput = {
+        type: "Login",
+        username: (record.attrs.username as StringLit).val,
+        password: (record.attrs.password as StringLit).val,
+      };
+      const newTrace = stepUserInput(systemState.trace, clientID, msg);
+      return {
+        ...systemState,
+        trace: newTrace,
+      };
+    }
+    case "addClient": {
+      // TODO: DRY this up with reducers.ts
+      const clientID = (record.attrs.id as StringLit).val;
+      const { newTrace: trace2, newInits: newInits1 } = step(
+        systemState.trace,
+        update,
+        spawnInitiator(`user${clientID}`, system.initialUserState)
+      );
+      const { newTrace: trace3, newInits: newInits2 } = step(
+        trace2,
+        update,
+        spawnInitiator(`client${clientID}`, system.initialClientState(clientID))
+      );
+      const trace4 = stepAll(trace3, update, [...newInits1, ...newInits2]);
+      return {
+        clientIDs: [...systemState.clientIDs, clientID],
+        nextClientID: 0, // not using this
+        trace: trace4,
+      };
+    }
+    case "runMutation": {
+      const clientID = (record.attrs.from as StringLit).val;
+      const msg: UserInput = {
+        type: "RunMutation",
+        invocation: {
+          type: "Invocation",
+          name: (record.attrs.name as StringLit).val,
+          args: (record.attrs.args as Array).items.map((i) => dlToJson(i)),
+        },
+      };
+      const newTrace = stepUserInput(systemState.trace, clientID, msg);
+      return {
+        ...systemState,
+        trace: newTrace,
+      };
+    }
+    case "explore": {
+      const steps = (record.attrs.steps as Int).val;
+      const seed = (record.attrs.seed as Int).val;
+      const frame = explore(system, systemState, steps, seed);
+      return frame.state;
+    }
+  }
 }
 
 function stepUserInput(
