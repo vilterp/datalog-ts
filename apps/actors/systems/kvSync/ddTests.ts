@@ -1,6 +1,6 @@
 import { KVSyncState, makeActorSystem, update } from ".";
 import { parserTermToInternal } from "../../../../core/translateAST";
-import { Array, Rec, StringLit } from "../../../../core/types";
+import { Array, Int, Rec, StringLit } from "../../../../core/types";
 import { parseRecord } from "../../../../languageWorkbench/languages/dl/parser";
 import { runDDTestAtPath, TestOutput } from "../../../../util/ddTest";
 import { datalogOut } from "../../../../util/ddTest/types";
@@ -13,7 +13,8 @@ import { UserInput } from "./types";
 import { fsLoader } from "../../../../core/fsLoader";
 import { SimpleInterpreter } from "../../../../core/simple/interpreter";
 import { ParseErrors } from "../../../../languageWorkbench/parserlib/types";
-import { Trace } from "../../types";
+import { SystemState, Trace } from "../../types";
+import { explore } from "../../explore";
 
 export function kvSyncTests(writeResults: boolean): Suite {
   return [
@@ -34,12 +35,18 @@ function kvSyncTest(app: KVApp, testCases: string[]): TestOutput[] {
   const system = makeActorSystem(app);
   return testCases.map((testCase) => {
     const interp = new SimpleInterpreter("apps/actors", fsLoader);
-    let trace = system.getInitialState(interp);
+    let systemState: SystemState<KVSyncState> = {
+      trace: system.getInitialState(interp),
+      clientIDs: [],
+      nextClientID: 0,
+    };
     // TODO: parse it as a program? idk
     const lines = testCase.split("\n");
     const query = lines[lines.length - 1];
     const actions = lines.slice(0, lines.length - 1);
     actions.forEach((line) => {
+      // TODO: DRY up with reducers?
+
       // slice off the `.`
       const [rawRec, errors] = parseRecord(line.slice(0, line.length - 1));
       if (errors.length > 0) {
@@ -54,7 +61,11 @@ function kvSyncTest(app: KVApp, testCases: string[]): TestOutput[] {
             username: (record.attrs.username as StringLit).val,
             password: (record.attrs.password as StringLit).val,
           };
-          trace = stepUserInput(trace, clientID, msg);
+          const newTrace = stepUserInput(systemState.trace, clientID, msg);
+          systemState = {
+            ...systemState,
+            trace: newTrace,
+          };
           break;
         }
         case "logIn": {
@@ -64,14 +75,18 @@ function kvSyncTest(app: KVApp, testCases: string[]): TestOutput[] {
             username: (record.attrs.username as StringLit).val,
             password: (record.attrs.password as StringLit).val,
           };
-          trace = stepUserInput(trace, clientID, msg);
+          const newTrace = stepUserInput(systemState.trace, clientID, msg);
+          systemState = {
+            ...systemState,
+            trace: newTrace,
+          };
           break;
         }
         case "addClient": {
           // TODO: DRY this up with reducers.ts
           const clientID = (record.attrs.id as StringLit).val;
           const { newTrace: trace2, newInits: newInits1 } = step(
-            trace,
+            systemState.trace,
             update,
             spawnInitiator(`user${clientID}`, system.initialUserState)
           );
@@ -83,7 +98,12 @@ function kvSyncTest(app: KVApp, testCases: string[]): TestOutput[] {
               system.initialClientState(clientID)
             )
           );
-          trace = stepAll(trace3, update, [...newInits1, ...newInits2]);
+          const trace4 = stepAll(trace3, update, [...newInits1, ...newInits2]);
+          systemState = {
+            clientIDs: [...systemState.clientIDs, clientID],
+            nextClientID: 0, // not using this
+            trace: trace4,
+          };
           break;
         }
         case "runMutation": {
@@ -96,12 +116,24 @@ function kvSyncTest(app: KVApp, testCases: string[]): TestOutput[] {
               args: (record.attrs.args as Array).items.map((i) => dlToJson(i)),
             },
           };
-          trace = stepUserInput(trace, clientID, msg);
+          const newTrace = stepUserInput(systemState.trace, clientID, msg);
+          systemState = {
+            ...systemState,
+            trace: newTrace,
+          };
           break;
+        }
+        case "explore": {
+          const steps = (record.attrs.steps as Int).val;
+          const seed = (record.attrs.seed as Int).val;
+          const frame = explore(system, systemState, steps, seed);
+          systemState = frame.state;
         }
       }
     });
-    return datalogOut(trace.interp.queryStr(query).map((res) => res.term));
+    return datalogOut(
+      systemState.trace.interp.queryStr(query).map((res) => res.term)
+    );
   });
 }
 
