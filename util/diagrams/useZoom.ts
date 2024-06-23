@@ -130,17 +130,14 @@ const REAL_ZOOM_ABS_RANGE: [number, number] = [0, MAX_ZOOM_ABS - 10];
 function correctForEdge(internal: ZoomStateInternal): ZoomStateInternal {
   const state = getZoomState(internal);
   const [worldLeft, worldRight] = visibleWorldSpaceRangeUnclamped(state);
-  console.log("range", state, [worldLeft, worldRight]);
   if (worldLeft < 0) {
     const rightShift = -worldLeft;
-    console.log("right shifting by", rightShift);
     return {
       ...internal,
       focusPos: clamp(internal.focusPos + rightShift, WORLD_SPACE_RANGE),
     };
   } else if (worldRight > 1) {
     const leftShift = worldRight - 1;
-    console.log("left shifting by", leftShift);
     return {
       ...internal,
       focusPos: clamp(internal.focusPos - leftShift, WORLD_SPACE_RANGE),
@@ -154,13 +151,6 @@ function zoomPercentage(zoomAbs: number): number {
     [0, MAX_ZOOM_ABS],
     [1, 0],
     clamp(zoomAbs, ZOOM_ABS_RANGE)
-  );
-  console.log(
-    "lerp",
-    [0, MAX_ZOOM_ABS],
-    [1, 0],
-    clamp(zoomAbs, ZOOM_ABS_RANGE),
-    res
   );
   return res;
 }
