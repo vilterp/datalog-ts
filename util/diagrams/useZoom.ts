@@ -101,12 +101,12 @@ function reducer(state: ZoomStateInternal, evt: ZoomEvt): ZoomStateInternal {
 
       const newState: ZoomStateInternal = {
         ...state,
-        focusPos: newFocusPos,
+        focusPos: clamp(newFocusPos, WORLD_SPACE_RANGE),
         zoomAbs: newZoomAbs,
       };
 
-      // return correctForEdge(newState);
-      return newState;
+      return correctForEdge(newState);
+      // return newState;
     }
   }
 }
@@ -116,7 +116,7 @@ function getZoomState(internal: ZoomStateInternal): ZoomState {
   return {
     focusPos: internal.focusPos,
     viewWidth: internal.viewWidth,
-    zoomPct: internal.zoomAbs,
+    zoomPct: zoomPercentage(internal.zoomAbs),
   };
 }
 
@@ -129,16 +129,22 @@ const REAL_ZOOM_ABS_RANGE: [number, number] = [0, MAX_ZOOM_ABS - 10];
 
 function correctForEdge(internal: ZoomStateInternal): ZoomStateInternal {
   const state = getZoomState(internal);
-  const [worldLeft, worldRight] = visibleWorldSpaceRange(state);
-  console.log("range", [worldLeft, worldRight]);
+  const [worldLeft, worldRight] = visibleWorldSpaceRangeUnclamped(state);
+  console.log("range", state, [worldLeft, worldRight]);
   if (worldLeft < 0) {
     const rightShift = -worldLeft;
     console.log("right shifting by", rightShift);
-    return { ...internal, focusPos: internal.focusPos + rightShift };
+    return {
+      ...internal,
+      focusPos: clamp(internal.focusPos + rightShift, WORLD_SPACE_RANGE),
+    };
   } else if (worldRight > 1) {
     const leftShift = worldRight - 1;
     console.log("left shifting by", leftShift);
-    return { ...internal, focusPos: internal.focusPos - leftShift };
+    return {
+      ...internal,
+      focusPos: clamp(internal.focusPos - leftShift, WORLD_SPACE_RANGE),
+    };
   }
   return internal;
 }
@@ -148,6 +154,13 @@ function zoomPercentage(zoomAbs: number): number {
     [0, MAX_ZOOM_ABS],
     [1, 0],
     clamp(zoomAbs, ZOOM_ABS_RANGE)
+  );
+  console.log(
+    "lerp",
+    [0, MAX_ZOOM_ABS],
+    [1, 0],
+    clamp(zoomAbs, ZOOM_ABS_RANGE),
+    res
   );
   return res;
 }
@@ -170,5 +183,15 @@ export function visibleWorldSpaceRange(zoomState: ZoomState): [number, number] {
   return [
     clamp(zoomState.focusPos - halfVisibleWidth, WORLD_SPACE_RANGE),
     clamp(zoomState.focusPos + halfVisibleWidth, WORLD_SPACE_RANGE),
+  ];
+}
+
+export function visibleWorldSpaceRangeUnclamped(
+  zoomState: ZoomState
+): [number, number] {
+  const halfVisibleWidth = zoomState.zoomPct / 2;
+  return [
+    zoomState.focusPos - halfVisibleWidth,
+    zoomState.focusPos + halfVisibleWidth,
   ];
 }
