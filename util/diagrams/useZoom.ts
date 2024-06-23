@@ -116,10 +116,19 @@ function reducer(state: ZoomStateInternal, evt: ZoomEvt): ZoomStateInternal {
 
 // ==== Computations ===
 
-const SENSITIVITY = 0.001;
+const MAX_ZOOM_ABS = 10_000;
+const ZOOM_ABS_RANGE: [number, number] = [0, MAX_ZOOM_ABS];
 
 function zoomPercentage(zoomAbs: number): number {
-  return (1 / (1 + Math.exp(SENSITIVITY * zoomAbs))) * 2;
+  const res =
+    1 -
+    linearInterpolate(
+      [0, MAX_ZOOM_ABS],
+      [0, 1],
+      clamp(zoomAbs, ZOOM_ABS_RANGE)
+    );
+  console.log("zoomAbs", zoomAbs, "res", res);
+  return res;
 }
 
 export function worldToView(state: ZoomState, worldPoint: number): number {

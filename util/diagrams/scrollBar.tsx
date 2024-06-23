@@ -11,13 +11,16 @@ export function ScrollBar(props: { width: number; zoomState: ZoomState }) {
   const barWidth = props.width * props.zoomState.zoomPct;
 
   return (
-    <svg width={props.width} height={10}>
-      <rect
-        height={10}
-        fill="grey"
-        x={barMiddleX - barWidth / 2}
-        width={barWidth}
-      />
-    </svg>
+    <>
+      <svg width={props.width} height={10}>
+        <rect
+          height={10}
+          fill="grey"
+          x={barMiddleX - barWidth / 2}
+          width={barWidth}
+        />
+      </svg>
+      <pre>{JSON.stringify(props.zoomState)}</pre>
+    </>
   );
 }
