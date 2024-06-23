@@ -1,6 +1,6 @@
 import useLocalStorage from "react-use-localstorage";
 import { useEffect, useReducer } from "react";
-import { pairsToObj, range } from "../../util/util";
+import { pairsToObj } from "../../util/util";
 
 export function useBoolLocalStorage(
   key: string,
@@ -71,11 +71,11 @@ export function useEffectfulReducer<S, A>(
       }
     }
   };
-  const [effRedState, innerDispatch] = useReducer(myReducer, {
-    state: initialState,
-    nextPromiseID: 0,
-    promises: {},
-  });
+  const [effRedState, innerDispatch] = useReducer(
+    myReducer,
+    initialState,
+    initialInnerReducerState
+  );
   const outerDispatch = (action: A) => {
     innerDispatch({ type: "OutsideAction", action });
   };
@@ -88,4 +88,14 @@ export function useEffectfulReducer<S, A>(
     });
   }, [effRedState]);
   return [effRedState.state, outerDispatch];
+}
+
+function initialInnerReducerState<S, A>(
+  initialState: S
+): EffectfulReducerState<S, A> {
+  return {
+    state: initialState,
+    nextPromiseID: 0,
+    promises: {},
+  };
 }
