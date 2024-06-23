@@ -1,5 +1,5 @@
 import React from "react";
-import { ZoomState } from "./useZoom";
+import { ZoomState, visibleWorldSpaceRange } from "./useZoom";
 import { linearInterpolate } from "./util";
 
 export function ScrollBar(props: { width: number; zoomState: ZoomState }) {
@@ -20,7 +20,12 @@ export function ScrollBar(props: { width: number; zoomState: ZoomState }) {
           width={barWidth}
         />
       </svg>
-      <pre>{JSON.stringify(props.zoomState)}</pre>
+      <pre>
+        {JSON.stringify({
+          ...props.zoomState,
+          worldSpaceRange: visibleWorldSpaceRange(props.zoomState),
+        })}
+      </pre>
     </>
   );
 }

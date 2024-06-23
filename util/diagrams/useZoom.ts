@@ -1,11 +1,11 @@
 import { Ref, useEffect, useReducer, useRef } from "react";
 import { linearInterpolate } from "./util";
-import { average, clamp } from "../util";
+import { clamp } from "../util";
 
 export type ZoomState = {
-  focusPos: number;
-  zoomPct: number;
-  viewWidth: number;
+  focusPos: number; // [0, 1]
+  zoomPct: number; // 1: all the way zoomed out
+  viewWidth: number; // pixels
 };
 
 type ZoomStateInternal = {
@@ -88,11 +88,8 @@ function reducer(state: ZoomStateInternal, evt: ZoomEvt): ZoomStateInternal {
     }
     case "Zoom": {
       const newZoomAbs = clamp(state.zoomAbs - evt.delta, REAL_ZOOM_ABS_RANGE);
-      const zoomState: ZoomState = {
-        focusPos: state.focusPos,
-        viewWidth: state.viewWidth,
-        zoomPct: state.zoomAbs,
-      };
+      const zoomState = getZoomState(state);
+
       const mouseWorldSpacePos = viewToWorld(zoomState, evt.pos);
       const bottomLeg = MAX_ZOOM_ABS - state.zoomAbs;
       const sideLeg = state.focusPos - mouseWorldSpacePos;
@@ -102,13 +99,25 @@ function reducer(state: ZoomStateInternal, evt: ZoomEvt): ZoomStateInternal {
       const newSideLeg = slope * newBottomLeg;
       const newFocusPos = mouseWorldSpacePos + newSideLeg;
 
-      return {
+      const newState: ZoomStateInternal = {
         ...state,
         focusPos: newFocusPos,
         zoomAbs: newZoomAbs,
       };
+
+      // return correctForEdge(newState);
+      return newState;
     }
   }
+}
+
+// TODO: refactor to not need to do this as much
+function getZoomState(internal: ZoomStateInternal): ZoomState {
+  return {
+    focusPos: internal.focusPos,
+    viewWidth: internal.viewWidth,
+    zoomPct: internal.zoomAbs,
+  };
 }
 
 // ==== Computations ===
@@ -117,6 +126,22 @@ const MAX_ZOOM_ABS = 5_000;
 const ZOOM_ABS_RANGE: [number, number] = [0, MAX_ZOOM_ABS];
 // prevent us from NaN-ing out
 const REAL_ZOOM_ABS_RANGE: [number, number] = [0, MAX_ZOOM_ABS - 10];
+
+function correctForEdge(internal: ZoomStateInternal): ZoomStateInternal {
+  const state = getZoomState(internal);
+  const [worldLeft, worldRight] = visibleWorldSpaceRange(state);
+  console.log("range", [worldLeft, worldRight]);
+  if (worldLeft < 0) {
+    const rightShift = -worldLeft;
+    console.log("right shifting by", rightShift);
+    return { ...internal, focusPos: internal.focusPos + rightShift };
+  } else if (worldRight > 1) {
+    const leftShift = worldRight - 1;
+    console.log("left shifting by", leftShift);
+    return { ...internal, focusPos: internal.focusPos - leftShift };
+  }
+  return internal;
+}
 
 function zoomPercentage(zoomAbs: number): number {
   const res = linearInterpolate(
