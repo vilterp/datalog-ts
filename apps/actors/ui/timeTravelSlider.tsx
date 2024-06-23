@@ -118,7 +118,12 @@ function ExploreForm(props: {
   const [steps, setSteps] = React.useState(DEFAULT_STEP_LIMIT);
 
   return (
-    <form onSubmit={() => props.onExplore(steps)}>
+    <form
+      onSubmit={(evt) => {
+        evt.preventDefault();
+        props.onExplore(steps);
+      }}
+    >
       <button type="submit" disabled={props.disabled}>
         Explore
       </button>{" "}
