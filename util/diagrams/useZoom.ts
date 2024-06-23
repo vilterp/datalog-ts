@@ -120,13 +120,11 @@ const MAX_ZOOM_ABS = 10_000;
 const ZOOM_ABS_RANGE: [number, number] = [0, MAX_ZOOM_ABS];
 
 function zoomPercentage(zoomAbs: number): number {
-  const res =
-    1 -
-    linearInterpolate(
-      [0, MAX_ZOOM_ABS],
-      [0, 1],
-      clamp(zoomAbs, ZOOM_ABS_RANGE)
-    );
+  const res = linearInterpolate(
+    [0, MAX_ZOOM_ABS],
+    [1, 0],
+    clamp(zoomAbs, ZOOM_ABS_RANGE)
+  );
   console.log("zoomAbs", zoomAbs, "res", res);
   return res;
 }
