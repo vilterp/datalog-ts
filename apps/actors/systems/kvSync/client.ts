@@ -209,7 +209,10 @@ function runMutationOnClient(
 
 export function isTxnVisible(client: ClientState, txnID: string): boolean {
   const txn = client.transactions[txnID];
-  return txn.fromMe || txn.state.type === "Committed";
+  return (
+    (txn.fromMe && txn.state.type === "Pending") ||
+    txn.state.type === "Committed"
+  );
 }
 
 function addTransaction(

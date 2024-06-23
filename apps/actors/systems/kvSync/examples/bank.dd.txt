@@ -80,6 +80,66 @@ application/json
       {
         "transactionID": "3162498",
         "value": 90
+      },
+      {
+        "transactionID": "394413",
+        "value": 45
+      },
+      {
+        "transactionID": "3454773",
+        "value": 34
+      },
+      {
+        "transactionID": "3955983",
+        "value": 60
+      },
+      {
+        "transactionID": "5004033",
+        "value": 53
+      },
+      {
+        "transactionID": "3164523",
+        "value": 13
+      },
+      {
+        "transactionID": "25908",
+        "value": 51
+      },
+      {
+        "transactionID": "885588",
+        "value": 19
+      },
+      {
+        "transactionID": "2199228",
+        "value": 79
+      },
+      {
+        "transactionID": "4702623",
+        "value": 3
+      },
+      {
+        "transactionID": "682323",
+        "value": 6
+      },
+      {
+        "transactionID": "3054273",
+        "value": 6
+      },
+      {
+        "transactionID": "4351173",
+        "value": 10
+      },
+      {
+        "transactionID": "4240743",
+        "value": 78
+      },
+      {
+        "transactionID": "1497948",
+        "value": 41
+      },
+      {
+        "transactionID": "4984908",
+        "value": 113
       }
     ]
   },
@@ -87,100 +147,24 @@ application/json
   "client0": {
     "bob": [
       {
-        "transactionID": "3162498",
-        "value": 90
-      },
-      {
-        "transactionID": "4320618",
-        "value": 112
-      },
-      {
-        "transactionID": "3695523",
-        "value": 152
-      },
-      {
-        "transactionID": "4090893",
-        "value": 149
-      },
-      {
-        "transactionID": "5191188",
-        "value": 87
-      },
-      {
-        "transactionID": "394413",
-        "value": 42
-      },
-      {
-        "transactionID": "3454773",
-        "value": 31
-      },
-      {
-        "transactionID": "3955983",
-        "value": 57
-      },
-      {
-        "transactionID": "5004033",
-        "value": 50
-      },
-      {
-        "transactionID": "3164523",
-        "value": 10
-      },
-      {
-        "transactionID": "25908",
-        "value": 48
-      },
-      {
-        "transactionID": "885588",
-        "value": 16
-      },
-      {
-        "transactionID": "2199228",
-        "value": 76
-      },
-      {
-        "transactionID": "4702623",
-        "value": 0
-      },
-      {
-        "transactionID": "682323",
-        "value": 3
-      },
-      {
-        "transactionID": "3054273",
-        "value": 3
-      },
-      {
-        "transactionID": "4351173",
-        "value": 7
-      },
-      {
-        "transactionID": "4240743",
-        "value": 75
-      },
-      {
-        "transactionID": "1497948",
-        "value": 38
-      },
-      {
         "transactionID": "4984908",
-        "value": 110
+        "value": 113
       },
       {
         "transactionID": "3007023",
-        "value": 118
+        "value": 121
       },
       {
         "transactionID": "3656148",
-        "value": 202
+        "value": 205
       },
       {
         "transactionID": "4998453",
-        "value": 130
+        "value": 133
       },
       {
         "transactionID": "1270833",
-        "value": 149
+        "value": 152
       }
     ]
   }
