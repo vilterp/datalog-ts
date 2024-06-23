@@ -129,7 +129,7 @@ const REAL_ZOOM_ABS_RANGE: [number, number] = [0, MAX_ZOOM_ABS - 10];
 
 function correctForEdge(internal: ZoomStateInternal): ZoomStateInternal {
   const state = getZoomState(internal);
-  const [worldLeft, worldRight] = visibleWorldSpaceRangeUnclamped(state);
+  const [worldLeft, worldRight] = visibleWorldSpaceRange(state);
   if (worldLeft < 0) {
     const rightShift = -worldLeft;
     return {
@@ -169,16 +169,6 @@ export function viewToWorld(state: ZoomState, viewPoint: number): number {
 const WORLD_SPACE_RANGE: [number, number] = [0, 1];
 
 export function visibleWorldSpaceRange(zoomState: ZoomState): [number, number] {
-  const halfVisibleWidth = zoomState.zoomPct / 2;
-  return [
-    zoomState.focusPos - halfVisibleWidth,
-    zoomState.focusPos + halfVisibleWidth,
-  ];
-}
-
-export function visibleWorldSpaceRangeUnclamped(
-  zoomState: ZoomState
-): [number, number] {
   const halfVisibleWidth = zoomState.zoomPct / 2;
   return [
     zoomState.focusPos - halfVisibleWidth,

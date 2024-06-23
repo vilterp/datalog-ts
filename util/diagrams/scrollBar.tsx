@@ -1,9 +1,5 @@
 import React from "react";
-import {
-  ZoomState,
-  visibleWorldSpaceRange,
-  visibleWorldSpaceRangeUnclamped,
-} from "./useZoom";
+import { ZoomState, visibleWorldSpaceRange } from "./useZoom";
 import { linearInterpolate } from "./util";
 
 export function ScrollBar(props: { width: number; zoomState: ZoomState }) {
@@ -29,9 +25,6 @@ export function ScrollBar(props: { width: number; zoomState: ZoomState }) {
           {
             ...props.zoomState,
             worldSpaceRange: visibleWorldSpaceRange(props.zoomState),
-            worldSpaceRangeUnclamped: visibleWorldSpaceRangeUnclamped(
-              props.zoomState
-            ),
           },
           null,
           2
