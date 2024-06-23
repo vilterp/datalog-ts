@@ -20,7 +20,11 @@ const initialScrollState: ZoomStateInternal = {
   viewWidth: 0, // get initial somehow?
 };
 
-export function useZoom(): [Ref<SVGSVGElement>, ZoomState] {
+export function useZoom(): [
+  Ref<SVGSVGElement>,
+  ZoomState,
+  (action: ZoomEvt) => void
+] {
   const svgRef = useRef<SVGSVGElement>(null);
 
   const [state, dispatch] = useReducer(reducer, initialScrollState);
@@ -67,16 +71,17 @@ export function useZoom(): [Ref<SVGSVGElement>, ZoomState] {
     };
   }, []);
 
-  return [svgRef, zoomState];
+  return [svgRef, zoomState, dispatch];
 }
 
-type ZoomEvt =
+export type ZoomEvt =
   | {
       type: "Zoom";
       pos: number; // in view space
       delta: number;
     }
-  | { type: "Resize"; newWidth: number };
+  | { type: "Resize"; newWidth: number }
+  | { type: "ScrollTo"; focus: number };
 
 function reducer(state: ZoomStateInternal, evt: ZoomEvt): ZoomStateInternal {
   switch (evt.type) {

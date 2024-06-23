@@ -33,7 +33,7 @@ export const sequence: VizTypeSpec = {
 export function SequenceDiagram(props: VizArgs & { width: number }) {
   try {
     const spec = useMemo(() => getSpec(props), [props]);
-    const [svgRef, zoomState] = useZoom();
+    const [svgRef, zoomState, dispatch] = useZoom();
 
     return (
       <div>
@@ -43,7 +43,11 @@ export function SequenceDiagram(props: VizArgs & { width: number }) {
           onMouseOver={(term) => props.setHighlightedTerm?.(term)}
         />
 
-        <ScrollBar zoomState={zoomState} width={props.width} />
+        <ScrollBar
+          zoomState={zoomState}
+          width={props.width}
+          dispatch={dispatch}
+        />
       </div>
     );
   } catch (e) {
