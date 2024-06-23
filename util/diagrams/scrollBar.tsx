@@ -19,16 +19,18 @@ export function ScrollBar(props: {
   const barWidth = props.width * props.zoomState.zoomPct;
 
   return (
-    <svg width={props.width} height={10}>
+    <svg width={props.width} height={20}>
       <rect
-        height={10}
+        height={20}
         fill={dragging ? "darkgrey" : "lightgrey"}
         style={{ cursor: dragging ? "grabbing" : "grab" }}
         x={barMiddleX - barWidth / 2}
         width={barWidth}
         onMouseDown={() => setDragging(true)}
         onMouseUp={() => setDragging(false)}
-        // onMouseMove={(evt) => }
+        // onMouseMove={(evt) => {
+        //   const worldPos = evt.clientX;
+        // }}
       />
     </svg>
   );
