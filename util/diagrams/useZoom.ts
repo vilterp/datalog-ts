@@ -87,28 +87,23 @@ function reducer(state: ZoomStateInternal, evt: ZoomEvt): ZoomStateInternal {
       };
     }
     case "Zoom": {
-      // TODO: avoid this allocation
+      const newZoomAbs = clamp(state.zoomAbs - evt.delta, ZOOM_ABS_RANGE);
       const zoomState: ZoomState = {
         focusPos: state.focusPos,
-        zoomPct: zoomPercentage(state.zoomAbs),
         viewWidth: state.viewWidth,
+        zoomPct: state.zoomAbs,
       };
-      const [worldLeft, worldRight] = visibleWorldSpaceRange(zoomState);
-      const focusPosRaw = linearInterpolate(
-        [0, state.viewWidth],
-        [
-          clamp(worldLeft, WORLD_SPACE_RANGE),
-          clamp(worldRight, WORLD_SPACE_RANGE),
-        ],
-        evt.pos
-      );
-      const mouseFocusPos = clamp(focusPosRaw, WORLD_SPACE_RANGE);
-      const oldFocusPos = state.focusPos;
-      const newFocusPos = average([oldFocusPos, mouseFocusPos]);
+      const mouseWorldSpacePos = viewToWorld(zoomState, evt.pos);
+      const bottomLeg = state.zoomAbs;
+      const sideLeg = state.focusPos - mouseWorldSpacePos;
+      const slope = sideLeg / bottomLeg;
+      const newSideLeg = slope * newZoomAbs;
+      const newFocusPos = mouseWorldSpacePos + newSideLeg;
+
       return {
         ...state,
         focusPos: newFocusPos,
-        zoomAbs: Math.max(0, state.zoomAbs - evt.delta),
+        zoomAbs: newZoomAbs,
       };
     }
   }
@@ -125,7 +120,6 @@ function zoomPercentage(zoomAbs: number): number {
     [1, 0],
     clamp(zoomAbs, ZOOM_ABS_RANGE)
   );
-  console.log("zoomAbs", zoomAbs, "res", res);
   return res;
 }
 
