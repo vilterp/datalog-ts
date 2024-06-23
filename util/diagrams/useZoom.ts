@@ -94,7 +94,7 @@ function reducer(state: ZoomStateInternal, evt: ZoomEvt): ZoomStateInternal {
         zoomPct: state.zoomAbs,
       };
       const mouseWorldSpacePos = viewToWorld(zoomState, evt.pos);
-      const bottomLeg = state.zoomAbs;
+      const bottomLeg = MAX_ZOOM_ABS - state.zoomAbs;
       const sideLeg = state.focusPos - mouseWorldSpacePos;
       const slope = sideLeg / bottomLeg;
       const newSideLeg = slope * newZoomAbs;
