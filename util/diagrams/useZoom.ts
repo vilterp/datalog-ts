@@ -87,7 +87,7 @@ function reducer(state: ZoomStateInternal, evt: ZoomEvt): ZoomStateInternal {
       };
     }
     case "Zoom": {
-      const newZoomAbs = clamp(state.zoomAbs - evt.delta, ZOOM_ABS_RANGE);
+      const newZoomAbs = clamp(state.zoomAbs - evt.delta, REAL_ZOOM_ABS_RANGE);
       const zoomState: ZoomState = {
         focusPos: state.focusPos,
         viewWidth: state.viewWidth,
@@ -113,8 +113,10 @@ function reducer(state: ZoomStateInternal, evt: ZoomEvt): ZoomStateInternal {
 
 // ==== Computations ===
 
-const MAX_ZOOM_ABS = 10_000;
+const MAX_ZOOM_ABS = 5_000;
 const ZOOM_ABS_RANGE: [number, number] = [0, MAX_ZOOM_ABS];
+// prevent us from NaN-ing out
+const REAL_ZOOM_ABS_RANGE: [number, number] = [0, MAX_ZOOM_ABS - 10];
 
 function zoomPercentage(zoomAbs: number): number {
   const res = linearInterpolate(
