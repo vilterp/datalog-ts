@@ -171,8 +171,8 @@ const WORLD_SPACE_RANGE: [number, number] = [0, 1];
 export function visibleWorldSpaceRange(zoomState: ZoomState): [number, number] {
   const halfVisibleWidth = zoomState.zoomPct / 2;
   return [
-    clamp(zoomState.focusPos - halfVisibleWidth, WORLD_SPACE_RANGE),
-    clamp(zoomState.focusPos + halfVisibleWidth, WORLD_SPACE_RANGE),
+    zoomState.focusPos - halfVisibleWidth,
+    zoomState.focusPos + halfVisibleWidth,
   ];
 }
 
