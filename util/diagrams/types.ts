@@ -4,6 +4,7 @@ export type Diag<T> =
   | HorizLayout<T>
   | VertLayout<T>
   | ZLayout<T>
+  | Clip<T>
   // | FlexLayout<T> // could replace Horiz & Vert
   // primitives
   | Line
@@ -11,11 +12,6 @@ export type Diag<T> =
   | Spacer
   | Text
   | Tag<T>;
-
-export interface Point {
-  x: number;
-  y: number;
-}
 
 interface AbsPos<T> {
   type: "ABS_POS";
@@ -177,4 +173,34 @@ export function Tag<T>(tag: T, diag: Diag<T>): Diag<T> {
     tag,
     diag,
   };
+}
+
+// Clip
+
+interface Clip<T> {
+  type: "CLIP";
+  id: string; // TODO: autogenerate this
+  dims: Dimensions;
+  inner: Diag<T>;
+}
+
+export function Clip<T>(id: string, dims: Dimensions, inner: Diag<T>): Diag<T> {
+  return {
+    type: "CLIP",
+    id,
+    dims,
+    inner,
+  };
+}
+
+// Helpers
+
+export interface Point {
+  x: number;
+  y: number;
+}
+
+export interface Dimensions {
+  width: number;
+  height: number;
 }

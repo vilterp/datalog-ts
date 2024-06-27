@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Ref } from "react";
-import { Diag } from "./types";
+import { Diag, Dimensions } from "./types";
 
 export function Diagram<T>(props: {
   diagram: Diag<T>;
@@ -17,10 +17,6 @@ export function Diagram<T>(props: {
       </svg>
     </div>
   );
-}
-export interface Dimensions {
-  width: number;
-  height: number;
 }
 
 export const EMPTY_DIMENSIONS: Dimensions = {
@@ -77,6 +73,8 @@ export function dimensions<T>(d: Diag<T>): Dimensions {
       return { height: d.fontSize, width: 30 };
     case "TAG":
       return dimensions(d.diag);
+    case "CLIP":
+      return d.dims;
   }
 }
 
@@ -164,5 +162,20 @@ function render<T>(
           {render(d.diag, onMouseOver)}
         </g>
       );
+    case "CLIP": {
+      return (
+        <g>
+          <clipPath id={d.id}>
+            <rect
+              width={d.dims.width}
+              height={d.dims.height}
+              x={-d.dims.width / 2}
+              y={d.dims.height / 2}
+            />
+            <g clipPath={`url(#${d.id})`}>{render(d.inner, onMouseOver)}</g>
+          </clipPath>
+        </g>
+      );
+    }
   }
 }

@@ -18,6 +18,8 @@ function recurse<T extends Json>(
         return origin;
       }
       return recurse(d.diag, tag, origin);
+    case "CLIP":
+      return recurse(d.inner, tag, origin);
     case "ABS_POS":
       return recurse(d.diag, tag, {
         x: origin.x + d.point.x,
