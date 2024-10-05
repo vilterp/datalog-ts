@@ -38,6 +38,8 @@ function MarketInner(props: { client: Client; user: string }) {
         <h2>Market</h2>
       </LoggedInHeader>
 
+      <h3>Offers</h3>
+
       {queryStatus === "Loading" ? (
         <em>Loading...</em>
       ) : (
@@ -51,6 +53,8 @@ function MarketInner(props: { client: Client; user: string }) {
           ]}
         />
       )}
+
+      <h3>Create Offer</h3>
 
       <OfferForm client={props.client} />
 
@@ -102,13 +106,13 @@ function useOffers(client: Client): [Offer[], QueryStatus] {
   });
 
   const offers = Object.entries(rawOffers).map(([id, rawOffer]) => {
-    const offer = rawOffer as any;
+    const offer = rawOffer.value as any;
     return {
       id: offer.id as number,
       item: offer.item as string,
       price: offer.price as number,
       status: offer.status as "open" | "sold",
-      state: client.state.transactions[id]?.state,
+      state: client.state.transactions[rawOffer.transactionID]?.state,
     };
   });
 
