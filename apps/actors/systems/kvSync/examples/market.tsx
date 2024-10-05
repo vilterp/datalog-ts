@@ -19,7 +19,6 @@ import { LoginWrapper } from "../uiCommon/loginWrapper";
 import { Inspector } from "../uiCommon/inspector";
 import { Table } from "../../../../../uiCommon/generic/table";
 import { LoggedInHeader } from "../uiCommon/loggedInHeader";
-import { set } from "immutable";
 
 function MarketUI(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
@@ -146,7 +145,7 @@ const mutations: MutationDefns = {
     letExpr(
       [{ varName: "id", val: apply("rand", []) }],
       write(
-        apply("concat", [str("/offers/"), apply("rand", [])]),
+        apply("concat", [str("/offers/"), varr("id")]),
         obj({
           id: varr("id"),
           item: varr("item"),
