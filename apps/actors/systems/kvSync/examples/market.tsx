@@ -5,7 +5,9 @@ import {
   apply,
   lambda,
   letExpr,
+  memberAccess,
   obj,
+  read,
   str,
   varr,
   write,
@@ -17,6 +19,7 @@ import { LoginWrapper } from "../uiCommon/loginWrapper";
 import { Inspector } from "../uiCommon/inspector";
 import { Table } from "../../../../../uiCommon/generic/table";
 import { LoggedInHeader } from "../uiCommon/loggedInHeader";
+import { set } from "immutable";
 
 function MarketUI(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
@@ -49,7 +52,18 @@ function MarketInner(props: { client: Client; user: string }) {
           columns={[
             { name: "item", render: (offer) => offer.item },
             { name: "price", render: (offer) => offer.price },
+            { name: "offered by", render: (offer) => offer.user },
             { name: "status", render: (offer) => offer.status },
+            {
+              name: "buy",
+              render: (offer) => (
+                <button
+                  onClick={() => props.client.runMutation("Buy", [offer.id])}
+                >
+                  Buy
+                </button>
+              ),
+            },
           ]}
         />
       )}
@@ -72,6 +86,9 @@ function OfferForm(props: { client: Client }) {
       onSubmit={(evt) => {
         evt.preventDefault();
 
+        setItem("");
+        setPrice(0);
+
         props.client.runMutation("Offer", [item, price]);
       }}
     >
@@ -92,11 +109,14 @@ function OfferForm(props: { client: Client }) {
   );
 }
 
+type OfferStatus = "open" | "sold";
+
 type Offer = {
   id: number;
   item: string;
   price: number;
-  status: "open" | "sold";
+  user: string;
+  status: OfferStatus;
   state: TransactionState;
 };
 
@@ -111,7 +131,8 @@ function useOffers(client: Client): [Offer[], QueryStatus] {
       id: offer.id as number,
       item: offer.item as string,
       price: offer.price as number,
-      status: offer.status as "open" | "sold",
+      status: offer.status as OfferStatus,
+      user: offer.user as string,
       state: client.state.transactions[rawOffer.transactionID]?.state,
     };
   });
@@ -131,11 +152,30 @@ const mutations: MutationDefns = {
           item: varr("item"),
           price: varr("price"),
           status: str("open"),
+          user: varr("curUser"),
         })
       )
     )
   ),
-  // Buy: lambda(["itemID"], doExpr([write(varr("itemID"), obj({}))])),
+  Buy: lambda(
+    ["id"],
+    letExpr(
+      [
+        { varName: "key", val: apply("concat", [str("/offers/"), varr("id")]) },
+        { varName: "current", val: read(varr("key"), obj({})) },
+      ],
+      write(
+        varr("key"),
+        obj({
+          id: memberAccess(varr("current"), "id"),
+          item: memberAccess(varr("current"), "item"),
+          price: memberAccess(varr("current"), "price"),
+          status: str("sold"),
+          user: memberAccess(varr("current"), "user"),
+        })
+      )
+    )
+  ),
 };
 
 export const market: KVApp = {
