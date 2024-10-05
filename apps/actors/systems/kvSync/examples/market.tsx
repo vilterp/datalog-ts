@@ -1,11 +1,22 @@
 import React, { useState } from "react";
 import { KVApp } from "./types";
 import { MutationDefns, UserInput } from "../types";
-import { apply, lambda, obj, str, varr, write } from "../mutations/types";
+import {
+  apply,
+  lambda,
+  letExpr,
+  obj,
+  str,
+  varr,
+  write,
+} from "../mutations/types";
 import { Client, makeClient, useLiveQuery } from "../hooks";
 import { UIProps } from "../../../types";
 import { ClientState, QueryStatus, TransactionState } from "../client";
 import { LoginWrapper } from "../uiCommon/loginWrapper";
+import { Inspector } from "../uiCommon/inspector";
+import { Table } from "../../../../../uiCommon/generic/table";
+import { LoggedInHeader } from "../uiCommon/loggedInHeader";
 
 function MarketUI(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
@@ -23,32 +34,27 @@ function MarketInner(props: { client: Client; user: string }) {
 
   return (
     <>
-      <h1>Market</h1>
+      <LoggedInHeader user={props.user} client={props.client}>
+        <h2>Market</h2>
+      </LoggedInHeader>
 
       {queryStatus === "Loading" ? (
         <em>Loading...</em>
       ) : (
-        <table>
-          <thead>
-            <tr>
-              <th>Item</th>
-              <th>Price</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {Object.entries(offers).map(([id, offer]) => (
-              <tr key={id}>
-                <td>{offer.item}</td>
-                <td>{offer.price}</td>
-                <td>{offer.status}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <Table<Offer>
+          data={offers}
+          getKey={(offer) => offer.item}
+          columns={[
+            { name: "item", render: (offer) => offer.item },
+            { name: "price", render: (offer) => offer.price },
+            { name: "status", render: (offer) => offer.status },
+          ]}
+        />
       )}
 
       <OfferForm client={props.client} />
+
+      <Inspector client={props.client} />
     </>
   );
 }
@@ -83,6 +89,7 @@ function OfferForm(props: { client: Client }) {
 }
 
 type Offer = {
+  id: number;
   item: string;
   price: number;
   status: "open" | "sold";
@@ -97,6 +104,7 @@ function useOffers(client: Client): [Offer[], QueryStatus] {
   const offers = Object.entries(rawOffers).map(([id, rawOffer]) => {
     const offer = rawOffer as any;
     return {
+      id: offer.id as number,
       item: offer.item as string,
       price: offer.price as number,
       status: offer.status as "open" | "sold",
@@ -110,13 +118,17 @@ function useOffers(client: Client): [Offer[], QueryStatus] {
 const mutations: MutationDefns = {
   Offer: lambda(
     ["item", "price"],
-    write(
-      apply("concat", [str("/offers/"), apply("rand", [])]),
-      obj({
-        item: varr("item"),
-        price: varr("price"),
-        status: str("open"),
-      })
+    letExpr(
+      [{ varName: "id", val: apply("rand", []) }],
+      write(
+        apply("concat", [str("/offers/"), apply("rand", [])]),
+        obj({
+          id: varr("id"),
+          item: varr("item"),
+          price: varr("price"),
+          status: str("open"),
+        })
+      )
     )
   ),
   // Buy: lambda(["itemID"], doExpr([write(varr("itemID"), obj({}))])),
