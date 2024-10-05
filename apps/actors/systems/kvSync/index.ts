@@ -14,12 +14,7 @@ import { EXAMPLES } from "./examples";
 import { KVApp } from "./examples/types";
 import { hashString, lastItem } from "../../../../util/util";
 
-export const KVSYNC_SYSTEMS = [
-  EXAMPLES.counter,
-  EXAMPLES.todoMVC,
-  EXAMPLES.bank,
-  EXAMPLES.chat,
-].map(makeActorSystem);
+export const KVSYNC_SYSTEMS = Object.values(EXAMPLES).map(makeActorSystem);
 
 export type KVSyncState = ServerState | ClientState | { type: "UserState" };
 
