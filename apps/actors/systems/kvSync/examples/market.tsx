@@ -57,6 +57,7 @@ function MarketInner(props: { client: Client; user: string }) {
               name: "buy",
               render: (offer) => (
                 <button
+                  disabled={offer.status === "sold"}
                   onClick={() => props.client.runMutation("Buy", [offer.id])}
                 >
                   Buy
