@@ -8,6 +8,7 @@ import { KVApp } from "./types";
 import { Inspector } from "../uiCommon/inspector";
 import { LoggedIn, LoginWrapper } from "../uiCommon/loginWrapper";
 import { Table } from "../../../../../uiCommon/generic/table";
+import { DBCtx, indexedRead, Schema } from "../indexes";
 
 type Message = {
   id: number;
@@ -264,27 +265,77 @@ function ThreadList(props: {
 // /latestMessageRead/byUser/<UserID> => <MessageID>
 // /latestMessageRead/byThread/<ThreadID> => <MessageID>
 
+const schema: Schema = {
+  messages: {
+    primaryKey: ["threadID", "id"],
+    fields: {
+      id: { type: "string" },
+      threadID: { type: "string" },
+      seqNo: { type: "number" },
+      sender: { type: "string" },
+      message: { type: "string" },
+    },
+    indexes: {},
+  },
+  channels: {
+    primaryKey: ["id"],
+    fields: {
+      id: { type: "string" },
+      name: { type: "string" },
+      latestMessageID: { type: "string" },
+    },
+    indexes: {},
+  },
+  latestMessageRead: {
+    primaryKey: ["userID", "threadID"],
+    fields: {
+      userID: { type: "string" },
+      threadID: { type: "string" },
+      messageID: { type: "string" },
+    },
+    indexes: {
+      user: true,
+      thread: true,
+    },
+  },
+};
+
 const mutations: TSMutationDefns = {
   sendMessage: (ctx, [threadID, message]) => {
-    const latestSeqNo = ctx.read(`/latestMessage/${threadID}`, 0) as number;
+    const db = new DBCtx(schema, ctx);
+
+    const latestSeqNo = db.read("channels", "id", threadID)
+      .latestMessageID as number;
     const newSeqNo = latestSeqNo + 1;
     const newID = ctx.rand();
-    ctx.write(`/latestMessage/${threadID}`, newSeqNo);
-    ctx.write(`/latestMessageRead/byUser/${ctx.curUser}/${threadID}`, newSeqNo);
-    ctx.write(
-      `/latestMessageRead/byThread/${threadID}/${ctx.curUser}`,
-      newSeqNo
-    );
-    ctx.write(`/messages/${threadID}/${newID}`, {
+
+    db.update("channels", {
+      id: threadID,
+      latestMessageID: newID,
+    });
+
+    db.update("latestMessageRead", {
+      userID: ctx.curUser,
+      threadID,
+      messageID: newID,
+    });
+
+    db.insert("messages", {
       id: newID,
+      threadID,
       seqNo: newSeqNo,
       sender: ctx.curUser,
       message,
     });
   },
   markRead: (ctx, [threadID, seqNo]) => {
-    ctx.write(`/latestMessageRead/byUser/${ctx.curUser}/${threadID}`, seqNo);
-    ctx.write(`/latestMessageRead/byThread/${threadID}/${ctx.curUser}`, seqNo);
+    const db = new DBCtx(schema, ctx);
+
+    db.update("latestMessageRead", {
+      userID: ctx.curUser,
+      threadID,
+      messageID: seqNo,
+    });
   },
 };
 
