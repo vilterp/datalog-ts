@@ -1,0 +1,4 @@
+addClient{id: "0"}.
+signUp{clientID: "0", username: "bob", password: "foo"}.
+explore{seed: 123548762349586, steps: 100}.
+----
