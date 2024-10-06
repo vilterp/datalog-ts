@@ -4,19 +4,11 @@ import { UIProps } from "../../../types";
 import { ClientState, QueryStatus, TransactionState } from "../client";
 import { Client, makeClient, useLiveQuery } from "../hooks";
 import {
-  apply,
-  read,
-  varr,
-  letExpr,
-  ifExpr,
-  lambda,
-  abort,
-  str,
-  write,
-  doExpr,
-  int,
-} from "../mutations/types";
-import { MutationDefns, MutationInvocation, UserInput } from "../types";
+  AbortError,
+  MutationInvocation,
+  TSMutationDefns,
+  UserInput,
+} from "../types";
 import { KVApp } from "./types";
 import { Inspector } from "../uiCommon/inspector";
 import { LoginWrapper } from "../uiCommon/loginWrapper";
@@ -199,55 +191,34 @@ function PayForm(props: { client: Client }) {
 // ==== Mutations ====
 
 // TODO: is default=0 correct for everything here?
-const mutations: MutationDefns = {
-  CreateAccount: lambda(["name"], write(varr("name"), int(0))),
-  Deposit: lambda(
-    ["amount"],
-    letExpr(
-      [{ varName: "balanceBefore", val: read(varr("curUser"), 0) }],
-      write(
-        varr("curUser"),
-        apply("+", [varr("balanceBefore"), varr("amount")])
-      )
-    )
-  ),
-  Withdraw: lambda(
-    ["amount"],
-    letExpr(
-      [{ varName: "balanceBefore", val: read(varr("curUser"), 0) }],
-      ifExpr(
-        apply(">", [varr("amount"), varr("balanceBefore")]),
-        abort(str("balance not high enough")),
-        write(
-          varr("curUser"),
-          apply("-", [varr("balanceBefore"), varr("amount")])
-        )
-      )
-    )
-  ),
-  Transfer: lambda(
-    ["toAccount", "amount"],
-    letExpr(
-      [
-        { varName: "fromBalance", val: read(varr("curUser"), 0) },
-        { varName: "toBalance", val: read(varr("toAccount"), 0) },
-      ],
-      ifExpr(
-        apply(">", [varr("amount"), varr("fromBalance")]),
-        abort(str("balance not high enough")),
-        doExpr([
-          write(
-            varr("curUser"),
-            apply("-", [varr("fromBalance"), varr("amount")])
-          ),
-          write(
-            varr("toAccount"),
-            apply("+", [varr("toBalance"), varr("amount")])
-          ),
-        ])
-      )
-    )
-  ),
+
+const mutations: TSMutationDefns = {
+  CreateAccount: (ctx, [name]) => {
+    ctx.write(name as string, 0);
+  },
+  Deposit: (ctx, [amount]) => {
+    const balanceBefore = ctx.read(ctx.curUser) as number;
+    ctx.write(ctx.curUser, balanceBefore + (amount as number));
+  },
+  Withdraw: (ctx, [rawAmount]) => {
+    const amount = rawAmount as number;
+    const balanceBefore = ctx.read(ctx.curUser) as number;
+    if (amount > balanceBefore) {
+      throw new AbortError("balance is not high enough");
+    }
+    ctx.write(ctx.curUser, balanceBefore - amount);
+  },
+  Transfer: (ctx, [rawToAccount, rawAmount]) => {
+    const amount = rawAmount as number;
+    const toAccount = rawToAccount as string;
+    const fromBalance = ctx.read(ctx.curUser) as number;
+    const toBalance = ctx.read(toAccount) as number;
+    if (amount > fromBalance) {
+      throw new AbortError("balance is not high enough");
+    }
+    ctx.write(ctx.curUser, fromBalance - amount);
+    ctx.write(toAccount, toBalance + amount);
+  },
 };
 
 const MAX_RANDOM_TXN_AMOUNT = 100;

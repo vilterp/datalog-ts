@@ -1,5 +1,6 @@
 import { ActorResp, LoadedTickInitiator } from "../../types";
 import {
+  AbortError,
   AbortReason,
   KVData,
   LiveQueryRequest,
@@ -7,21 +8,20 @@ import {
   LiveQueryUpdate,
   MsgToClient,
   MsgToServer,
-  MutationDefns,
   MutationInvocation,
   MutationRequest,
   MutationResponse,
   Query,
   Trace,
   TransactionMetadata,
+  TSMutationDefns,
   WriteOp,
 } from "./types";
 import * as effects from "../../effects";
-import { mapObj, randStep } from "../../../../util/util";
-import { runMutation } from "./mutations/run";
-import { InterpreterState } from "./mutations/builtins";
+import { mapObj, randStep, randStep2 } from "../../../../util/util";
 import { garbageCollectTransactions } from "./gc";
 import { addNewVersion } from "./mvcc";
+import { MutationContextImpl } from "./common";
 
 export type QueryStatus = "Loading" | "Online";
 
@@ -34,7 +34,6 @@ export type ClientState = {
   loginState: LoginState;
   liveQueries: { [id: string]: LiveQuery };
   transactions: { [id: string]: TransactionRecord };
-  mutationDefns: MutationDefns;
   randSeed: number;
   time: number;
 };
@@ -45,7 +44,6 @@ export type LoginState =
 
 export function initialClientState(
   clientID: string,
-  mutationDefns: MutationDefns,
   randSeed: number
 ): ClientState {
   return {
@@ -54,7 +52,6 @@ export function initialClientState(
     loginState: { type: "LoggedOut", loggingInAs: null },
     data: {},
     liveQueries: {},
-    mutationDefns,
     transactions: {},
     randSeed,
     time: 0,
@@ -144,54 +141,63 @@ function processLiveQueryUpdate(
 }
 
 function runMutationOnClient(
+  mutations: TSMutationDefns,
   state: ClientState,
   invocation: MutationInvocation,
   username: string
 ): [ClientState, MutationRequest | null] {
-  const randNum = randStep(state.randSeed);
+  const [randNum, randSeed1] = randStep2(state.randSeed);
   const txnID = randNum.toString();
-  const initialInterpState: InterpreterState = {
-    type: "InterpreterState",
-    randSeed: randStep(randNum),
-  };
   const isVisible = (txnID) => isTxnVisible(state, txnID);
-  const [data1, resVal, newInterpState, outcome, trace] = runMutation(
-    state.data,
-    initialInterpState,
+
+  const ctx = new MutationContextImpl(
     txnID,
-    state.mutationDefns[invocation.name],
-    invocation.args,
     username,
-    isVisible
+    state.data,
+    isVisible,
+    randSeed1
   );
+
+  const mutation = mutations[invocation.name];
+
+  try {
+    mutation(ctx, invocation.args);
+  } catch (e) {
+    if (e instanceof AbortError) {
+      const state1: ClientState = {
+        ...state,
+        randSeed: ctx.randState,
+      };
+      console.warn("CLIENT: txn aborted client side:", e.resVal, ctx.trace);
+      const state2 = addTransaction(state1, txnID, {
+        invocation,
+        clientTrace: ctx.trace,
+        writes: ctx.trace.filter((op) => op.type === "Write") as WriteOp[],
+        fromMe: true,
+        state: {
+          type: "Aborted",
+          // TODO: pretty print values
+          reason: { type: "FailedOnClient", reason: JSON.stringify(e.resVal) },
+          // TODO: this is not actually the server trace; is that ok?
+          serverTrace: ctx.trace,
+          serverTimestamp: state.time,
+        },
+      });
+      return [state2, null];
+    }
+    throw e;
+  }
+
   const state1: ClientState = {
     ...state,
-    randSeed: newInterpState.randSeed,
-    data: data1,
+    randSeed: ctx.randState,
+    data: ctx.kvData,
   };
   const writes = [];
-  if (outcome === "Abort") {
-    console.warn("CLIENT: txn aborted client side:", resVal, trace);
-    const state2 = addTransaction(state1, txnID, {
-      invocation,
-      clientTrace: trace,
-      writes,
-      fromMe: true,
-      state: {
-        type: "Aborted",
-        // TODO: pretty print values
-        reason: { type: "FailedOnClient", reason: JSON.stringify(resVal) },
-        // TODO: this is not actually the server trace; is that ok?
-        serverTrace: trace,
-        serverTimestamp: state.time,
-      },
-    });
-    return [state2, null];
-  }
 
   const state2 = addTransaction(state1, txnID, {
     invocation,
-    clientTrace: trace,
+    clientTrace: ctx.trace,
     writes,
     fromMe: true,
     state: { type: "Pending", sentTime: state.time },
@@ -200,9 +206,12 @@ function runMutationOnClient(
   const req: MutationRequest = {
     type: "MutationRequest",
     txnID,
-    interpState: initialInterpState,
+    interpState: {
+      type: "InterpreterState",
+      randSeed: randSeed1,
+    },
     invocation,
-    trace: trace,
+    trace: ctx.trace,
   };
   return [state2, req];
 }
@@ -287,10 +296,11 @@ function processLiveQueryResponse(
 }
 
 export function updateClient(
+  mutations: TSMutationDefns,
   state: ClientState,
   init: LoadedTickInitiator<ClientState, MsgToClient>
 ): ActorResp<ClientState, MsgToServer> {
-  const resp = updateClientInner(state, init);
+  const resp = updateClientInner(mutations, state, init);
   switch (resp.type) {
     case "continue": {
       // TODO: notify ppl that their txn was rejected
@@ -307,6 +317,7 @@ export function updateClient(
 }
 
 function updateClientInner(
+  mutations: TSMutationDefns,
   state: ClientState,
   init: LoadedTickInitiator<ClientState, MsgToClient>
 ): ActorResp<ClientState, MsgToServer> {
@@ -481,6 +492,7 @@ function updateClientInner(
           }
 
           const [newState, req] = runMutationOnClient(
+            mutations,
             state,
             {
               type: "Invocation",

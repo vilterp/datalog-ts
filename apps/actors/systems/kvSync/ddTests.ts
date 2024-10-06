@@ -13,9 +13,16 @@ import { UserInput } from "./types";
 import { fsLoader } from "../../../../core/fsLoader";
 import { SimpleInterpreter } from "../../../../core/simple/interpreter";
 import { ParseErrors } from "../../../../languageWorkbench/parserlib/types";
-import { System, SystemState, Trace } from "../../types";
+import {
+  LoadedTickInitiator,
+  System,
+  SystemState,
+  Trace,
+  UpdateFn,
+} from "../../types";
 import { explore } from "../../explore";
 import { mapObj } from "../../../../util/util";
+import { counter } from "./examples/counter";
 
 export function kvSyncTests(writeResults: boolean): Suite {
   return [
@@ -29,11 +36,29 @@ export function kvSyncTests(writeResults: boolean): Suite {
         );
       },
     },
+    {
+      name: "counter",
+      test() {
+        runDDTestAtPath(
+          "apps/actors/systems/kvSync/examples/counter.dd.txt",
+          (inputs) => kvSyncTest(counter, inputs),
+          writeResults
+        );
+      },
+    },
   ];
 }
 
 function kvSyncTest(app: KVApp, testCases: string[]): TestOutput[] {
   const system = makeActorSystem(app);
+
+  const doUpdate: UpdateFn<KVSyncState, KVSyncMsg> = (
+    state: KVSyncState,
+    init: LoadedTickInitiator<KVSyncState, KVSyncMsg>
+  ) => {
+    return update(app.mutations, state, init);
+  };
+
   return testCases.map((testCase) => {
     const interp = new SimpleInterpreter("apps/actors", fsLoader);
     let systemState: SystemState<KVSyncState> = {
@@ -54,7 +79,7 @@ function kvSyncTest(app: KVApp, testCases: string[]): TestOutput[] {
         throw new ParseErrors(errors);
       }
       const record = parserTermToInternal(rawRec) as Rec;
-      systemState = reducer(system, systemState, record);
+      systemState = reducer(doUpdate, system, systemState, record);
     });
     if (query === ".jsonState") {
       return jsonOut(justStates(systemState));
@@ -79,6 +104,7 @@ function justStates(state: SystemState<KVSyncState>) {
 }
 
 function reducer(
+  doUpdate: UpdateFn<KVSyncState, KVSyncMsg>,
   system: System<KVSyncState, KVSyncMsg>,
   systemState: SystemState<KVSyncState>,
   record: Rec
@@ -91,7 +117,12 @@ function reducer(
         username: (record.attrs.username as StringLit).val,
         password: (record.attrs.password as StringLit).val,
       };
-      const newTrace = stepUserInput(systemState.trace, clientID, msg);
+      const newTrace = stepUserInput(
+        doUpdate,
+        systemState.trace,
+        clientID,
+        msg
+      );
       return {
         ...systemState,
         trace: newTrace,
@@ -104,7 +135,12 @@ function reducer(
         username: (record.attrs.username as StringLit).val,
         password: (record.attrs.password as StringLit).val,
       };
-      const newTrace = stepUserInput(systemState.trace, clientID, msg);
+      const newTrace = stepUserInput(
+        doUpdate,
+        systemState.trace,
+        clientID,
+        msg
+      );
       return {
         ...systemState,
         trace: newTrace,
@@ -115,15 +151,15 @@ function reducer(
       const clientID = (record.attrs.id as StringLit).val;
       const { newTrace: trace2, newInits: newInits1 } = step(
         systemState.trace,
-        update,
+        doUpdate,
         spawnInitiator(`user${clientID}`, system.initialUserState)
       );
       const { newTrace: trace3, newInits: newInits2 } = step(
         trace2,
-        update,
+        doUpdate,
         spawnInitiator(`client${clientID}`, system.initialClientState(clientID))
       );
-      const trace4 = stepAll(trace3, update, [...newInits1, ...newInits2]);
+      const trace4 = stepAll(trace3, doUpdate, [...newInits1, ...newInits2]);
       return {
         clientIDs: [...systemState.clientIDs, clientID],
         nextClientID: 0, // not using this
@@ -140,7 +176,12 @@ function reducer(
           args: (record.attrs.args as Array).items.map((i) => dlToJson(i)),
         },
       };
-      const newTrace = stepUserInput(systemState.trace, clientID, msg);
+      const newTrace = stepUserInput(
+        doUpdate,
+        systemState.trace,
+        clientID,
+        msg
+      );
       return {
         ...systemState,
         trace: newTrace,
@@ -156,6 +197,7 @@ function reducer(
 }
 
 function stepUserInput(
+  doUpdate: UpdateFn<KVSyncState, KVSyncMsg>,
   trace: Trace<KVSyncState>,
   clientID: string,
   msg: UserInput
@@ -165,7 +207,8 @@ function stepUserInput(
     clientID,
     msg
   );
-  return stepAll(trace1, update, [
+
+  return stepAll(trace1, doUpdate, [
     {
       from: `user${clientID}`,
       to: `client${clientID}`,

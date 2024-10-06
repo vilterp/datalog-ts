@@ -1,9 +1,9 @@
 import React from "react";
 import { Client } from "../hooks";
 import { TxnState } from "./txnState";
-import { prettyPrintInvocation } from "../mutations/pretty";
 import { TransactionRecord, TransactionState } from "../client";
 import { Table } from "../../../../../uiCommon/generic/table";
+import { prettyPrintInvocation } from "../common";
 
 export function TransactionList(props: {
   client: Client;

@@ -1,6 +1,4 @@
 import { Json } from "../../../../util/json";
-import { InterpreterState } from "./mutations/builtins";
-import { Lambda } from "./mutations/types";
 
 export type VersionedValue = {
   value: Json;
@@ -84,7 +82,24 @@ type LogOutResponse = {
 
 // Mutations & Queries
 
-export type MutationDefns = { [name: string]: Lambda };
+export class AbortError extends Error {
+  resVal: Json;
+  constructor(resVal: Json) {
+    super("Mutation aborted");
+    this.resVal = resVal;
+  }
+}
+
+export type MutationCtx = {
+  curUser: string;
+  rand: () => number;
+  read: (key: string, _default?: Json) => Json;
+  write: (key: string, value: Json) => void;
+};
+
+type MutationFn = (ctx: MutationCtx, args: Json[]) => void;
+
+export type TSMutationDefns = { [name: string]: MutationFn };
 
 export type Query = { prefix: string };
 
@@ -121,6 +136,11 @@ export type MutationRequest = {
   interpState: InterpreterState;
   invocation: MutationInvocation;
   trace: Trace;
+};
+
+export type InterpreterState = {
+  type: "InterpreterState";
+  randSeed: number;
 };
 
 export type MutationResponse = {

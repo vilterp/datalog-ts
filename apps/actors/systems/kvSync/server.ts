@@ -1,23 +1,24 @@
 import { ActorResp, LoadedTickInitiator, OutgoingMessage } from "../../types";
 import {
+  AbortError,
   KVData,
   LiveQueryRequest,
   LiveQueryResponse,
   LiveQueryUpdate,
   MsgToClient,
   MsgToServer,
-  MutationDefns,
   MutationRequest,
   MutationResponse,
   Query,
   TransactionMetadata,
+  TSMutationDefns,
   WriteOp,
 } from "./types";
 import * as effects from "../../effects";
 import { filterMap, mapObj, randStep2, removeKey } from "../../../../util/util";
 import { Json, jsonEq } from "../../../../util/json";
-import { runMutation } from "./mutations/run";
 import { keyInQuery, runQuery } from "./query";
+import { MutationContextImpl } from "./common";
 
 export type ServerState = {
   type: "ServerState";
@@ -26,13 +27,11 @@ export type ServerState = {
   userSessions: { [token: string]: string }; // username
   liveQueries: { clientID: string; query: Query }[]; // TODO: index
   transactionMetadata: TransactionMetadata;
-  mutationDefns: MutationDefns;
   randSeed: number;
   time: number;
 };
 
 export function initialServerState(
-  mutationDefns: MutationDefns,
   initialKVPairs: { [key: string]: Json },
   randSeed: number
 ): ServerState {
@@ -54,7 +53,6 @@ export function initialServerState(
       },
     },
     randSeed,
-    mutationDefns,
     time: 0,
   };
 }
@@ -88,53 +86,67 @@ function processLiveQueryRequest(
 }
 
 function runMutationOnServer(
+  mutationDefns: TSMutationDefns,
   state: ServerState,
   user: string,
   req: MutationRequest,
   clientID: string
 ): [ServerState, MutationResponse, LiveQueryUpdate[]] {
   const isTxnCommitted = (txnID: string) => true;
-  const [newData, resVal, newInterpState, outcome, trace] = runMutation(
-    state.data,
-    req.interpState,
-    req.txnID,
-    state.mutationDefns[req.invocation.name],
-    req.invocation.args,
-    user,
-    isTxnCommitted
-  );
   const txnTime = state.time;
+
+  const ctx = new MutationContextImpl(
+    req.txnID,
+    user,
+    state.data,
+    isTxnCommitted,
+    req.interpState.randSeed
+  );
+
+  try {
+    const mutation = mutationDefns[req.invocation.name];
+    if (!mutation) {
+      throw new Error(`Unknown mutation: ${req.invocation.name}`);
+    }
+
+    const resVal = mutation(ctx, req.invocation.args);
+  } catch (e) {
+    if (e instanceof AbortError) {
+      console.warn("SERVER: rejecting txn due to abort", e);
+      return [
+        state,
+        {
+          type: "MutationResponse",
+          txnID: req.txnID,
+          payload: {
+            type: "Reject",
+            timestamp: txnTime,
+            serverTrace: ctx.trace,
+            reason: {
+              type: "FailedOnServer",
+              failure: { type: "LogicError", reason: JSON.stringify(e.resVal) },
+            },
+          },
+        },
+        [],
+      ];
+    }
+    throw e;
+  }
+
   const newState: ServerState = {
     ...state,
     time: state.time + 1,
+    randSeed: ctx.randState,
     transactionMetadata: {
       ...state.transactionMetadata,
       [req.txnID]: { serverTimestamp: txnTime, invocation: req.invocation },
     },
-    data: newData,
+    data: ctx.kvData,
   };
-  if (outcome === "Abort") {
-    return [
-      state,
-      {
-        type: "MutationResponse",
-        txnID: req.txnID,
-        payload: {
-          type: "Reject",
-          timestamp: txnTime,
-          serverTrace: trace,
-          reason: {
-            type: "FailedOnServer",
-            failure: { type: "LogicError", reason: JSON.stringify(resVal) },
-          },
-        },
-      },
-      [],
-    ];
-  }
-  if (!jsonEq(trace, req.trace)) {
+  if (!jsonEq(ctx.trace, req.trace)) {
     console.warn("SERVER: rejecting txn due to trace mismatch", {
-      serverTrace: trace,
+      serverTrace: ctx.trace,
       clientTrace: req.trace,
     });
     return [
@@ -145,7 +157,7 @@ function runMutationOnServer(
         payload: {
           type: "Reject",
           timestamp: txnTime,
-          serverTrace: trace,
+          serverTrace: ctx.trace,
           reason: {
             type: "FailedOnServer",
             failure: { type: "TraceDoesntMatch" },
@@ -156,7 +168,7 @@ function runMutationOnServer(
     ];
   }
   // live query updates
-  const writes: WriteOp[] = trace.filter(
+  const writes: WriteOp[] = ctx.trace.filter(
     (op) => op.type === "Write"
   ) as WriteOp[];
   const liveQueryUpdates: LiveQueryUpdate[] = filterMap(
@@ -204,6 +216,7 @@ function runMutationOnServer(
 
 // TODO: maybe move this out to index.ts? idk
 export function updateServer(
+  mutations: TSMutationDefns,
   state: ServerState,
   init: LoadedTickInitiator<ServerState, MsgToServer>
 ): ActorResp<ServerState, MsgToClient> {
@@ -276,6 +289,7 @@ export function updateServer(
             }
             case "MutationRequest": {
               const [newState, mutationResp, updates] = runMutationOnServer(
+                mutations,
                 state,
                 user,
                 innerMsg,

@@ -1,6 +1,6 @@
 import { UIProps } from "../../../types";
 import { ClientState } from "../client";
-import { MutationDefns, MutationInvocation, UserInput } from "../types";
+import { MutationInvocation, TSMutationDefns, UserInput } from "../types";
 
 type ChooseFn = (
   clients: {
@@ -11,7 +11,7 @@ type ChooseFn = (
 
 export type KVApp = {
   name: string;
-  mutations: MutationDefns;
+  mutations: TSMutationDefns;
   initialKVPairs?: {};
   ui: (props: UIProps<ClientState, UserInput>) => React.ReactElement;
   choose?: ChooseFn;
