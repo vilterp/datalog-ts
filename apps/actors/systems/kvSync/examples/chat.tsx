@@ -2,19 +2,7 @@ import React, { Ref, useLayoutEffect, useRef, useState } from "react";
 import { UIProps } from "../../../types";
 import { ClientState, QueryStatus } from "../client";
 import { Client, makeClient, useLiveQuery } from "../hooks";
-import {
-  apply,
-  doExpr,
-  int,
-  lambda,
-  letExpr,
-  obj,
-  read,
-  str,
-  varr,
-  write,
-} from "../mutations/types";
-import { MutationDefns, TSMutationDefns, UserInput } from "../types";
+import { TSMutationDefns, UserInput } from "../types";
 import { TxnState } from "../uiCommon/txnState";
 import { KVApp } from "./types";
 import { Inspector } from "../uiCommon/inspector";

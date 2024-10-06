@@ -4,20 +4,7 @@ import { UIProps } from "../../../types";
 import { ClientState, QueryStatus, TransactionState } from "../client";
 import { Client, makeClient, useLiveQuery } from "../hooks";
 import {
-  apply,
-  read,
-  varr,
-  letExpr,
-  ifExpr,
-  lambda,
-  abort,
-  str,
-  write,
-  doExpr,
-  int,
-} from "../mutations/types";
-import {
-  MutationDefns,
+  AbortError,
   MutationInvocation,
   TSMutationDefns,
   UserInput,
@@ -217,7 +204,7 @@ const mutations: TSMutationDefns = {
     const amount = rawAmount as number;
     const balanceBefore = ctx.read(ctx.curUser) as number;
     if (amount > balanceBefore) {
-      throw ctx.abort("balance is not high enough");
+      throw new AbortError("balance is not high enough");
     }
     ctx.write(ctx.curUser, balanceBefore - amount);
   },
@@ -227,7 +214,7 @@ const mutations: TSMutationDefns = {
     const fromBalance = ctx.read(ctx.curUser) as number;
     const toBalance = ctx.read(toAccount) as number;
     if (amount > fromBalance) {
-      throw ctx.abort("balance is not high enough");
+      throw new AbortError("balance is not high enough");
     }
     ctx.write(ctx.curUser, fromBalance - amount);
     ctx.write(toAccount, toBalance + amount);
