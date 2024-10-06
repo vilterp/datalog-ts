@@ -140,6 +140,7 @@ export type DLInt = {
   span: Span;
   first: DLNum;
   num: DLNum[];
+  decimal: DLNum[];
 };
 export type DLLoadKW = {
   type: "LoadKW";
@@ -784,6 +785,9 @@ function extractInt(input: string, node: RuleTree): DLInt {
     span: node.span,
     first: extractNum(input, childByName(node, "num", "first")),
     num: childrenByName(node, "num").map((child) => extractNum(input, child)),
+    decimal: childrenByName(node, "num").map((child) =>
+      extractNum(input, child)
+    ),
   };
 }
 function extractLoadKW(input: string, node: RuleTree): DLLoadKW {
@@ -1012,7 +1016,7 @@ function extractVar(input: string, node: RuleTree): DLVar {
     ),
   };
 }
-export const GRAMMAR: Grammar = {
+const GRAMMAR: Grammar = {
   main: {
     type: "Sequence",
     items: [
@@ -1803,6 +1807,36 @@ export const GRAMMAR: Grammar = {
           type: "Text",
           value: "",
         },
+      },
+      {
+        type: "Choice",
+        choices: [
+          {
+            type: "Text",
+            value: "",
+          },
+          {
+            type: "Sequence",
+            items: [
+              {
+                type: "Text",
+                value: ".",
+              },
+              {
+                type: "RepSep",
+                rep: {
+                  type: "Ref",
+                  captureName: "decimal",
+                  rule: "num",
+                },
+                sep: {
+                  type: "Text",
+                  value: "",
+                },
+              },
+            ],
+          },
+        ],
       },
     ],
   },
