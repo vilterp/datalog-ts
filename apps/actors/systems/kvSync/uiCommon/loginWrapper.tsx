@@ -6,10 +6,14 @@ export function LoginWrapper(props: {
   // TODO: have this pass a 'loggedInClient' object
   loggedIn: (user: string) => React.ReactNode;
 }) {
-  return props.client.state.loginState.type === "LoggedIn" ? (
-    <>{props.loggedIn(props.client.state.loginState.username)}</>
-  ) : (
-    <LoginSignupForm client={props.client} />
+  return (
+    <div style={{ padding: 5 }}>
+      {props.client.state.loginState.type === "LoggedIn" ? (
+        <>{props.loggedIn(props.client.state.loginState.username)}</>
+      ) : (
+        <LoginSignupForm client={props.client} />
+      )}
+    </div>
   );
 }
 
