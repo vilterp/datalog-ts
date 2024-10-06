@@ -1,4 +1,165 @@
 addClient{id: "0"}.
 signUp{clientID: "0", username: "bob", password: "foo"}.
 explore{seed: 123548762349586, steps: 100}.
+.jsonState
 ----
+application/json
+{
+  "server": {
+    "counter": [
+      {
+        "value": 0,
+        "transactionID": "0"
+      }
+    ]
+  },
+  "user0": {},
+  "client0": {
+    "counter": [
+      {
+        "transactionID": "0.00037566525896607457",
+        "value": 1
+      },
+      {
+        "transactionID": "0.31381383055244927",
+        "value": 2
+      },
+      {
+        "transactionID": "0.26905546502122235",
+        "value": 3
+      },
+      {
+        "transactionID": "0.015206331866985496",
+        "value": 2
+      },
+      {
+        "transactionID": "0.5728273955852048",
+        "value": 3
+      },
+      {
+        "transactionID": "0.5100409435201818",
+        "value": 2
+      },
+      {
+        "transactionID": "0.2581415779498793",
+        "value": 3
+      },
+      {
+        "transactionID": "0.5855064094862961",
+        "value": 2
+      },
+      {
+        "transactionID": "0.6062274799740198",
+        "value": 3
+      },
+      {
+        "transactionID": "0.8652590050969823",
+        "value": 2
+      },
+      {
+        "transactionID": "0.40809971923762905",
+        "value": 3
+      },
+      {
+        "transactionID": "0.9319858592301475",
+        "value": 4
+      },
+      {
+        "transactionID": "0.8863366133406168",
+        "value": 3
+      },
+      {
+        "transactionID": "0.6594613051595737",
+        "value": 2
+      },
+      {
+        "transactionID": "0.5661584819351868",
+        "value": 1
+      },
+      {
+        "transactionID": "0.42560927982033164",
+        "value": 0
+      },
+      {
+        "transactionID": "0.21517043534216512",
+        "value": 1
+      },
+      {
+        "transactionID": "0.3695129378414833",
+        "value": 2
+      },
+      {
+        "transactionID": "0.4039512359573983",
+        "value": 1
+      },
+      {
+        "transactionID": "0.20842740052233208",
+        "value": 0
+      },
+      {
+        "transactionID": "0.03932677352738266",
+        "value": 1
+      },
+      {
+        "transactionID": "0.9650901932875534",
+        "value": 2
+      },
+      {
+        "transactionID": "0.27087885678827656",
+        "value": 1
+      },
+      {
+        "transactionID": "0.6609517467775864",
+        "value": 2
+      },
+      {
+        "transactionID": "0.6160107442326944",
+        "value": 1
+      },
+      {
+        "transactionID": "0.29258132380673785",
+        "value": 2
+      },
+      {
+        "transactionID": "0.4143147560901146",
+        "value": 3
+      },
+      {
+        "transactionID": "0.3881101900600923",
+        "value": 2
+      },
+      {
+        "transactionID": "0.9679691288321923",
+        "value": 1
+      },
+      {
+        "transactionID": "0.6571485331814256",
+        "value": 2
+      },
+      {
+        "transactionID": "0.6953998633617534",
+        "value": 3
+      },
+      {
+        "transactionID": "0.5855059047094602",
+        "value": 4
+      },
+      {
+        "transactionID": "0.5977436956928519",
+        "value": 5
+      },
+      {
+        "transactionID": "0.27829665763145",
+        "value": 6
+      },
+      {
+        "transactionID": "0.3319304597861417",
+        "value": 7
+      },
+      {
+        "transactionID": "0.7552428541288179",
+        "value": 6
+      }
+    ]
+  }
+}
