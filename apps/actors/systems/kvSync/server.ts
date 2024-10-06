@@ -96,8 +96,8 @@ class ServerMutationContext implements MutationCtx {
   trace: Trace;
   isTxnCommitted: (txnID: string) => boolean;
   kvData: KVData;
-  readonly curUser: string;
-  private randState: number;
+  curUser: string;
+  randState: number;
 
   constructor(
     transactionID: string,
@@ -193,6 +193,7 @@ function runMutationOnServer(
   const newState: ServerState = {
     ...state,
     time: state.time + 1,
+    randSeed: ctx.randState,
     transactionMetadata: {
       ...state.transactionMetadata,
       [req.txnID]: { serverTimestamp: txnTime, invocation: req.invocation },

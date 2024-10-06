@@ -1,5 +1,6 @@
 import { ActorResp, LoadedTickInitiator } from "../../types";
 import {
+  AbortError,
   AbortReason,
   KVData,
   LiveQueryRequest,
@@ -8,20 +9,21 @@ import {
   MsgToClient,
   MsgToServer,
   MutationCtx,
-  MutationDefns,
   MutationInvocation,
   MutationRequest,
   MutationResponse,
   Query,
   Trace,
   TransactionMetadata,
+  TSMutationDefns,
   WriteOp,
 } from "./types";
 import * as effects from "../../effects";
 import { mapObj, randStep, randStep2 } from "../../../../util/util";
 import { garbageCollectTransactions } from "./gc";
-import { addNewVersion } from "./mvcc";
+import { addNewVersion, getVisibleValue } from "./mvcc";
 import { Json } from "../../../../util/json";
+import { doWrite } from "./common";
 
 export type QueryStatus = "Loading" | "Online";
 
@@ -34,7 +36,7 @@ export type ClientState = {
   loginState: LoginState;
   liveQueries: { [id: string]: LiveQuery };
   transactions: { [id: string]: TransactionRecord };
-  mutationDefns: MutationDefns;
+  mutationDefns: TSMutationDefns;
   randSeed: number;
   time: number;
 };
@@ -45,7 +47,7 @@ export type LoginState =
 
 export function initialClientState(
   clientID: string,
-  mutationDefns: MutationDefns,
+  mutationDefns: TSMutationDefns,
   randSeed: number
 ): ClientState {
   return {
@@ -147,11 +149,22 @@ class ClientMutationContext implements MutationCtx {
   curUser: string;
   randState: number;
   kvData: KVData;
+  trace: Trace = [];
+  transactionID: string;
+  isTxnCommitted: (txnID: string) => boolean;
 
-  constructor(curUser: string, kvData: KVData, randSeed: number) {
+  constructor(
+    txnID: string,
+    curUser: string,
+    kvData: KVData,
+    isTxnCommitted: (txnID: string) => boolean,
+    randSeed: number
+  ) {
+    this.transactionID = txnID;
     this.curUser = curUser;
     this.randState = randSeed;
     this.kvData = kvData;
+    this.isTxnCommitted = isTxnCommitted;
   }
 
   rand(): number {
@@ -170,9 +183,17 @@ class ClientMutationContext implements MutationCtx {
     return val;
   }
 
-  write(key: string, value: Json) {}
-
-  abort(reason: string) {}
+  write(key: string, value: Json) {
+    const [newKVData, writeOp] = doWrite(
+      this.kvData,
+      this.isTxnCommitted,
+      this.transactionID,
+      key,
+      value
+    );
+    this.kvData = newKVData;
+    this.trace.push(writeOp);
+  }
 }
 
 function runMutationOnClient(
@@ -183,43 +204,55 @@ function runMutationOnClient(
   const randNum = randStep(state.randSeed);
   const txnID = randNum.toString();
   const isVisible = (txnID) => isTxnVisible(state, txnID);
-  const [data1, resVal, newInterpState, outcome, trace] = runMutation(
-    state.data,
-    initialInterpState,
+
+  const ctx = new ClientMutationContext(
     txnID,
-    state.mutationDefns[invocation.name],
-    invocation.args,
     username,
-    isVisible
+    state.data,
+    isVisible,
+    state.randSeed
   );
+
+  const mutation = state.mutationDefns[invocation.name];
+
+  try {
+    mutation(ctx, invocation.args);
+  } catch (e) {
+    if (e instanceof AbortError) {
+      const state1: ClientState = {
+        ...state,
+        randSeed: ctx.randState,
+      };
+      console.warn("CLIENT: txn aborted client side:", e.resVal, ctx.trace);
+      const state2 = addTransaction(state1, txnID, {
+        invocation,
+        clientTrace: ctx.trace,
+        writes: ctx.trace.filter((op) => op.type === "Write") as WriteOp[],
+        fromMe: true,
+        state: {
+          type: "Aborted",
+          // TODO: pretty print values
+          reason: { type: "FailedOnClient", reason: JSON.stringify(e.resVal) },
+          // TODO: this is not actually the server trace; is that ok?
+          serverTrace: ctx.trace,
+          serverTimestamp: state.time,
+        },
+      });
+      return [state2, null];
+    }
+    throw e;
+  }
+
   const state1: ClientState = {
     ...state,
-    randSeed: newInterpState.randSeed,
-    data: data1,
+    randSeed: ctx.randState,
+    data: ctx.kvData,
   };
   const writes = [];
-  if (outcome === "Abort") {
-    console.warn("CLIENT: txn aborted client side:", resVal, trace);
-    const state2 = addTransaction(state1, txnID, {
-      invocation,
-      clientTrace: trace,
-      writes,
-      fromMe: true,
-      state: {
-        type: "Aborted",
-        // TODO: pretty print values
-        reason: { type: "FailedOnClient", reason: JSON.stringify(resVal) },
-        // TODO: this is not actually the server trace; is that ok?
-        serverTrace: trace,
-        serverTimestamp: state.time,
-      },
-    });
-    return [state2, null];
-  }
 
   const state2 = addTransaction(state1, txnID, {
     invocation,
-    clientTrace: trace,
+    clientTrace: ctx.trace,
     writes,
     fromMe: true,
     state: { type: "Pending", sentTime: state.time },
@@ -228,9 +261,12 @@ function runMutationOnClient(
   const req: MutationRequest = {
     type: "MutationRequest",
     txnID,
-    interpState: initialInterpState,
+    interpState: {
+      type: "InterpreterState",
+      randSeed: state.randSeed,
+    },
     invocation,
-    trace: trace,
+    trace: ctx.trace,
   };
   return [state2, req];
 }

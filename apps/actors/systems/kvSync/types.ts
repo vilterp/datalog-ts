@@ -1,6 +1,4 @@
 import { Json } from "../../../../util/json";
-import { InterpreterState } from "./mutations/builtins";
-import { Lambda } from "./mutations/types";
 
 export type VersionedValue = {
   value: Json;
@@ -103,8 +101,6 @@ type MutationFn = (ctx: MutationCtx, args: Json[]) => void;
 
 export type TSMutationDefns = { [name: string]: MutationFn };
 
-export type MutationDefns = { [name: string]: Lambda };
-
 export type Query = { prefix: string };
 
 export type LiveQueryRequest = {
@@ -140,6 +136,11 @@ export type MutationRequest = {
   interpState: InterpreterState;
   invocation: MutationInvocation;
   trace: Trace;
+};
+
+export type InterpreterState = {
+  type: "InterpreterState";
+  randSeed: number;
 };
 
 export type MutationResponse = {
