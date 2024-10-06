@@ -8,14 +8,7 @@ import { KVApp } from "./types";
 import { Inspector } from "../uiCommon/inspector";
 import { LoggedIn, LoginWrapper } from "../uiCommon/loginWrapper";
 import { Table } from "../../../../../uiCommon/generic/table";
-import { DBCtx, indexedRead, Schema } from "../indexes";
-
-type Message = {
-  id: number;
-  seqNo: number;
-  sender: string;
-  message: string;
-};
+import { DBCtx, Schema } from "../indexes";
 
 function ChatUI(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
@@ -265,6 +258,25 @@ function ThreadList(props: {
 // /latestMessageRead/byUser/<UserID> => <MessageID>
 // /latestMessageRead/byThread/<ThreadID> => <MessageID>
 
+type Message = {
+  id: number;
+  seqNo: number;
+  sender: string;
+  message: string;
+};
+
+type Channel = {
+  id: string;
+  name: string;
+  latestMessageID: string;
+};
+
+type LatestMessageRead = {
+  userID: string;
+  threadID: string;
+  messageID: string;
+};
+
 const schema: Schema = {
   messages: {
     primaryKey: ["threadID", "id"],
@@ -304,8 +316,8 @@ const mutations: TSMutationDefns = {
   sendMessage: (ctx, [threadID, message]) => {
     const db = new DBCtx(schema, ctx);
 
-    const latestSeqNo = db.read("channels", "id", threadID)
-      .latestMessageID as number;
+    const channel = db.read("channels", "id", threadID) as Channel;
+    const latestSeqNo = channel.latestMessageID;
     const newSeqNo = latestSeqNo + 1;
     const newID = ctx.rand();
 
