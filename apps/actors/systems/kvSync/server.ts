@@ -100,7 +100,7 @@ function runMutationOnServer(
     user,
     state.data,
     isTxnCommitted,
-    state.randSeed
+    req.interpState.randSeed
   );
 
   try {
