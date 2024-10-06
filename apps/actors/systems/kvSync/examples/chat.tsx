@@ -216,7 +216,7 @@ function ThreadList(props: {
     props.client,
     "latest-message-read",
     {
-      prefix: `/latestMessageRead/by_user/${props.user}`,
+      prefix: `/latestMessageRead/by_userID/${props.user}`,
     }
   );
 
@@ -226,10 +226,9 @@ function ThreadList(props: {
       <LoggedIn client={props.client} user={props.user} />
       {props.threads.map((threadID) => {
         // TODO: need full keys
-        const latestMessageInThread =
-          latestMessage[`/latestMessage/${threadID}`];
+        const latestMessageInThread = latestMessage[`/channels/${threadID}`];
 
-        const key = `/latestMessageRead/byUser/${props.user}/${threadID}`;
+        const key = `/latestMessageRead/by_userID/${props.user}/${threadID}`;
         const latestMessageReadInThread = latestMessageRead[key];
         const numUnread =
           ((latestMessageInThread?.value as number) || 0) -
@@ -261,13 +260,6 @@ function ThreadList(props: {
     </div>
   );
 }
-
-// Schema:
-//
-// /messages/<ThreadID>/<MessageID> => { id, seqNo, sender, message }
-// /latestMessage/<ThreadID> => <MessageID>
-// /latestMessageRead/byUser/<UserID> => <MessageID>
-// /latestMessageRead/byThread/<ThreadID> => <MessageID>
 
 type Message = {
   id: number;
