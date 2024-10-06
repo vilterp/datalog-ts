@@ -1,15 +1,20 @@
-import React, { Ref, useLayoutEffect, useRef, useState } from "react";
+import React, { useLayoutEffect, useRef, useState } from "react";
 import { UIProps } from "../../../types";
 import { ClientState, QueryStatus } from "../client";
 import { Client, makeClient, useLiveQuery } from "../hooks";
-import { KVData, TSMutationDefns, UserInput } from "../types";
+import { TSMutationDefns, UserInput } from "../types";
 import { TxnState } from "../uiCommon/txnState";
 import { KVApp } from "./types";
 import { Inspector } from "../uiCommon/inspector";
 import { LoggedIn, LoginWrapper } from "../uiCommon/loginWrapper";
 import { Table } from "../../../../../uiCommon/generic/table";
-import { DBCtx, QueryCtx, Schema, useTablePointQuery } from "../indexes";
-import { pairsToObj } from "../../../../../util/util";
+import {
+  DBCtx,
+  getInitialData,
+  QueryCtx,
+  Schema,
+  useTablePointQuery,
+} from "../indexes";
 
 function ChatUI(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
@@ -45,7 +50,7 @@ function ChatUIInner(props: { client: Client; user: string }) {
                 user={props.user}
                 curThread={curThread}
                 setCurThread={setCurThread}
-                threads={EXAMPLE_THREADS}
+                threads={EXAMPLE_CHANNELS}
               />
             </td>
             <td>
@@ -359,21 +364,20 @@ const mutations: TSMutationDefns = {
   },
 };
 
-const EXAMPLE_THREADS = ["foo", "bar"];
+const EXAMPLE_CHANNELS = ["foo", "bar"];
 
 export const chat: KVApp = {
   name: "Chat",
   mutations,
   ui: ChatUI,
   // TODO: wrap up in indexes.ts
-  initialKVPairs: pairsToObj(
-    EXAMPLE_THREADS.map((id) => ({
-      key: `/channels/primary/"${id}"`,
-      value: {
-        id,
-        name: id,
-        latestMessageID: 0,
-      },
-    }))
-  ),
+  initialKVPairs: getInitialData(schema, {
+    messages: [],
+    channels: EXAMPLE_CHANNELS.map((id) => ({
+      id,
+      name: id,
+      latestMessageID: 0,
+    })),
+    latestMessageRead: [],
+  }),
 };

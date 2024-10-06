@@ -1,7 +1,7 @@
 import { Json, jsonEq } from "../../../../util/json";
 import { QueryStatus } from "./client";
 import { Client, QueryResults, useLiveQuery } from "./hooks";
-import { MutationCtx, Query } from "./types";
+import { KVData, MutationCtx, Query } from "./types";
 
 export type Schema = { [tableName: string]: TableSchema };
 
@@ -121,4 +121,34 @@ function getPrimaryKeyStr(table: string, values: Json[]): string {
 
 function getIndexKeyStr(table: string, indexName: string, value: Json): string {
   return `/${table}/by_${indexName}/${JSON.stringify(value)}`;
+}
+
+// initial data loading
+
+type InitialData = { [table: string]: Json[] };
+type KVPairs = { [key: string]: Json };
+
+export function getInitialData(schema: Schema, data: InitialData): KVPairs {
+  const out: KVPairs = {};
+
+  const simpleMutationCtx: MutationCtx = {
+    curUser: "system",
+    rand: () => -1,
+    read: (key) => {
+      throw new Error(`Read not supported in initial data`);
+    },
+    write: (key, value) => {
+      out[key] = value;
+    },
+  };
+
+  const ctx = new DBCtx(schema, simpleMutationCtx);
+
+  for (const table in data) {
+    for (const row of data[table]) {
+      ctx.insert(table, row);
+    }
+  }
+
+  return out;
 }
