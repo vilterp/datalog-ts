@@ -1,5 +1,7 @@
 import { Json, jsonEq } from "../../../../util/json";
-import { MutationCtx } from "./types";
+import { QueryStatus } from "./client";
+import { Client, QueryResults, useLiveQuery } from "./hooks";
+import { MutationCtx, Query } from "./types";
 
 export type Schema = { [tableName: string]: TableSchema };
 
@@ -13,6 +15,48 @@ export type FieldSchema = {
   type: "string" | "number";
   // TODO: references other tables
 };
+
+export type QueryCtx = {
+  client: Client;
+  schema: Schema;
+};
+
+export function useTablePointQuery(
+  ctx: QueryCtx,
+  table: string,
+  attr: string,
+  value: Json
+): [QueryResults, QueryStatus] {
+  return useLiveQuery(
+    ctx.client,
+    `${table}-${attr}-${JSON.stringify(value)}`,
+    getQuery(ctx.schema, table, attr, value)
+  );
+}
+
+function getQuery(
+  schema: Schema,
+  table: string,
+  attr: string,
+  value: Json
+): Query {
+  const tableSchema = schema[table];
+  if (tableSchema.indexes[attr]) {
+    return {
+      prefix: getPrimaryKeyStr(table, [value]),
+    };
+  }
+
+  if (jsonEq([attr], tableSchema.primaryKey)) {
+    return {
+      prefix: getIndexKeyStr(table, attr, value),
+    };
+  }
+
+  // TODO: map back to main schema?
+
+  throw new Error(`No index for ${table}.${attr}`);
+}
 
 export class DBCtx {
   schema: Schema;
@@ -60,7 +104,11 @@ export class DBCtx {
 
     if (tableSchema.indexes[attr]) {
       const keyStr = getIndexKeyStr(table, attr, value);
-      return this.mutationCtx.read(keyStr);
+      const primaryKeyStr = this.mutationCtx.read(keyStr) as string;
+      if (!primaryKeyStr) {
+        return null;
+      }
+      return this.mutationCtx.read(primaryKeyStr);
     }
 
     throw new Error(`No index for ${table}.${attr}`);

@@ -8,7 +8,7 @@ import { KVApp } from "./types";
 import { Inspector } from "../uiCommon/inspector";
 import { LoggedIn, LoginWrapper } from "../uiCommon/loginWrapper";
 import { Table } from "../../../../../uiCommon/generic/table";
-import { DBCtx, Schema } from "../indexes";
+import { DBCtx, QueryCtx, Schema, useTablePointQuery } from "../indexes";
 
 function ChatUI(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
@@ -75,15 +75,18 @@ function MessageTable(props: {
   client: Client;
   user: string;
 }) {
-  const [messages, messagesStatus] = useLiveQuery(
-    props.client,
-    `messages-${props.threadID}`,
-    { prefix: `/messages/${props.threadID}` }
+  const ctx: QueryCtx = { client: props.client, schema };
+  const [messages, messagesStatus] = useTablePointQuery(
+    ctx,
+    "messages",
+    "threadID",
+    props.threadID
   );
-  const [latestMessageSeen, latestMessageSeenStatus] = useLiveQuery(
-    props.client,
-    `latest-seen-by-${props.threadID}`,
-    { prefix: `/latestMessageRead/byThread/${props.threadID}` }
+  const [latestMessageSeen, latestMessageSeenStatus] = useTablePointQuery(
+    ctx,
+    "latestMessageRead",
+    "threadID",
+    props.threadID
   );
 
   if (messagesStatus === "Loading") {
@@ -173,13 +176,12 @@ function useLatestSeqNo(
   client: Client,
   threadID: string
 ): [number, QueryStatus] {
-  const [results, status] = useLiveQuery(client, `latestSeqNo-${threadID}`, {
-    prefix: `/latestMessage/${threadID}`,
-  });
+  const ctx: QueryCtx = { client, schema };
+  const [results, status] = useTablePointQuery(ctx, "channels", "id", threadID);
   if (status === "Loading") {
     return [0, status];
   }
-  const result = results[`/latestMessage/${threadID}`];
+  const result = results[`/channels/${threadID}`];
   if (!result) {
     return [0, status];
   }
@@ -193,19 +195,22 @@ function ThreadList(props: {
   curThread: string;
   setCurThread: (th: string) => void;
 }) {
+  const ctx: QueryCtx = { client: props.client, schema };
+
   // TODO: this should be only for chats that this user is in
   const [latestMessage, latestMessageStatus] = useLiveQuery(
     props.client,
     "latest-messages",
     {
-      prefix: "/latestMessage",
+      prefix: "/channels",
     }
   );
+
   const [latestMessageRead, latestMessageReadStatus] = useLiveQuery(
     props.client,
     "latest-message-read",
     {
-      prefix: `/latestMessageRead/byUser/${props.user}`,
+      prefix: `/latestMessageRead/by_user/${props.user}`,
     }
   );
 
@@ -287,7 +292,9 @@ const schema: Schema = {
       sender: { type: "string" },
       message: { type: "string" },
     },
-    indexes: {},
+    indexes: {
+      threadID: true,
+    },
   },
   channels: {
     primaryKey: ["id"],
@@ -306,8 +313,8 @@ const schema: Schema = {
       messageID: { type: "string" },
     },
     indexes: {
-      user: true,
-      thread: true,
+      userID: true,
+      threadID: true,
     },
   },
 };
