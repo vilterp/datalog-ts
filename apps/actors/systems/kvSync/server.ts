@@ -141,8 +141,6 @@ class ServerMutationContext implements MutationCtx {
     this.kvData = newKVData;
     this.trace.push(writeOp);
   }
-
-  abort: (reason: string) => Error;
 }
 
 function runMutationOnServer(

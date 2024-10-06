@@ -7,6 +7,7 @@ import {
   LiveQueryUpdate,
   MsgToClient,
   MsgToServer,
+  MutationCtx,
   MutationDefns,
   MutationInvocation,
   MutationRequest,
@@ -17,11 +18,10 @@ import {
   WriteOp,
 } from "./types";
 import * as effects from "../../effects";
-import { mapObj, randStep } from "../../../../util/util";
-import { runMutation } from "./mutations/run";
-import { InterpreterState } from "./mutations/builtins";
+import { mapObj, randStep, randStep2 } from "../../../../util/util";
 import { garbageCollectTransactions } from "./gc";
 import { addNewVersion } from "./mvcc";
+import { Json } from "../../../../util/json";
 
 export type QueryStatus = "Loading" | "Online";
 
@@ -143,6 +143,38 @@ function processLiveQueryUpdate(
   };
 }
 
+class ClientMutationContext implements MutationCtx {
+  curUser: string;
+  randState: number;
+  kvData: KVData;
+
+  constructor(curUser: string, kvData: KVData, randSeed: number) {
+    this.curUser = curUser;
+    this.randState = randSeed;
+    this.kvData = kvData;
+  }
+
+  rand(): number {
+    const [val, newState] = randStep2(this.randState);
+    this.randState = newState;
+    return val;
+  }
+
+  read(key: string): Json {
+    const val = getVisibleValue(this.isTxnCommitted, this.kvData, key);
+    this.trace.push({
+      type: "Read",
+      key,
+      transactionID: "-1",
+    });
+    return val;
+  }
+
+  write(key: string, value: Json) {}
+
+  abort(reason: string) {}
+}
+
 function runMutationOnClient(
   state: ClientState,
   invocation: MutationInvocation,
@@ -150,10 +182,6 @@ function runMutationOnClient(
 ): [ClientState, MutationRequest | null] {
   const randNum = randStep(state.randSeed);
   const txnID = randNum.toString();
-  const initialInterpState: InterpreterState = {
-    type: "InterpreterState",
-    randSeed: randStep(randNum),
-  };
   const isVisible = (txnID) => isTxnVisible(state, txnID);
   const [data1, resVal, newInterpState, outcome, trace] = runMutation(
     state.data,

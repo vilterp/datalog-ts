@@ -97,7 +97,6 @@ export type MutationCtx = {
   rand: () => number;
   read: (key: string) => Json;
   write: (key: string, value: Json) => void;
-  abort: (reason: string) => Error;
 };
 
 type MutationFn = (ctx: MutationCtx, args: Json[]) => void;
