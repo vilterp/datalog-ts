@@ -1,24 +1,12 @@
 import React, { useState } from "react";
 import { UIProps } from "../../../types";
 import { ClientState, QueryStatus, TransactionState } from "../client";
-import { MutationDefns, UserInput } from "../types";
+import { TSMutationDefns, UserInput } from "../types";
 import { KVApp } from "./types";
-import {
-  apply,
-  bool,
-  lambda,
-  letExpr,
-  memberAccess,
-  obj,
-  read,
-  str,
-  varr,
-  write,
-} from "../mutations/types";
 import { mapObjToList } from "../../../../../util/util";
 import { Client, makeClient, useLiveQuery } from "../hooks";
 import { Inspector } from "../uiCommon/inspector";
-import { LoggedIn, LoginWrapper } from "../uiCommon/loginWrapper";
+import { LoginWrapper } from "../uiCommon/loginWrapper";
 import { Table } from "../../../../../uiCommon/generic/table";
 import { LoggedInHeader } from "../uiCommon/loggedInHeader";
 
@@ -134,35 +122,23 @@ function useTodos(client: Client): [Todo[], QueryStatus] {
 
 // Schema:
 // /todos/<id> => { name, done }
-const mutations: MutationDefns = {
-  AddTodo: lambda(
-    ["name"],
-    write(
-      apply("concat", [str("/todos/"), apply("rand", [])]),
-      obj({
-        name: varr("name"),
-        user: varr("curUser"),
-        done: bool(false),
-      })
-    )
-  ),
-  ChangeCompletionStatus: lambda(
-    ["id", "newCompletionStatus"],
-    letExpr(
-      [
-        { varName: "key", val: apply("concat", [str("/todos/"), varr("id")]) },
-        { varName: "current", val: read(varr("key"), obj({})) },
-      ],
-      write(
-        varr("key"),
-        obj({
-          name: memberAccess(varr("current"), "name"),
-          user: memberAccess(varr("current"), "user"),
-          done: varr("newCompletionStatus"),
-        })
-      )
-    )
-  ),
+const mutations: TSMutationDefns = {
+  AddTodo: (ctx, [name]) => {
+    const id = ctx.rand();
+    ctx.write(`/todos/${id}`, {
+      name,
+      user: ctx.curUser,
+      done: false,
+    });
+  },
+  ChangeCompletionStatus: (ctx, [id, newCompletionStatus]) => {
+    const key = `/todos/${id}`;
+    const current = ctx.read(key) as Todo;
+    ctx.write(key, {
+      ...current,
+      done: newCompletionStatus,
+    });
+  },
 };
 
 export const todoMVC: KVApp = {

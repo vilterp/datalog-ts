@@ -9,7 +9,12 @@ import {
   varr,
   write,
 } from "../mutations/types";
-import { MutationDefns, MutationInvocation, UserInput } from "../types";
+import {
+  MutationDefns,
+  MutationInvocation,
+  TSMutationDefns,
+  UserInput,
+} from "../types";
 import { KVApp } from "./types";
 import { UIProps } from "../../../types";
 import { ClientState } from "../client";
@@ -70,21 +75,15 @@ function CounterUIInner(props: { client: Client; user: string }) {
   );
 }
 
-const mutations: MutationDefns = {
-  Increment: lambda(
-    [],
-    letExpr(
-      [{ varName: "cur", val: read(str("counter"), 0) }],
-      write(str("counter"), apply("+", [varr("cur"), int(1)]))
-    )
-  ),
-  Decrement: lambda(
-    [],
-    letExpr(
-      [{ varName: "cur", val: read(str("counter"), 0) }],
-      write(str("counter"), apply("-", [varr("cur"), int(1)]))
-    )
-  ),
+const mutations: TSMutationDefns = {
+  Increment: (ctx) => {
+    const cur = ctx.read("counter") as number;
+    ctx.write("counter", cur + 1);
+  },
+  Decrement: (ctx) => {
+    const cur = ctx.read("counter") as number;
+    ctx.write("counter", cur - 1);
+  },
 };
 
 function choose(

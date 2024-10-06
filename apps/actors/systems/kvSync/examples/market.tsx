@@ -1,17 +1,6 @@
 import React, { useState } from "react";
 import { KVApp } from "./types";
-import { MutationDefns, UserInput } from "../types";
-import {
-  apply,
-  lambda,
-  letExpr,
-  memberAccess,
-  obj,
-  read,
-  str,
-  varr,
-  write,
-} from "../mutations/types";
+import { TSMutationDefns, UserInput } from "../types";
 import { Client, makeClient, useLiveQuery } from "../hooks";
 import { UIProps } from "../../../types";
 import { ClientState, QueryStatus, TransactionState } from "../client";
@@ -140,42 +129,25 @@ function useOffers(client: Client): [Offer[], QueryStatus] {
   return [offers, queryStatus];
 }
 
-const mutations: MutationDefns = {
-  Offer: lambda(
-    ["item", "price"],
-    letExpr(
-      [{ varName: "id", val: apply("rand", []) }],
-      write(
-        apply("concat", [str("/offers/"), varr("id")]),
-        obj({
-          id: varr("id"),
-          item: varr("item"),
-          price: varr("price"),
-          status: str("open"),
-          user: varr("curUser"),
-        })
-      )
-    )
-  ),
-  Buy: lambda(
-    ["id"],
-    letExpr(
-      [
-        { varName: "key", val: apply("concat", [str("/offers/"), varr("id")]) },
-        { varName: "current", val: read(varr("key"), obj({})) },
-      ],
-      write(
-        varr("key"),
-        obj({
-          id: memberAccess(varr("current"), "id"),
-          item: memberAccess(varr("current"), "item"),
-          price: memberAccess(varr("current"), "price"),
-          status: str("sold"),
-          user: memberAccess(varr("current"), "user"),
-        })
-      )
-    )
-  ),
+const mutations: TSMutationDefns = {
+  Offer: (ctx, [item, price]) => {
+    const id = ctx.rand();
+    ctx.write(`/offers/${id}`, {
+      id,
+      item,
+      price,
+      status: "open",
+      user: ctx.curUser,
+    });
+  },
+  Buy: (ctx, [id]) => {
+    const key = `/offers/${id}`;
+    const current = ctx.read(key) as Offer;
+    ctx.write(key, {
+      ...current,
+      status: "sold",
+    });
+  },
 };
 
 export const market: KVApp = {

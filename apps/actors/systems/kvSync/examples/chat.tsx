@@ -14,7 +14,7 @@ import {
   varr,
   write,
 } from "../mutations/types";
-import { MutationDefns, UserInput } from "../types";
+import { MutationDefns, TSMutationDefns, UserInput } from "../types";
 import { TxnState } from "../uiCommon/txnState";
 import { KVApp } from "./types";
 import { Inspector } from "../uiCommon/inspector";
@@ -276,93 +276,30 @@ function ThreadList(props: {
 // /latestMessageRead/byUser/<UserID> => <MessageID>
 // /latestMessageRead/byThread/<ThreadID> => <MessageID>
 
-const mutations: MutationDefns = {
-  sendMessage: lambda(
-    ["threadID", "message"],
-    letExpr(
-      [
-        {
-          varName: "latestSeqNo",
-          val: apply("parseInt", [
-            read(
-              apply("concat", [str("/latestMessage/"), varr("threadID")]),
-              0
-            ),
-          ]),
-        },
-        {
-          varName: "newSeqNo",
-          val: apply("+", [varr("latestSeqNo"), int(1)]),
-        },
-        {
-          varName: "newID",
-          val: apply("rand", []),
-        },
-      ],
-      doExpr([
-        write(
-          apply("concat", [str("/latestMessage/"), varr("threadID")]),
-          varr("newSeqNo")
-        ),
-        // TODO: call markRead?
-        write(
-          apply("concat", [
-            str("/latestMessageRead/byUser/"),
-            varr("curUser"),
-            str("/"),
-            varr("threadID"),
-          ]),
-          varr("newSeqNo")
-        ),
-        write(
-          apply("concat", [
-            str("/latestMessageRead/byThread/"),
-            varr("threadID"),
-            str("/"),
-            varr("curUser"),
-          ]),
-          varr("newSeqNo")
-        ),
-        write(
-          apply("concat", [
-            str("/messages/"),
-            varr("threadID"),
-            str("/"),
-            varr("newID"),
-          ]),
-          obj({
-            id: varr("newID"),
-            seqNo: varr("newSeqNo"),
-            sender: varr("curUser"),
-            message: varr("message"),
-          })
-        ),
-      ])
-    )
-  ),
-  markRead: lambda(
-    ["threadID", "seqNo"],
-    doExpr([
-      write(
-        apply("concat", [
-          str("/latestMessageRead/byUser/"),
-          varr("curUser"),
-          str("/"),
-          varr("threadID"),
-        ]),
-        varr("seqNo")
-      ),
-      write(
-        apply("concat", [
-          str("/latestMessageRead/byThread/"),
-          varr("threadID"),
-          str("/"),
-          varr("curUser"),
-        ]),
-        varr("seqNo")
-      ),
-    ])
-  ),
+const mutations: TSMutationDefns = {
+  sendMessage: (ctx, [threadID, message]) => {
+    const latestSeqNo = parseInt(
+      ctx.read(`/latestMessage/${threadID}`) as string
+    );
+    const newSeqNo = latestSeqNo + 1;
+    const newID = ctx.rand();
+    ctx.write(`/latestMessage/${threadID}`, newSeqNo);
+    ctx.write(`/latestMessageRead/byUser/${ctx.curUser}/${threadID}`, newSeqNo);
+    ctx.write(
+      `/latestMessageRead/byThread/${threadID}/${ctx.curUser}`,
+      newSeqNo
+    );
+    ctx.write(`/messages/${threadID}/${newID}`, {
+      id: newID,
+      seqNo: newSeqNo,
+      sender: ctx.curUser,
+      message,
+    });
+  },
+  markRead: (ctx, [threadID, seqNo]) => {
+    ctx.write(`/latestMessageRead/byUser/${ctx.curUser}/${threadID}`, seqNo);
+    ctx.write(`/latestMessageRead/byThread/${threadID}/${ctx.curUser}`, seqNo);
+  },
 };
 
 const EXAMPLE_THREADS = ["foo", "bar"];

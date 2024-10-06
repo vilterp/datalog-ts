@@ -11,6 +11,7 @@ import {
   MutationResponse,
   Query,
   TransactionMetadata,
+  TSMutationDefns,
   WriteOp,
 } from "./types";
 import * as effects from "../../effects";
@@ -26,13 +27,13 @@ export type ServerState = {
   userSessions: { [token: string]: string }; // username
   liveQueries: { clientID: string; query: Query }[]; // TODO: index
   transactionMetadata: TransactionMetadata;
-  mutationDefns: MutationDefns;
+  mutationDefns: TSMutationDefns;
   randSeed: number;
   time: number;
 };
 
 export function initialServerState(
-  mutationDefns: MutationDefns,
+  mutationDefns: TSMutationDefns,
   initialKVPairs: { [key: string]: Json },
   randSeed: number
 ): ServerState {

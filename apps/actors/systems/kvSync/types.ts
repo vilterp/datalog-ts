@@ -84,6 +84,24 @@ type LogOutResponse = {
 
 // Mutations & Queries
 
+class AbortError extends Error {
+  constructor(public reason: AbortReason) {
+    super("Mutation aborted");
+  }
+}
+
+type MutationCtx = {
+  curUser: string;
+  rand: () => number;
+  read: (key: string) => Json;
+  write: (key: string, value: Json) => void;
+  abort: (reason: string) => Error;
+};
+
+type MutationFn = (ctx: MutationCtx, args: Json[]) => void;
+
+export type TSMutationDefns = { [name: string]: MutationFn };
+
 export type MutationDefns = { [name: string]: Lambda };
 
 export type Query = { prefix: string };
