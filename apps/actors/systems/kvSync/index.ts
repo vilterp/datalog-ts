@@ -7,10 +7,11 @@ import {
   MessageToClient,
   System,
   Trace,
+  UpdateFn,
 } from "../../types";
 import { ClientState, initialClientState, updateClient } from "./client";
 import { initialServerState, ServerState, updateServer } from "./server";
-import { MsgToClient, MsgToServer } from "./types";
+import { MsgToClient, MsgToServer, TSMutationDefns } from "./types";
 import { EXAMPLES } from "./examples";
 import { KVApp } from "./examples/types";
 import { hashString, lastItem } from "../../../../util/util";
@@ -23,23 +24,24 @@ export type KVSyncMsg = MsgToServer | MsgToClient;
 
 export function makeActorSystem(app: KVApp): System<KVSyncState, KVSyncMsg> {
   const randServerSeed = 1234; // TODO: pass this in
+  const doUpdate: UpdateFn<KVSyncState, KVSyncMsg> = (
+    state: KVSyncState,
+    init: LoadedTickInitiator<KVSyncState, KVSyncMsg>
+  ) => {
+    return update(app.mutations, state, init);
+  };
   return {
     name: `KV: ${app.name}`,
     id: `kv-${app.name}`,
     ui: app.ui,
-    update,
+    update: doUpdate,
     getInitialState: (interp): Trace<KVSyncState> => {
-      return spawnInitialActors(update, interp, {
-        server: initialServerState(
-          app.mutations,
-          app.initialKVPairs || {},
-          randServerSeed
-        ),
+      return spawnInitialActors(doUpdate, interp, {
+        server: initialServerState(app.initialKVPairs || {}, randServerSeed),
       });
     },
     // TODO: generate ID deterministically
-    initialClientState: (id: string) =>
-      initialClientState(id, app.mutations, hashString(id)),
+    initialClientState: (id: string) => initialClientState(id, hashString(id)),
     initialUserState: { type: "UserState" },
     chooseNextMove: app.choose ? kvSyncChooseMove(app) : undefined,
   };
@@ -72,17 +74,20 @@ function kvSyncChooseMove(app: KVApp): ChooseFn<KVSyncState, KVSyncMsg> {
 }
 
 export function update(
+  mutations: TSMutationDefns,
   state: KVSyncState,
   init: LoadedTickInitiator<KVSyncState, KVSyncMsg>
 ): ActorResp<KVSyncState, KVSyncMsg> {
   switch (state.type) {
     case "ClientState":
       return updateClient(
+        mutations,
         state,
         init as LoadedTickInitiator<ClientState, MsgToClient>
       );
     case "ServerState":
       return updateServer(
+        mutations,
         state,
         init as LoadedTickInitiator<ServerState, MsgToServer>
       );

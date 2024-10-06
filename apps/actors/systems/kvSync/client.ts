@@ -34,7 +34,6 @@ export type ClientState = {
   loginState: LoginState;
   liveQueries: { [id: string]: LiveQuery };
   transactions: { [id: string]: TransactionRecord };
-  mutationDefns: TSMutationDefns;
   randSeed: number;
   time: number;
 };
@@ -45,7 +44,6 @@ export type LoginState =
 
 export function initialClientState(
   clientID: string,
-  mutationDefns: TSMutationDefns,
   randSeed: number
 ): ClientState {
   return {
@@ -54,7 +52,6 @@ export function initialClientState(
     loginState: { type: "LoggedOut", loggingInAs: null },
     data: {},
     liveQueries: {},
-    mutationDefns,
     transactions: {},
     randSeed,
     time: 0,
@@ -144,6 +141,7 @@ function processLiveQueryUpdate(
 }
 
 function runMutationOnClient(
+  mutations: TSMutationDefns,
   state: ClientState,
   invocation: MutationInvocation,
   username: string
@@ -160,7 +158,7 @@ function runMutationOnClient(
     state.randSeed
   );
 
-  const mutation = state.mutationDefns[invocation.name];
+  const mutation = mutations[invocation.name];
 
   try {
     mutation(ctx, invocation.args);
@@ -298,10 +296,11 @@ function processLiveQueryResponse(
 }
 
 export function updateClient(
+  mutations: TSMutationDefns,
   state: ClientState,
   init: LoadedTickInitiator<ClientState, MsgToClient>
 ): ActorResp<ClientState, MsgToServer> {
-  const resp = updateClientInner(state, init);
+  const resp = updateClientInner(mutations, state, init);
   switch (resp.type) {
     case "continue": {
       // TODO: notify ppl that their txn was rejected
@@ -318,6 +317,7 @@ export function updateClient(
 }
 
 function updateClientInner(
+  mutations: TSMutationDefns,
   state: ClientState,
   init: LoadedTickInitiator<ClientState, MsgToClient>
 ): ActorResp<ClientState, MsgToServer> {
@@ -492,6 +492,7 @@ function updateClientInner(
           }
 
           const [newState, req] = runMutationOnClient(
+            mutations,
             state,
             {
               type: "Invocation",

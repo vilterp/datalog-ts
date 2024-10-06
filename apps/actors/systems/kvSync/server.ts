@@ -27,13 +27,11 @@ export type ServerState = {
   userSessions: { [token: string]: string }; // username
   liveQueries: { clientID: string; query: Query }[]; // TODO: index
   transactionMetadata: TransactionMetadata;
-  mutationDefns: TSMutationDefns;
   randSeed: number;
   time: number;
 };
 
 export function initialServerState(
-  mutationDefns: TSMutationDefns,
   initialKVPairs: { [key: string]: Json },
   randSeed: number
 ): ServerState {
@@ -55,7 +53,6 @@ export function initialServerState(
       },
     },
     randSeed,
-    mutationDefns,
     time: 0,
   };
 }
@@ -89,6 +86,7 @@ function processLiveQueryRequest(
 }
 
 function runMutationOnServer(
+  mutationDefns: TSMutationDefns,
   state: ServerState,
   user: string,
   req: MutationRequest,
@@ -106,7 +104,7 @@ function runMutationOnServer(
   );
 
   try {
-    const mutation = state.mutationDefns[req.invocation.name];
+    const mutation = mutationDefns[req.invocation.name];
     if (!mutation) {
       throw new Error(`Unknown mutation: ${req.invocation.name}`);
     }
@@ -217,6 +215,7 @@ function runMutationOnServer(
 
 // TODO: maybe move this out to index.ts? idk
 export function updateServer(
+  mutations: TSMutationDefns,
   state: ServerState,
   init: LoadedTickInitiator<ServerState, MsgToServer>
 ): ActorResp<ServerState, MsgToClient> {
@@ -289,6 +288,7 @@ export function updateServer(
             }
             case "MutationRequest": {
               const [newState, mutationResp, updates] = runMutationOnServer(
+                mutations,
                 state,
                 user,
                 innerMsg,
