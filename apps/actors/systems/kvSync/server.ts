@@ -21,7 +21,7 @@ import { filterMap, mapObj, randStep2, removeKey } from "../../../../util/util";
 import { Json, jsonEq } from "../../../../util/json";
 import { keyInQuery, runQuery } from "./query";
 import { getVisibleValue } from "./mvcc";
-import { doWrite } from "./common";
+import { doWrite, MutationContextImpl } from "./common";
 
 export type ServerState = {
   type: "ServerState";
@@ -91,58 +91,6 @@ function processLiveQueryRequest(
   ];
 }
 
-class ServerMutationContext implements MutationCtx {
-  transactionID: string;
-  trace: Trace;
-  isTxnCommitted: (txnID: string) => boolean;
-  kvData: KVData;
-  curUser: string;
-  randState: number;
-
-  constructor(
-    transactionID: string,
-    kvData: KVData,
-    isTxnCommitted: (txnID: string) => boolean,
-    curUser: string,
-    randState: number
-  ) {
-    this.transactionID = transactionID;
-    this.trace = [];
-    this.curUser = curUser;
-    this.randState = randState;
-    this.kvData = kvData;
-    this.isTxnCommitted = isTxnCommitted;
-  }
-
-  rand(): number {
-    const [val, newState] = randStep2(this.randState);
-    this.randState = newState;
-    return val;
-  }
-
-  read(key: string): Json {
-    const val = getVisibleValue(this.isTxnCommitted, this.kvData, key);
-    this.trace.push({
-      type: "Read",
-      key,
-      transactionID: "-1",
-    });
-    return val;
-  }
-
-  write(key: string, value: Json) {
-    const [newKVData, writeOp] = doWrite(
-      this.kvData,
-      this.isTxnCommitted,
-      this.transactionID,
-      key,
-      value
-    );
-    this.kvData = newKVData;
-    this.trace.push(writeOp);
-  }
-}
-
 function runMutationOnServer(
   state: ServerState,
   user: string,
@@ -152,11 +100,11 @@ function runMutationOnServer(
   const isTxnCommitted = (txnID: string) => true;
   const txnTime = state.time;
 
-  const ctx = new ServerMutationContext(
+  const ctx = new MutationContextImpl(
     req.txnID,
+    user,
     state.data,
     isTxnCommitted,
-    user,
     state.randSeed
   );
 

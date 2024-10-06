@@ -8,7 +8,6 @@ import {
   LiveQueryUpdate,
   MsgToClient,
   MsgToServer,
-  MutationCtx,
   MutationInvocation,
   MutationRequest,
   MutationResponse,
@@ -19,11 +18,10 @@ import {
   WriteOp,
 } from "./types";
 import * as effects from "../../effects";
-import { mapObj, randStep, randStep2 } from "../../../../util/util";
+import { mapObj, randStep } from "../../../../util/util";
 import { garbageCollectTransactions } from "./gc";
-import { addNewVersion, getVisibleValue } from "./mvcc";
-import { Json } from "../../../../util/json";
-import { doWrite } from "./common";
+import { addNewVersion } from "./mvcc";
+import { MutationContextImpl } from "./common";
 
 export type QueryStatus = "Loading" | "Online";
 
@@ -145,57 +143,6 @@ function processLiveQueryUpdate(
   };
 }
 
-class ClientMutationContext implements MutationCtx {
-  curUser: string;
-  randState: number;
-  kvData: KVData;
-  trace: Trace = [];
-  transactionID: string;
-  isTxnCommitted: (txnID: string) => boolean;
-
-  constructor(
-    txnID: string,
-    curUser: string,
-    kvData: KVData,
-    isTxnCommitted: (txnID: string) => boolean,
-    randSeed: number
-  ) {
-    this.transactionID = txnID;
-    this.curUser = curUser;
-    this.randState = randSeed;
-    this.kvData = kvData;
-    this.isTxnCommitted = isTxnCommitted;
-  }
-
-  rand(): number {
-    const [val, newState] = randStep2(this.randState);
-    this.randState = newState;
-    return val;
-  }
-
-  read(key: string): Json {
-    const val = getVisibleValue(this.isTxnCommitted, this.kvData, key);
-    this.trace.push({
-      type: "Read",
-      key,
-      transactionID: "-1",
-    });
-    return val;
-  }
-
-  write(key: string, value: Json) {
-    const [newKVData, writeOp] = doWrite(
-      this.kvData,
-      this.isTxnCommitted,
-      this.transactionID,
-      key,
-      value
-    );
-    this.kvData = newKVData;
-    this.trace.push(writeOp);
-  }
-}
-
 function runMutationOnClient(
   state: ClientState,
   invocation: MutationInvocation,
@@ -205,7 +152,7 @@ function runMutationOnClient(
   const txnID = randNum.toString();
   const isVisible = (txnID) => isTxnVisible(state, txnID);
 
-  const ctx = new ClientMutationContext(
+  const ctx = new MutationContextImpl(
     txnID,
     username,
     state.data,
