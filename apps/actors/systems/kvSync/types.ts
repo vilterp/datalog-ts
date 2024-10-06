@@ -93,7 +93,7 @@ export class AbortError extends Error {
 export type MutationCtx = {
   curUser: string;
   rand: () => number;
-  read: (key: string) => Json;
+  read: (key: string, _default?: Json) => Json;
   write: (key: string, value: Json) => void;
 };
 

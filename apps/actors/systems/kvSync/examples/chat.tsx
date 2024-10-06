@@ -266,9 +266,7 @@ function ThreadList(props: {
 
 const mutations: TSMutationDefns = {
   sendMessage: (ctx, [threadID, message]) => {
-    const latestSeqNo = parseInt(
-      ctx.read(`/latestMessage/${threadID}`) as string
-    );
+    const latestSeqNo = ctx.read(`/latestMessage/${threadID}`, 0) as number;
     const newSeqNo = latestSeqNo + 1;
     const newID = ctx.rand();
     ctx.write(`/latestMessage/${threadID}`, newSeqNo);
