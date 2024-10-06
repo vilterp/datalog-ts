@@ -41,14 +41,14 @@ export class MutationContextImpl implements MutationCtx {
 
   read(key: string, default_: Json = null): Json {
     const val = getVisibleValue(this.isTxnCommitted, this.kvData, key);
-    this.trace.push({
-      type: "Read",
-      key,
-      transactionID: "-1",
-    });
     if (val === null) {
       return default_;
     }
+    this.trace.push({
+      type: "Read",
+      key,
+      transactionID: val.transactionID,
+    });
     return val.value;
   }
 
@@ -65,7 +65,7 @@ export class MutationContextImpl implements MutationCtx {
   }
 }
 
-export function doWrite(
+function doWrite(
   kvData: KVData,
   isTxnCommitted: (txnID: string) => boolean,
   transactionID: string,

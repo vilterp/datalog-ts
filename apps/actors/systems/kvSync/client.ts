@@ -18,7 +18,7 @@ import {
   WriteOp,
 } from "./types";
 import * as effects from "../../effects";
-import { mapObj, randStep } from "../../../../util/util";
+import { mapObj, randStep, randStep2 } from "../../../../util/util";
 import { garbageCollectTransactions } from "./gc";
 import { addNewVersion } from "./mvcc";
 import { MutationContextImpl } from "./common";
@@ -146,7 +146,7 @@ function runMutationOnClient(
   invocation: MutationInvocation,
   username: string
 ): [ClientState, MutationRequest | null] {
-  const randNum = randStep(state.randSeed);
+  const [randNum, randSeed1] = randStep2(state.randSeed);
   const txnID = randNum.toString();
   const isVisible = (txnID) => isTxnVisible(state, txnID);
 
@@ -155,8 +155,10 @@ function runMutationOnClient(
     username,
     state.data,
     isVisible,
-    state.randSeed
+    randSeed1
   );
+
+  console.log("client: txn id", txnID);
 
   const mutation = mutations[invocation.name];
 

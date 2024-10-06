@@ -95,6 +95,8 @@ function runMutationOnServer(
   const isTxnCommitted = (txnID: string) => true;
   const txnTime = state.time;
 
+  console.log("server: txn id", req.txnID);
+
   const ctx = new MutationContextImpl(
     req.txnID,
     user,
@@ -112,6 +114,7 @@ function runMutationOnServer(
     const resVal = mutation(ctx, req.invocation.args);
   } catch (e) {
     if (e instanceof AbortError) {
+      console.warn("SERVER: rejecting txn due to abort", e);
       return [
         state,
         {
