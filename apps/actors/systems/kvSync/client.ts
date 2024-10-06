@@ -210,7 +210,7 @@ function runMutationOnClient(
     txnID,
     interpState: {
       type: "InterpreterState",
-      randSeed: state.randSeed,
+      randSeed: randSeed1,
     },
     invocation,
     trace: ctx.trace,
