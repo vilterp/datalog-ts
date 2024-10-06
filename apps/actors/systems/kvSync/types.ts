@@ -84,13 +84,15 @@ type LogOutResponse = {
 
 // Mutations & Queries
 
-class AbortError extends Error {
-  constructor(public reason: AbortReason) {
+export class AbortError extends Error {
+  resVal: Json;
+  constructor(resVal: Json) {
     super("Mutation aborted");
+    this.resVal = resVal;
   }
 }
 
-type MutationCtx = {
+export type MutationCtx = {
   curUser: string;
   rand: () => number;
   read: (key: string) => Json;

@@ -1,15 +1,17 @@
 import { ActorResp, LoadedTickInitiator, OutgoingMessage } from "../../types";
 import {
+  AbortError,
   KVData,
   LiveQueryRequest,
   LiveQueryResponse,
   LiveQueryUpdate,
   MsgToClient,
   MsgToServer,
-  MutationDefns,
+  MutationCtx,
   MutationRequest,
   MutationResponse,
   Query,
+  Trace,
   TransactionMetadata,
   TSMutationDefns,
   WriteOp,
@@ -17,8 +19,9 @@ import {
 import * as effects from "../../effects";
 import { filterMap, mapObj, randStep2, removeKey } from "../../../../util/util";
 import { Json, jsonEq } from "../../../../util/json";
-import { runMutation } from "./mutations/run";
 import { keyInQuery, runQuery } from "./query";
+import { getVisibleValue } from "./mvcc";
+import { doWrite } from "./common";
 
 export type ServerState = {
   type: "ServerState";
@@ -88,6 +91,60 @@ function processLiveQueryRequest(
   ];
 }
 
+class ServerMutationContext implements MutationCtx {
+  transactionID: string;
+  trace: Trace;
+  isTxnCommitted: (txnID: string) => boolean;
+  kvData: KVData;
+  readonly curUser: string;
+  private randState: number;
+
+  constructor(
+    transactionID: string,
+    kvData: KVData,
+    isTxnCommitted: (txnID: string) => boolean,
+    curUser: string,
+    randState: number
+  ) {
+    this.transactionID = transactionID;
+    this.trace = [];
+    this.curUser = curUser;
+    this.randState = randState;
+    this.kvData = kvData;
+    this.isTxnCommitted = isTxnCommitted;
+  }
+
+  rand(): number {
+    const [val, newState] = randStep2(this.randState);
+    this.randState = newState;
+    return val;
+  }
+
+  read(key: string): Json {
+    const val = getVisibleValue(this.isTxnCommitted, this.kvData, key);
+    this.trace.push({
+      type: "Read",
+      key,
+      transactionID: "-1",
+    });
+    return val;
+  }
+
+  write(key: string, value: Json) {
+    const [newKVData, writeOp] = doWrite(
+      this.kvData,
+      this.isTxnCommitted,
+      this.transactionID,
+      key,
+      value
+    );
+    this.kvData = newKVData;
+    this.trace.push(writeOp);
+  }
+
+  abort: (reason: string) => Error;
+}
+
 function runMutationOnServer(
   state: ServerState,
   user: string,
@@ -95,16 +152,46 @@ function runMutationOnServer(
   clientID: string
 ): [ServerState, MutationResponse, LiveQueryUpdate[]] {
   const isTxnCommitted = (txnID: string) => true;
-  const [newData, resVal, newInterpState, outcome, trace] = runMutation(
-    state.data,
-    req.interpState,
-    req.txnID,
-    state.mutationDefns[req.invocation.name],
-    req.invocation.args,
-    user,
-    isTxnCommitted
-  );
   const txnTime = state.time;
+
+  const ctx = new ServerMutationContext(
+    req.txnID,
+    state.data,
+    isTxnCommitted,
+    user,
+    state.randSeed
+  );
+
+  try {
+    const mutation = state.mutationDefns[req.invocation.name];
+    if (!mutation) {
+      throw new Error(`Unknown mutation: ${req.invocation.name}`);
+    }
+
+    const resVal = mutation(ctx, req.invocation.args);
+  } catch (e) {
+    if (e instanceof AbortError) {
+      return [
+        state,
+        {
+          type: "MutationResponse",
+          txnID: req.txnID,
+          payload: {
+            type: "Reject",
+            timestamp: txnTime,
+            serverTrace: ctx.trace,
+            reason: {
+              type: "FailedOnServer",
+              failure: { type: "LogicError", reason: JSON.stringify(e.resVal) },
+            },
+          },
+        },
+        [],
+      ];
+    }
+    throw e;
+  }
+
   const newState: ServerState = {
     ...state,
     time: state.time + 1,
@@ -112,30 +199,11 @@ function runMutationOnServer(
       ...state.transactionMetadata,
       [req.txnID]: { serverTimestamp: txnTime, invocation: req.invocation },
     },
-    data: newData,
+    data: ctx.kvData,
   };
-  if (outcome === "Abort") {
-    return [
-      state,
-      {
-        type: "MutationResponse",
-        txnID: req.txnID,
-        payload: {
-          type: "Reject",
-          timestamp: txnTime,
-          serverTrace: trace,
-          reason: {
-            type: "FailedOnServer",
-            failure: { type: "LogicError", reason: JSON.stringify(resVal) },
-          },
-        },
-      },
-      [],
-    ];
-  }
-  if (!jsonEq(trace, req.trace)) {
+  if (!jsonEq(ctx.trace, req.trace)) {
     console.warn("SERVER: rejecting txn due to trace mismatch", {
-      serverTrace: trace,
+      serverTrace: ctx.trace,
       clientTrace: req.trace,
     });
     return [
@@ -146,7 +214,7 @@ function runMutationOnServer(
         payload: {
           type: "Reject",
           timestamp: txnTime,
-          serverTrace: trace,
+          serverTrace: ctx.trace,
           reason: {
             type: "FailedOnServer",
             failure: { type: "TraceDoesntMatch" },
@@ -157,7 +225,7 @@ function runMutationOnServer(
     ];
   }
   // live query updates
-  const writes: WriteOp[] = trace.filter(
+  const writes: WriteOp[] = ctx.trace.filter(
     (op) => op.type === "Write"
   ) as WriteOp[];
   const liveQueryUpdates: LiveQueryUpdate[] = filterMap(
