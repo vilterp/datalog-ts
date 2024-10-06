@@ -95,8 +95,6 @@ function runMutationOnServer(
   const isTxnCommitted = (txnID: string) => true;
   const txnTime = state.time;
 
-  console.log("server: txn id", req.txnID);
-
   const ctx = new MutationContextImpl(
     req.txnID,
     user,

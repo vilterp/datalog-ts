@@ -158,8 +158,6 @@ function runMutationOnClient(
     randSeed1
   );
 
-  console.log("client: txn id", txnID);
-
   const mutation = mutations[invocation.name];
 
   try {
