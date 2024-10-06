@@ -1,4 +1,165 @@
 addClient{id: "0"}.
 signUp{clientID: "0", username: "bob", password: "foo"}.
 explore{seed: 123548762349586, steps: 100}.
+.jsonState
 ----
+application/json
+{
+  "server": {
+    "counter": [
+      {
+        "value": 0,
+        "transactionID": "0"
+      }
+    ]
+  },
+  "user0": {},
+  "client0": {
+    "counter": [
+      {
+        "transactionID": "10698",
+        "value": 1
+      },
+      {
+        "transactionID": "4540893",
+        "value": 2
+      },
+      {
+        "transactionID": "3045903",
+        "value": 3
+      },
+      {
+        "transactionID": "1820643",
+        "value": 2
+      },
+      {
+        "transactionID": "1276908",
+        "value": 3
+      },
+      {
+        "transactionID": "1418433",
+        "value": 2
+      },
+      {
+        "transactionID": "2583933",
+        "value": 3
+      },
+      {
+        "transactionID": "2943483",
+        "value": 2
+      },
+      {
+        "transactionID": "669228",
+        "value": 3
+      },
+      {
+        "transactionID": "2573133",
+        "value": 2
+      },
+      {
+        "transactionID": "3162498",
+        "value": 3
+      },
+      {
+        "transactionID": "4320618",
+        "value": 4
+      },
+      {
+        "transactionID": "3695523",
+        "value": 3
+      },
+      {
+        "transactionID": "4090893",
+        "value": 2
+      },
+      {
+        "transactionID": "5191188",
+        "value": 1
+      },
+      {
+        "transactionID": "394413",
+        "value": 0
+      },
+      {
+        "transactionID": "925863",
+        "value": 1
+      },
+      {
+        "transactionID": "3454773",
+        "value": 2
+      },
+      {
+        "transactionID": "3955983",
+        "value": 1
+      },
+      {
+        "transactionID": "5004033",
+        "value": 0
+      },
+      {
+        "transactionID": "3164523",
+        "value": 1
+      },
+      {
+        "transactionID": "25908",
+        "value": 2
+      },
+      {
+        "transactionID": "4974108",
+        "value": 1
+      },
+      {
+        "transactionID": "3226038",
+        "value": 2
+      },
+      {
+        "transactionID": "2072283",
+        "value": 1
+      },
+      {
+        "transactionID": "885588",
+        "value": 2
+      },
+      {
+        "transactionID": "2199228",
+        "value": 3
+      },
+      {
+        "transactionID": "4702623",
+        "value": 2
+      },
+      {
+        "transactionID": "682323",
+        "value": 1
+      },
+      {
+        "transactionID": "2373018",
+        "value": 2
+      },
+      {
+        "transactionID": "3054273",
+        "value": 3
+      },
+      {
+        "transactionID": "4661178",
+        "value": 4
+      },
+      {
+        "transactionID": "3420573",
+        "value": 5
+      },
+      {
+        "transactionID": "286818",
+        "value": 6
+      },
+      {
+        "transactionID": "4351173",
+        "value": 7
+      },
+      {
+        "transactionID": "1483503",
+        "value": 6
+      }
+    ]
+  }
+}
