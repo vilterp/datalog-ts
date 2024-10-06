@@ -22,6 +22,7 @@ import {
 } from "../../types";
 import { explore } from "../../explore";
 import { mapObj } from "../../../../util/util";
+import { counter } from "./examples/counter";
 
 export function kvSyncTests(writeResults: boolean): Suite {
   return [
@@ -31,6 +32,16 @@ export function kvSyncTests(writeResults: boolean): Suite {
         runDDTestAtPath(
           "apps/actors/systems/kvSync/examples/bank.dd.txt",
           (inputs) => kvSyncTest(bank, inputs),
+          writeResults
+        );
+      },
+    },
+    {
+      name: "counter",
+      test() {
+        runDDTestAtPath(
+          "apps/actors/systems/kvSync/examples/counter.dd.txt",
+          (inputs) => kvSyncTest(counter, inputs),
           writeResults
         );
       },
