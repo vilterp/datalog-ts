@@ -116,9 +116,9 @@ export class DBCtx {
 }
 
 function getPrimaryKeyStr(table: string, values: Json[]): string {
-  return `${table}/primary/${values.map((v) => JSON.stringify(v)).join("/")}`;
+  return `/${table}/primary/${values.map((v) => JSON.stringify(v)).join("/")}`;
 }
 
 function getIndexKeyStr(table: string, indexName: string, value: Json): string {
-  return `${table}/by_${indexName}/${JSON.stringify(value)}`;
+  return `/${table}/by_${indexName}/${JSON.stringify(value)}`;
 }

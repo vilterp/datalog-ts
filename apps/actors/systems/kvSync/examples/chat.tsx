@@ -2,13 +2,14 @@ import React, { Ref, useLayoutEffect, useRef, useState } from "react";
 import { UIProps } from "../../../types";
 import { ClientState, QueryStatus } from "../client";
 import { Client, makeClient, useLiveQuery } from "../hooks";
-import { TSMutationDefns, UserInput } from "../types";
+import { KVData, TSMutationDefns, UserInput } from "../types";
 import { TxnState } from "../uiCommon/txnState";
 import { KVApp } from "./types";
 import { Inspector } from "../uiCommon/inspector";
 import { LoggedIn, LoginWrapper } from "../uiCommon/loginWrapper";
 import { Table } from "../../../../../uiCommon/generic/table";
 import { DBCtx, QueryCtx, Schema, useTablePointQuery } from "../indexes";
+import { pairsToObj } from "../../../../../util/util";
 
 function ChatUI(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
@@ -360,4 +361,19 @@ const mutations: TSMutationDefns = {
 
 const EXAMPLE_THREADS = ["foo", "bar"];
 
-export const chat: KVApp = { name: "Chat", mutations, ui: ChatUI };
+export const chat: KVApp = {
+  name: "Chat",
+  mutations,
+  ui: ChatUI,
+  // TODO: wrap up in indexes.ts
+  initialKVPairs: pairsToObj(
+    EXAMPLE_THREADS.map((id) => ({
+      key: `/channels/primary/"${id}"`,
+      value: {
+        id,
+        name: id,
+        latestMessageID: 0,
+      },
+    }))
+  ),
+};
