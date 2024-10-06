@@ -14,7 +14,7 @@ import { initialServerState, ServerState, updateServer } from "./server";
 import { MsgToClient, MsgToServer, TSMutationDefns } from "./types";
 import { EXAMPLES } from "./examples";
 import { KVApp } from "./examples/types";
-import { hashString, lastItem } from "../../../../util/util";
+import { hashString } from "../../../../util/util";
 
 export const KVSYNC_SYSTEMS = Object.values(EXAMPLES).map(makeActorSystem);
 
