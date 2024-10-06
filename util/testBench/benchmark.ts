@@ -106,12 +106,13 @@ export async function runAll(benchmarks: { [name: string]: BenchmarkSpec[] }) {
       console.group(entry.name);
       const res = await entry.run();
       console.log(res);
-      const recordName = `${suiteName}/${entry.name}`;
-      const airtableRecords = await postResultToAirtable(recordName, res);
-      console.log(
-        "posted to airtable:",
-        airtableRecords.map((r) => r.id)
-      );
+      // TODO: reenable when airtable has higher row limit
+      // const recordName = `${suiteName}/${entry.name}`;
+      // const airtableRecords = await postResultToAirtable(recordName, res);
+      // console.log(
+      //   "posted to airtable:",
+      //   airtableRecords.map((r) => r.id)
+      // );
       console.groupEnd();
     }
     console.groupEnd();

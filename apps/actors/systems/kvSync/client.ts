@@ -293,9 +293,12 @@ export function updateClient(
   const resp = updateClientInner(state, init);
   switch (resp.type) {
     case "continue": {
+      // TODO: notify ppl that their txn was rejected
+      const incremented = incrementTime(resp.state);
+      const collected = garbageCollectTransactions(incremented);
       return {
         ...resp,
-        state: garbageCollectTransactions(incrementTime(resp.state)),
+        state: incremented,
       };
     }
     default:
