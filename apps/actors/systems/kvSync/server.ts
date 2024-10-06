@@ -7,11 +7,9 @@ import {
   LiveQueryUpdate,
   MsgToClient,
   MsgToServer,
-  MutationCtx,
   MutationRequest,
   MutationResponse,
   Query,
-  Trace,
   TransactionMetadata,
   TSMutationDefns,
   WriteOp,
@@ -20,8 +18,7 @@ import * as effects from "../../effects";
 import { filterMap, mapObj, randStep2, removeKey } from "../../../../util/util";
 import { Json, jsonEq } from "../../../../util/json";
 import { keyInQuery, runQuery } from "./query";
-import { getVisibleValue } from "./mvcc";
-import { doWrite, MutationContextImpl } from "./common";
+import { MutationContextImpl } from "./common";
 
 export type ServerState = {
   type: "ServerState";

@@ -6,6 +6,7 @@ import {
   LoadedTickInitiator,
   MessageToClient,
   System,
+  Trace,
 } from "../../types";
 import { ClientState, initialClientState, updateClient } from "./client";
 import { initialServerState, ServerState, updateServer } from "./server";
@@ -27,14 +28,15 @@ export function makeActorSystem(app: KVApp): System<KVSyncState, KVSyncMsg> {
     id: `kv-${app.name}`,
     ui: app.ui,
     update,
-    getInitialState: (interp) =>
-      spawnInitialActors(update, interp, {
+    getInitialState: (interp): Trace<KVSyncState> => {
+      return spawnInitialActors(update, interp, {
         server: initialServerState(
           app.mutations,
           app.initialKVPairs || {},
           randServerSeed
         ),
-      }),
+      });
+    },
     // TODO: generate ID deterministically
     initialClientState: (id: string) =>
       initialClientState(id, app.mutations, hashString(id)),

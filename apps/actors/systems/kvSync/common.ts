@@ -1,7 +1,14 @@
 import { Json } from "../../../../util/json";
 import { randStep2 } from "../../../../util/util";
 import { addNewVersion, getVisibleValue } from "./mvcc";
-import { KVData, MutationCtx, Trace, VersionedValue, WriteOp } from "./types";
+import {
+  KVData,
+  MutationCtx,
+  MutationInvocation,
+  Trace,
+  VersionedValue,
+  WriteOp,
+} from "./types";
 
 export class MutationContextImpl implements MutationCtx {
   curUser: string;
@@ -86,4 +93,8 @@ export function doWrite(
       desc: { type: "Insert", after: newVersionedValue },
     },
   ];
+}
+
+export function prettyPrintInvocation(invocation: MutationInvocation): string {
+  return `${invocation.name}(${invocation.args.join(", ")})`;
 }
