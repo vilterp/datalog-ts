@@ -350,8 +350,8 @@ const mutations: TSMutationDefns = {
 
 const queries: TSQueryDefns = {
   messagesForThread: (ctx, [threadID]) => {
-    const db = new DBQueryCtx(schema, ctx);
-    return db.read("messages", [["threadID", threadID]]);
+    // TODO: use DB
+    return ctx.readAll(`/messages/by_threadID/${threadID}`);
   },
   channels: (ctx) => {
     // TODO: use DB

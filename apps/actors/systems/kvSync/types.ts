@@ -153,6 +153,7 @@ type ReadPoint = {
 type ReadRange = {
   type: "ReadRange";
   prefix: string;
+  values: QueryResults;
 };
 
 export type WriteDesc =

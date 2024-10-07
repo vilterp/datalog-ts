@@ -68,6 +68,7 @@ export class MutationContextImpl implements MutationCtx, QueryCtx {
     this.trace.push({
       type: "ReadRange",
       prefix,
+      values: out,
     });
 
     return out;

@@ -283,8 +283,17 @@ function processLiveQueryResponse(
   let newData = { ...state.data };
   for (const op of resp.trace) {
     // add latest transaction onto the end
-    if (op.type === "Read") {
-      newData[op.key] = addNewVersion(newData, op.key, op.value);
+    switch (op.type) {
+      case "Read":
+        newData[op.key] = addNewVersion(newData, op.key, op.value);
+        break;
+      case "ReadRange":
+        for (const key in op.values) {
+          newData[key] = addNewVersion(newData, key, op.values[key]);
+        }
+        break;
+      default:
+        throw new Error("unexpected trace op");
     }
   }
 

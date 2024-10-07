@@ -85,9 +85,19 @@ function processLiveQueryRequest(
   const [results, trace] = runQuery(app, ctx, req.invocation);
   const transactionTimestamps: TransactionMetadata = {};
   for (const op of trace) {
-    if (op.type === "Read") {
-      const txnID = op.transactionID;
-      transactionTimestamps[txnID] = state.transactionMetadata[txnID];
+    switch (op.type) {
+      case "Read":
+        transactionTimestamps[op.value.transactionID] =
+          state.transactionMetadata[op.value.transactionID];
+        break;
+      case "ReadRange":
+        for (const key in op.values) {
+          transactionTimestamps[op.values[key].transactionID] =
+            state.transactionMetadata[op.values[key].transactionID];
+        }
+        break;
+      case "Write":
+        throw new Error("unexpected write in trace");
     }
   }
 
