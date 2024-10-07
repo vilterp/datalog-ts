@@ -88,7 +88,10 @@ function MessageTable(props: {
   const [latestMessageSeen, latestMessageSeenStatus] = useTablePointQuery(
     ctx,
     "latestMessageRead",
-    [["threadID", props.threadID]]
+    [
+      ["threadID", props.threadID],
+      ["userID", props.user],
+    ]
   );
 
   if (messagesStatus === "Loading") {
