@@ -2,10 +2,16 @@ import { useEffect } from "react";
 import { UIProps } from "../../types";
 import { ClientState, QueryStatus, isTxnVisible } from "./client";
 import { runQuery } from "./query";
-import { Query, UserInput, VersionedValue } from "./types";
+import {
+  QueryCtx,
+  QueryInvocation,
+  QueryResults,
+  queryToString,
+  UserInput,
+} from "./types";
 import { Json } from "../../../../util/json";
-
-export type QueryResults = { [key: string]: VersionedValue };
+import { MutationContextImpl } from "./common";
+import { KVApp } from "./examples/types";
 
 export type Client = {
   state: ClientState;
@@ -13,7 +19,7 @@ export type Client = {
   signup(username: string, password: string): void;
   logout(): void;
   runMutation(name: string, args: Json[]): void;
-  registerLiveQuery(id: string, query: Query): void;
+  registerLiveQuery(invocation: QueryInvocation): void;
   cancelTransaction(id: string): void;
   retryTransaction(id: string): void;
 };
@@ -25,13 +31,14 @@ export function makeClient(props: UIProps<ClientState, UserInput>): Client {
       invocation: { type: "Invocation", name, args },
     });
   };
-  const registerLiveQuery = (id: string, query: Query) => {
+  const registerLiveQuery = (invocation: QueryInvocation) => {
+    const id = queryToString(invocation);
     // don't register duplicate query
     // TODO: key these on query itself; get rid of id
     if (props.state.liveQueries[id]) {
       return;
     }
-    props.sendUserInput({ type: "RegisterQuery", id, query });
+    props.sendUserInput({ type: "RegisterQuery", invocation });
   };
   const cancelTransaction = (id: string) => {
     props.sendUserInput({ type: "CancelTransaction", id });
@@ -62,18 +69,31 @@ export function makeClient(props: UIProps<ClientState, UserInput>): Client {
 }
 
 export function useLiveQuery(
+  app: KVApp,
   client: Client,
-  id: string,
-  query: Query
+  invocation: QueryInvocation
 ): [QueryResults, QueryStatus] {
+  const queryID = queryToString(invocation);
   // TODO: try to get rid of id; usse query itself as key
   useEffect(() => {
-    client.registerLiveQuery(id, query);
-  }, [id]);
+    client.registerLiveQuery(invocation);
+  }, [queryID]);
 
   const isVisible = (txnID) => isTxnVisible(client.state, txnID);
-  const results = runQuery(isVisible, client.state.data, query);
-  const queryMetadata = client.state.liveQueries[id];
+
+  const txnID = client.state.randSeed.toString();
+  const ctx: QueryCtx = new MutationContextImpl(
+    txnID,
+    client.state.loginState.type === "LoggedIn"
+      ? client.state.loginState.username
+      : "",
+    client.state.data,
+    isVisible,
+    client.state.randSeed
+  );
+
+  const [results, trace] = runQuery(app, ctx, invocation);
+  const queryMetadata = client.state.liveQueries[queryID];
   const status: QueryStatus = queryMetadata ? queryMetadata.status : "Loading";
   return [results, status];
 }

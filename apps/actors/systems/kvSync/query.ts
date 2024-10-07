@@ -1,25 +1,18 @@
+import { KVApp } from "./examples/types";
 import { QueryResults } from "./hooks";
-import { getVisibleValue } from "./mvcc";
-import { KVData, Query } from "./types";
+import { KVData, Query, QueryCtx, QueryInvocation, Trace } from "./types";
 
 export function keyInQuery(key: string, query: Query): boolean {
   return key.startsWith(query.prefix);
 }
 
 export function runQuery(
-  txnIsCommitted: (txnID: string) => boolean,
-  data: KVData,
-  query: Query
-): QueryResults {
-  const out: QueryResults = {};
-  for (const key in data) {
-    if (keyInQuery(key, query)) {
-      const res = getVisibleValue(txnIsCommitted, data, key);
-      if (res !== null) {
-        out[key] = res;
-      }
-    }
-  }
+  app: KVApp,
+  ctx: QueryCtx,
+  invocation: QueryInvocation
+): [QueryResults, Trace] {
+  const query = app.queries[invocation.name];
+  const res = query(ctx);
 
-  return out;
+  return [res, ctx.trace];
 }

@@ -5,6 +5,7 @@ import {
   KVData,
   MutationCtx,
   MutationInvocation,
+  QueryResults,
   Trace,
   VersionedValue,
   WriteOp,
@@ -39,17 +40,33 @@ export class MutationContextImpl implements MutationCtx {
     return val;
   }
 
-  read(key: string, default_: Json = null): Json {
+  read(key: string, default_: Json = null): VersionedValue {
     const val = getVisibleValue(this.isTxnCommitted, this.kvData, key);
     if (val === null) {
-      return default_;
+      return { value: default_, transactionID: "-1" };
     }
     this.trace.push({
       type: "Read",
       key,
       transactionID: val.transactionID,
     });
-    return val.value;
+    return val;
+  }
+
+  readAll(tableName: string, equalities: [string, Json][]): QueryResults {
+    const out: QueryResults = {};
+
+    for (const key in this.kvData) {
+      if (key.startsWith(`${tableName}/primary/`)) {
+        const value = getVisibleValue(this.isTxnCommitted, this.kvData, key);
+
+        if (recordMatches(value, equalities)) {
+          out[key] = value;
+        }
+      }
+    }
+
+    return out;
   }
 
   write(key: string, value: Json) {
@@ -63,6 +80,18 @@ export class MutationContextImpl implements MutationCtx {
     this.kvData = newKVData;
     this.trace.push(writeOp);
   }
+}
+
+function recordMatches(
+  value: VersionedValue,
+  equalities: [string, Json][]
+): boolean {
+  for (const [attr, val] of equalities) {
+    if (value.value[attr] !== val) {
+      return false;
+    }
+  }
+  return true;
 }
 
 function doWrite(

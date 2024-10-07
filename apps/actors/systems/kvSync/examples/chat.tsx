@@ -2,7 +2,7 @@ import React, { useLayoutEffect, useRef, useState } from "react";
 import { UIProps } from "../../../types";
 import { ClientState, QueryStatus } from "../client";
 import { Client, makeClient, useLiveQuery } from "../hooks";
-import { TSMutationDefns, UserInput } from "../types";
+import { TSMutationDefns, TSQueryDefns, UserInput } from "../types";
 import { TxnState } from "../uiCommon/txnState";
 import { KVApp } from "./types";
 import { Inspector } from "../uiCommon/inspector";
@@ -210,25 +210,15 @@ function ThreadList(props: {
   curThread: string;
   setCurThread: (th: string) => void;
 }) {
-  const ctx: QueryCtx = { client: props.client, schema };
-
   // TODO: this should be only for chats that this user is in
-  const [latestMessage, latestMessageStatus] = useLiveQuery(
-    props.client,
-    "latest-messages",
-    {
-      prefix: "/channels",
-    }
-  );
+  const [latestMessage, latestMessageStatus] = useLiveQuery(props.client, {
+    name: "getChannels",
+    args: [],
+  });
 
   const [latestMessageRead, latestMessageReadStatus] = useLiveQuery(
     props.client,
-    "latest-message-read",
-    {
-      prefix: `/latestMessageRead/by_userID_threadID/${JSON.stringify(
-        props.user
-      )}`,
-    }
+    { name: "latestMessagesForUser", args: [props.user] }
   );
 
   console.log("latestMessageRead", props.client.state.id, latestMessageRead);
@@ -334,7 +324,7 @@ const mutations: TSMutationDefns = {
   sendMessage: (ctx, [threadID, message]) => {
     const db = new DBCtx(schema, ctx);
 
-    const channel = db.read("channels", [["id", threadID]]) as Channel;
+    const channel = db.read("channels", [["id", threadID]]).value as Channel;
     const latestSeqNo = channel.latestMessageID;
     const newSeqNo = latestSeqNo + 1;
     const newID = ctx.rand();
@@ -369,11 +359,23 @@ const mutations: TSMutationDefns = {
   },
 };
 
+const queries: TSQueryDefns = {
+  getChannels: (ctx) => {
+    const db = new DBCtx(schema, ctx);
+    return db.readAll("channels", []);
+  },
+  latestMessagesForUser: (ctx, [userID]) => {
+    const db = new DBCtx(schema, ctx);
+    return db.read("latestMessageRead", [["userID", userID]]);
+  },
+};
+
 const EXAMPLE_CHANNELS = ["foo", "bar"];
 
 export const chat: KVApp = {
   name: "Chat",
   mutations,
+  queries,
   ui: ChatUI,
   // TODO: wrap up in indexes.ts
   initialKVPairs: getInitialData(schema, {

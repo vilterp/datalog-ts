@@ -14,8 +14,17 @@ export type UserInput =
   | { type: "Login"; username: string; password: string }
   | { type: "Logout" }
   | { type: "RunMutation"; invocation: MutationInvocation }
-  | { type: "RegisterQuery"; id: string; query: Query }
+  | { type: "RegisterQuery"; invocation: QueryInvocation }
   | { type: "CancelTransaction"; id: string };
+
+export type QueryInvocation = {
+  name: string;
+  args: Json[];
+};
+
+export function queryToString(invocation: QueryInvocation): string {
+  return `${invocation.name}(${invocation.args.join(",")})`;
+}
 
 export type MsgToServer =
   | SignupRequest
@@ -93,20 +102,30 @@ export class AbortError extends Error {
 export type MutationCtx = {
   curUser: string;
   rand: () => number;
-  read: (key: string, _default?: Json) => Json;
+  read: (key: string, _default?: Json) => VersionedValue;
+  readAll: (tableName: string, equalities: [string, Json][]) => QueryResults;
   write: (key: string, value: Json) => void;
+};
+
+export type QueryCtx = {
+  curUser: string;
+  read: (key: string) => VersionedValue;
 };
 
 type MutationFn = (ctx: MutationCtx, args: Json[]) => void;
 
 export type TSMutationDefns = { [name: string]: MutationFn };
 
-export type Query = { prefix: string };
+export type TSQueryDefns = {
+  [name: string]: (ctx: QueryCtx) => QueryResults;
+};
+
+export type QueryResults = { [key: string]: VersionedValue };
 
 export type LiveQueryRequest = {
   type: "LiveQueryRequest";
   id: string;
-  query: Query;
+  invocation: QueryInvocation;
 };
 
 // Full trace

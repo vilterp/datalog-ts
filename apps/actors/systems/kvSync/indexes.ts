@@ -1,7 +1,6 @@
 import { Json, jsonEq } from "../../../../util/json";
-import { QueryStatus } from "./client";
-import { Client, QueryResults, useLiveQuery } from "./hooks";
-import { MutationCtx, Query } from "./types";
+import { Client } from "./hooks";
+import { MutationCtx, QueryResults, VersionedValue } from "./types";
 
 export type Schema = { [tableName: string]: TableSchema };
 
@@ -22,38 +21,6 @@ export type QueryCtx = {
   client: Client;
   schema: Schema;
 };
-
-export function useTablePointQuery(
-  ctx: QueryCtx,
-  table: string,
-  equalities: [string, Json][]
-): [QueryResults, QueryStatus] {
-  const vals = equalities.map(
-    ([attr, value]) => `${attr}-${JSON.stringify(value)}`
-  );
-  return useLiveQuery(
-    ctx.client,
-    `${table}-${vals}`,
-    getQuery(ctx.schema, table, equalities)
-  );
-}
-
-function getQuery(
-  schema: Schema,
-  table: string,
-  equalities: [string, Json][]
-): Query {
-  const attrs = equalities.map(([attr, _]) => attr);
-  const values = equalities.map(([_, value]) => value);
-  const index = getIndex(schema, table, attrs);
-  if (index !== null) {
-    return {
-      prefix: getPrimaryKeyStr(table, values),
-    };
-  }
-
-  throw new Error(`No index for ${table}.[${attrs.join("_")}]`);
-}
 
 function getIndex(
   schema: Schema,
@@ -112,7 +79,7 @@ export class DBCtx {
     }
   }
 
-  read(table: string, equalities: Equalities): Json {
+  read(table: string, equalities: Equalities): VersionedValue {
     const tableSchema = this.schema[table];
     const attrs = equalities.map(([attr, _]) => attr);
     const values = equalities.map(([_, value]) => value);
@@ -126,7 +93,7 @@ export class DBCtx {
     const index = getIndex(this.schema, table, attrs);
     if (index) {
       const keyStr = getIndexKeyStr(table, equalities);
-      const primaryKeyStr = this.mutationCtx.read(keyStr) as string;
+      const primaryKeyStr = this.mutationCtx.read(keyStr).value as string;
       if (!primaryKeyStr) {
         return null;
       }
@@ -134,6 +101,10 @@ export class DBCtx {
     }
 
     throw new Error(`No index for ${table}.${attrs}`);
+  }
+
+  readAll(tableName: string, equalities: Equalities): QueryResults {
+    return this.mutationCtx.readAll(tableName, equalities);
   }
 }
 
@@ -166,6 +137,9 @@ export function getInitialData(schema: Schema, data: InitialData): KVPairs {
     },
     write: (key, value) => {
       out[key] = value;
+    },
+    readAll: (tableName, equalities) => {
+      throw new Error(`ReadAll not supported in initial data`);
     },
   };
 

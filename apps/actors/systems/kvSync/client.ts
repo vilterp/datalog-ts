@@ -11,7 +11,8 @@ import {
   MutationInvocation,
   MutationRequest,
   MutationResponse,
-  Query,
+  QueryInvocation,
+  queryToString,
   Trace,
   TransactionMetadata,
   TSMutationDefns,
@@ -25,7 +26,10 @@ import { MutationContextImpl } from "./common";
 
 export type QueryStatus = "Loading" | "Online";
 
-export type LiveQuery = { query: Query; status: QueryStatus };
+export type LiveQuery = {
+  invocation: QueryInvocation;
+  status: QueryStatus;
+};
 
 export type ClientState = {
   type: "ClientState";
@@ -237,14 +241,17 @@ function addTransaction(
 
 function registerLiveQuery(
   state: ClientState,
-  id: string,
-  query: Query
+  invocation: QueryInvocation
 ): [ClientState, LiveQueryRequest] {
+  const id = queryToString(invocation);
   const newState: ClientState = {
     ...state,
-    liveQueries: { ...state.liveQueries, [id]: { query, status: "Loading" } },
+    liveQueries: {
+      ...state.liveQueries,
+      [id]: { invocation, status: "Loading" },
+    },
   };
-  return [newState, { type: "LiveQueryRequest", id, query }];
+  return [newState, { type: "LiveQueryRequest", id, invocation }];
 }
 
 function getNewTransactions(metadata: TransactionMetadata): {
@@ -468,7 +475,7 @@ function updateClientInner(
         // Queries & Mutations
 
         case "RegisterQuery": {
-          const [newState, req] = registerLiveQuery(state, msg.id, msg.query);
+          const [newState, req] = registerLiveQuery(state, msg.invocation);
           if (state.loginState.type === "LoggedOut") {
             console.warn("CLIENT: must be logged in to register query");
             return effects.updateState(state);
