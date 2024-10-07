@@ -1,4 +1,5 @@
 import { Json } from "../../../../util/json";
+import { UIProps } from "../../types";
 
 export type VersionedValue = {
   value: Json;
@@ -99,25 +100,26 @@ export class AbortError extends Error {
   }
 }
 
-export type MutationCtx = {
-  curUser: string;
+export type MutationCtx = QueryCtx & {
   rand: () => number;
-  read: (key: string, _default?: Json) => VersionedValue;
-  readAll: (tableName: string, equalities: [string, Json][]) => QueryResults;
   write: (key: string, value: Json) => void;
 };
 
 export type QueryCtx = {
   curUser: string;
-  read: (key: string) => VersionedValue;
+  readAll: (tableName: string, equalities: [string, Json][]) => QueryResults;
+  read: (key: string) => Json;
+  trace: Trace;
 };
 
 type MutationFn = (ctx: MutationCtx, args: Json[]) => void;
 
 export type TSMutationDefns = { [name: string]: MutationFn };
 
+type QueryFn = (ctx: QueryCtx, args: Json[]) => Json;
+
 export type TSQueryDefns = {
-  [name: string]: (ctx: QueryCtx) => QueryResults;
+  [name: string]: QueryFn;
 };
 
 export type QueryResults = { [key: string]: VersionedValue };
@@ -200,7 +202,8 @@ export type LiveQueryUpdate = {
 export type LiveQueryResponse = {
   type: "LiveQueryResponse";
   id: string;
-  results: { [key: string]: VersionedValue };
+  results: Json;
+  trace: Trace;
   transactionMetadata: TransactionMetadata;
 };
 

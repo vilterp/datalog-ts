@@ -1,17 +1,11 @@
 import { useEffect } from "react";
 import { UIProps } from "../../types";
-import { ClientState, QueryStatus, isTxnVisible } from "./client";
+import { ClientState, isTxnVisible, QueryStatus } from "./client";
 import { runQuery } from "./query";
-import {
-  QueryCtx,
-  QueryInvocation,
-  QueryResults,
-  queryToString,
-  UserInput,
-} from "./types";
+import { QueryCtx, QueryInvocation, queryToString, UserInput } from "./types";
 import { Json } from "../../../../util/json";
 import { MutationContextImpl } from "./common";
-import { KVApp } from "./examples/types";
+import { KVApp } from "./kvApp";
 
 export type Client = {
   state: ClientState;
@@ -72,7 +66,7 @@ export function useLiveQuery(
   app: KVApp,
   client: Client,
   invocation: QueryInvocation
-): [QueryResults, QueryStatus] {
+): [Json, QueryStatus] {
   const queryID = queryToString(invocation);
   // TODO: try to get rid of id; usse query itself as key
   useEffect(() => {

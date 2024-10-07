@@ -4,17 +4,11 @@ import { ClientState, QueryStatus } from "../client";
 import { Client, makeClient, useLiveQuery } from "../hooks";
 import { TSMutationDefns, TSQueryDefns, UserInput } from "../types";
 import { TxnState } from "../uiCommon/txnState";
-import { KVApp } from "./types";
 import { Inspector } from "../uiCommon/inspector";
 import { LoggedIn, LoginWrapper } from "../uiCommon/loginWrapper";
 import { Table } from "../../../../../uiCommon/generic/table";
-import {
-  DBCtx,
-  getInitialData,
-  QueryCtx,
-  Schema,
-  useTablePointQuery,
-} from "../indexes";
+import { DBCtx, DBQueryCtx, getInitialData, Schema } from "../indexes";
+import { KVApp } from "../kvApp";
 
 function ChatUI(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
@@ -81,25 +75,20 @@ function MessageTable(props: {
   client: Client;
   user: string;
 }) {
-  const ctx: QueryCtx = { client: props.client, schema };
-  const [messages, messagesStatus] = useTablePointQuery(ctx, "messages", [
-    ["threadID", props.threadID],
-  ]);
-  const [latestMessageSeen, latestMessageSeenStatus] = useTablePointQuery(
-    ctx,
-    "latestMessageRead",
-    [
-      ["threadID", props.threadID],
-      ["userID", props.user],
-    ]
-  );
-  const [latestMessageSeen2, latestMessageSeenStatus2] = useTablePointQuery(
-    ctx,
-    "latestMessageRead",
-    [
-      ["userID", props.user],
-      ["threadID", props.threadID],
-    ]
+  const [messages, messagesStatus] = useLiveQuery(chat, props.client, {
+    name: "messages",
+    args: [["threadID", props.threadID]],
+  });
+  const [latestMessageSeen, latestMessageSeenStatus] = useLiveQuery(
+    chat,
+    props.client,
+    {
+      name: "latestMessageRead",
+      args: [
+        ["threadID", props.threadID],
+        ["userID", props.user],
+      ],
+    }
   );
 
   if (messagesStatus === "Loading") {
@@ -189,10 +178,10 @@ function useLatestSeqNo(
   client: Client,
   threadID: string
 ): [number, QueryStatus] {
-  const ctx: QueryCtx = { client, schema };
-  const [results, status] = useTablePointQuery(ctx, "channels", [
-    ["id", threadID],
-  ]);
+  const [results, status] = useLiveQuery(chat, client, {
+    name: "channels",
+    args: [["id", threadID]],
+  });
   if (status === "Loading") {
     return [0, status];
   }
@@ -211,12 +200,17 @@ function ThreadList(props: {
   setCurThread: (th: string) => void;
 }) {
   // TODO: this should be only for chats that this user is in
-  const [latestMessage, latestMessageStatus] = useLiveQuery(props.client, {
-    name: "getChannels",
-    args: [],
-  });
+  const [latestMessage, latestMessageStatus] = useLiveQuery(
+    chat,
+    props.client,
+    {
+      name: "getChannels",
+      args: [],
+    }
+  );
 
   const [latestMessageRead, latestMessageReadStatus] = useLiveQuery(
+    chat,
     props.client,
     { name: "latestMessagesForUser", args: [props.user] }
   );
@@ -324,7 +318,7 @@ const mutations: TSMutationDefns = {
   sendMessage: (ctx, [threadID, message]) => {
     const db = new DBCtx(schema, ctx);
 
-    const channel = db.read("channels", [["id", threadID]]).value as Channel;
+    const channel = db.read("channels", [["id", threadID]]) as Channel;
     const latestSeqNo = channel.latestMessageID;
     const newSeqNo = latestSeqNo + 1;
     const newID = ctx.rand();
@@ -361,11 +355,11 @@ const mutations: TSMutationDefns = {
 
 const queries: TSQueryDefns = {
   getChannels: (ctx) => {
-    const db = new DBCtx(schema, ctx);
+    const db = new DBQueryCtx(schema, ctx);
     return db.readAll("channels", []);
   },
   latestMessagesForUser: (ctx, [userID]) => {
-    const db = new DBCtx(schema, ctx);
+    const db = new DBQueryCtx(schema, ctx);
     return db.read("latestMessageRead", [["userID", userID]]);
   },
 };

@@ -5,13 +5,14 @@ import {
   KVData,
   MutationCtx,
   MutationInvocation,
+  QueryCtx,
   QueryResults,
   Trace,
   VersionedValue,
   WriteOp,
 } from "./types";
 
-export class MutationContextImpl implements MutationCtx {
+export class MutationContextImpl implements MutationCtx, QueryCtx {
   curUser: string;
   randState: number;
   kvData: KVData;

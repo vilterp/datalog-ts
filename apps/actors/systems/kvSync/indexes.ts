@@ -1,6 +1,5 @@
 import { Json, jsonEq } from "../../../../util/json";
-import { Client } from "./hooks";
-import { MutationCtx, QueryResults, VersionedValue } from "./types";
+import { MutationCtx, QueryCtx, QueryResults } from "./types";
 
 export type Schema = { [tableName: string]: TableSchema };
 
@@ -15,11 +14,6 @@ type IndexDef = string[];
 export type FieldSchema = {
   type: "string" | "number";
   // TODO: references other tables
-};
-
-export type QueryCtx = {
-  client: Client;
-  schema: Schema;
 };
 
 function getIndex(
@@ -43,13 +37,47 @@ function getIndex(
 
 type Equalities = [string, Json][];
 
-export class DBCtx {
+export class DBQueryCtx {
   schema: Schema;
-  mutationCtx: MutationCtx;
+  queryCtx: QueryCtx;
 
-  constructor(schema: Schema, mutationCtx: MutationCtx) {
+  constructor(schema: Schema, queryCtx: QueryCtx) {
     this.schema = schema;
-    this.mutationCtx = mutationCtx;
+    this.queryCtx = queryCtx;
+  }
+
+  read(table: string, equalities: Equalities): Json {
+    const tableSchema = this.schema[table];
+    const attrs = equalities.map(([attr, _]) => attr);
+    const values = equalities.map(([_, value]) => value);
+
+    // read primary key
+    if (jsonEq(attrs, tableSchema.primaryKey)) {
+      const keyStr = getPrimaryKeyStr(table, values);
+      return this.queryCtx.read(keyStr);
+    }
+
+    const index = getIndex(this.schema, table, attrs);
+    if (index) {
+      const keyStr = getIndexKeyStr(table, equalities);
+      const primaryKeyStr = this.queryCtx.read(keyStr) as string;
+      if (!primaryKeyStr) {
+        return null;
+      }
+      return this.queryCtx.read(primaryKeyStr);
+    }
+
+    throw new Error(`No index for ${table}.${attrs}`);
+  }
+
+  readAll(tableName: string, equalities: Equalities): QueryResults {
+    return this.queryCtx.readAll(tableName, equalities);
+  }
+}
+
+export class DBCtx extends DBQueryCtx {
+  constructor(schema: Schema, mutationCtx: MutationCtx) {
+    super(schema, mutationCtx);
   }
 
   insert(table: string, row: Json) {
@@ -68,43 +96,15 @@ export class DBCtx {
     const primaryKey = tableSchema.primaryKey.map((key) => row[key]);
     const keyStr = getPrimaryKeyStr(table, primaryKey);
 
-    this.mutationCtx.write(keyStr, row);
+    this.queryCtx.write(keyStr, row);
 
     // write indexes
     for (const index of tableSchema.indexes) {
       const equalities: Equalities = index.map((col) => [col, row[col]]);
 
       const indexKey = getIndexKeyStr(table, equalities);
-      this.mutationCtx.write(indexKey, primaryKey);
+      this.queryCtx.write(indexKey, primaryKey);
     }
-  }
-
-  read(table: string, equalities: Equalities): VersionedValue {
-    const tableSchema = this.schema[table];
-    const attrs = equalities.map(([attr, _]) => attr);
-    const values = equalities.map(([_, value]) => value);
-
-    // read primary key
-    if (jsonEq(attrs, tableSchema.primaryKey)) {
-      const keyStr = getPrimaryKeyStr(table, values);
-      return this.mutationCtx.read(keyStr);
-    }
-
-    const index = getIndex(this.schema, table, attrs);
-    if (index) {
-      const keyStr = getIndexKeyStr(table, equalities);
-      const primaryKeyStr = this.mutationCtx.read(keyStr).value as string;
-      if (!primaryKeyStr) {
-        return null;
-      }
-      return this.mutationCtx.read(primaryKeyStr);
-    }
-
-    throw new Error(`No index for ${table}.${attrs}`);
-  }
-
-  readAll(tableName: string, equalities: Equalities): QueryResults {
-    return this.mutationCtx.readAll(tableName, equalities);
   }
 }
 

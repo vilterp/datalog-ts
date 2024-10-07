@@ -3,7 +3,7 @@ import { chat } from "./chat";
 import { counter } from "./counter";
 import { todoMVC } from "./todoMVC";
 import { market } from "./market";
-import { KVApp } from "./types";
+import { KVApp } from "../kvApp";
 
 export const EXAMPLES: { [name: string]: KVApp } = {
   bank,

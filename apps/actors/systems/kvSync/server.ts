@@ -9,7 +9,8 @@ import {
   MsgToServer,
   MutationRequest,
   MutationResponse,
-  Query,
+  QueryInvocation,
+  Trace,
   TransactionMetadata,
   TSMutationDefns,
   WriteOp,
@@ -17,15 +18,20 @@ import {
 import * as effects from "../../effects";
 import { filterMap, mapObj, randStep2, removeKey } from "../../../../util/util";
 import { Json, jsonEq } from "../../../../util/json";
-import { keyInQuery, runQuery } from "./query";
+import { keyInTrace, runQuery } from "./query";
 import { MutationContextImpl } from "./common";
+import { KVApp } from "./kvApp";
 
 export type ServerState = {
   type: "ServerState";
   data: KVData;
   users: { [name: string]: string }; // password
   userSessions: { [token: string]: string }; // username
-  liveQueries: { clientID: string; query: Query }[]; // TODO: index
+  liveQueries: {
+    clientID: string;
+    invocation: QueryInvocation;
+    trace: Trace;
+  }[]; // TODO: index
   transactionMetadata: TransactionMetadata;
   randSeed: number;
   time: number;
@@ -58,28 +64,48 @@ export function initialServerState(
 }
 
 function processLiveQueryRequest(
+  app: KVApp,
   state: ServerState,
   clientID: string,
   req: LiveQueryRequest
 ): [ServerState, LiveQueryResponse] {
-  const newState: ServerState = {
-    ...state,
-    liveQueries: [...state.liveQueries, { clientID, query: req.query }],
-  };
   // TODO: dedup with useQuery
   const txnIsCommitted = () => true;
-  const results = runQuery(txnIsCommitted, state.data, req.query);
+
+  const txnID = state.randSeed.toString();
+
+  const ctx = new MutationContextImpl(
+    txnID,
+    "server", // who is the user?
+    state.data,
+    txnIsCommitted,
+    state.randSeed
+  );
+
+  const [results, trace] = runQuery(app, ctx, req.invocation);
   const transactionTimestamps: TransactionMetadata = {};
-  Object.values(results).forEach((vv) => {
-    transactionTimestamps[vv.transactionID] =
-      state.transactionMetadata[vv.transactionID];
-  });
+  for (const op of trace) {
+    if (op.type === "Read") {
+      const txnID = op.transactionID;
+      transactionTimestamps[txnID] = state.transactionMetadata[txnID];
+    }
+  }
+
+  const newState: ServerState = {
+    ...state,
+    liveQueries: [
+      ...state.liveQueries,
+      { clientID, invocation: req.invocation, trace },
+    ],
+  };
+
   return [
     newState,
     {
       type: "LiveQueryResponse",
       id: req.id,
       results,
+      trace,
       transactionMetadata: transactionTimestamps,
     },
   ];
@@ -177,7 +203,7 @@ function runMutationOnServer(
     state.liveQueries,
     (liveQuery) => {
       const matchingWrites = writes.filter((write) =>
-        keyInQuery(write.key, liveQuery.query)
+        keyInTrace(write.key, liveQuery.trace)
       );
       if (matchingWrites.length === 0) {
         return null;
@@ -218,7 +244,7 @@ function runMutationOnServer(
 
 // TODO: maybe move this out to index.ts? idk
 export function updateServer(
-  mutations: TSMutationDefns,
+  app: KVApp,
   state: ServerState,
   init: LoadedTickInitiator<ServerState, MsgToServer>
 ): ActorResp<ServerState, MsgToClient> {
@@ -283,6 +309,7 @@ export function updateServer(
             }
             case "LiveQueryRequest": {
               const [newState, resp] = processLiveQueryRequest(
+                app,
                 state,
                 init.from,
                 innerMsg
@@ -291,7 +318,7 @@ export function updateServer(
             }
             case "MutationRequest": {
               const [newState, mutationResp, updates] = runMutationOnServer(
-                mutations,
+                app.mutations,
                 state,
                 user,
                 innerMsg,

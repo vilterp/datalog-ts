@@ -19,10 +19,11 @@ import {
   WriteOp,
 } from "./types";
 import * as effects from "../../effects";
-import { mapObj, randStep, randStep2 } from "../../../../util/util";
+import { mapObj, randStep2 } from "../../../../util/util";
 import { garbageCollectTransactions } from "./gc";
 import { addNewVersion } from "./mvcc";
 import { MutationContextImpl } from "./common";
+import { KVApp } from "./kvApp";
 
 export type QueryStatus = "Loading" | "Online";
 
@@ -303,11 +304,11 @@ function processLiveQueryResponse(
 }
 
 export function updateClient(
-  mutations: TSMutationDefns,
+  app: KVApp,
   state: ClientState,
   init: LoadedTickInitiator<ClientState, MsgToClient>
 ): ActorResp<ClientState, MsgToServer> {
-  const resp = updateClientInner(mutations, state, init);
+  const resp = updateClientInner(app.mutations, state, init);
   switch (resp.type) {
     case "continue": {
       // TODO: notify ppl that their txn was rejected

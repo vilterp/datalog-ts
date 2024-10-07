@@ -11,10 +11,10 @@ import {
 } from "../../types";
 import { ClientState, initialClientState, updateClient } from "./client";
 import { initialServerState, ServerState, updateServer } from "./server";
-import { MsgToClient, MsgToServer, TSMutationDefns } from "./types";
+import { MsgToClient, MsgToServer } from "./types";
 import { EXAMPLES } from "./examples";
-import { KVApp } from "./examples/types";
 import { hashString } from "../../../../util/util";
+import { KVApp } from "./kvApp";
 
 export const KVSYNC_SYSTEMS = Object.values(EXAMPLES).map(makeActorSystem);
 
@@ -28,7 +28,7 @@ export function makeActorSystem(app: KVApp): System<KVSyncState, KVSyncMsg> {
     state: KVSyncState,
     init: LoadedTickInitiator<KVSyncState, KVSyncMsg>
   ) => {
-    return update(app.mutations, state, init);
+    return update(app, state, init);
   };
   return {
     name: `KV: ${app.name}`,
@@ -74,20 +74,20 @@ function kvSyncChooseMove(app: KVApp): ChooseFn<KVSyncState, KVSyncMsg> {
 }
 
 export function update(
-  mutations: TSMutationDefns,
+  app: KVApp,
   state: KVSyncState,
   init: LoadedTickInitiator<KVSyncState, KVSyncMsg>
 ): ActorResp<KVSyncState, KVSyncMsg> {
   switch (state.type) {
     case "ClientState":
       return updateClient(
-        mutations,
+        app,
         state,
         init as LoadedTickInitiator<ClientState, MsgToClient>
       );
     case "ServerState":
       return updateServer(
-        mutations,
+        app,
         state,
         init as LoadedTickInitiator<ServerState, MsgToServer>
       );
