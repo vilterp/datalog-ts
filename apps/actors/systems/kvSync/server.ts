@@ -228,6 +228,8 @@ function runMutationOnServer(
         return null;
       }
 
+      console.log("matchingWrites", matchingWrites);
+
       return {
         type: "LiveQueryUpdate",
         clientID: liveQuery.clientID,

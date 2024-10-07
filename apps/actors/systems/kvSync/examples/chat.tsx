@@ -104,7 +104,7 @@ function MessageTable(props: {
     usersSeenBySeqNo[seqNo] = users;
   });
 
-  console.log("messages", messages);
+  console.log("messages", props.client.state.id, messages);
 
   return (
     <>
