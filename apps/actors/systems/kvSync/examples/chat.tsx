@@ -76,18 +76,15 @@ function MessageTable(props: {
   user: string;
 }) {
   const [messages, messagesStatus] = useLiveQuery(chat, props.client, {
-    name: "messages",
-    args: [["threadID", props.threadID]],
+    name: "messagesForThread",
+    args: [props.threadID],
   });
   const [latestMessageSeen, latestMessageSeenStatus] = useLiveQuery(
     chat,
     props.client,
     {
-      name: "latestMessageRead",
-      args: [
-        ["threadID", props.threadID],
-        ["userID", props.user],
-      ],
+      name: "latestMessagesRead",
+      args: [props.user],
     }
   );
 
@@ -204,7 +201,7 @@ function ThreadList(props: {
     chat,
     props.client,
     {
-      name: "getChannels",
+      name: "channels",
       args: [],
     }
   );
@@ -214,8 +211,6 @@ function ThreadList(props: {
     props.client,
     { name: "latestMessagesForUser", args: [props.user] }
   );
-
-  console.log("latestMessageRead", props.client.state.id, latestMessageRead);
 
   return (
     <div style={{ width: 100 }}>
@@ -354,12 +349,17 @@ const mutations: TSMutationDefns = {
 };
 
 const queries: TSQueryDefns = {
-  getChannels: (ctx) => {
+  messagesForThread: (ctx, [threadID]) => {
+    const db = new DBQueryCtx(schema, ctx);
+    return db.read("messages", [["threadID", threadID]]);
+  },
+  channels: (ctx) => {
     const db = new DBQueryCtx(schema, ctx);
     return db.readAll("channels", []);
   },
   latestMessagesForUser: (ctx, [userID]) => {
     const db = new DBQueryCtx(schema, ctx);
+    // TODO: ... read other stuff???
     return db.read("latestMessageRead", [["userID", userID]]);
   },
 };

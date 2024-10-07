@@ -18,6 +18,10 @@ export function runQuery(
   invocation: QueryInvocation
 ): [Json, Trace] {
   const query = app.queries[invocation.name];
+  if (!query) {
+    throw new Error(`Query not found: ${invocation.name}`);
+  }
+
   const res = query(ctx, invocation.args) as Json;
 
   return [res, ctx.trace];
