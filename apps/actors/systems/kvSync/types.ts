@@ -107,7 +107,7 @@ export type MutationCtx = QueryCtx & {
 
 export type QueryCtx = {
   curUser: string;
-  readAll: (tableName: string, equalities: [string, Json][]) => QueryResults;
+  readAll: (prefix: string) => QueryResults;
   read: (key: string) => Json;
   trace: Trace;
 };
@@ -142,7 +142,18 @@ export type WriteOp = {
   desc: WriteDesc;
 };
 
-export type ReadOp = { type: "Read"; key: string; transactionID: string };
+export type ReadOp = ReadPoint | ReadRange;
+
+type ReadPoint = {
+  type: "Read";
+  key: string;
+  value: VersionedValue;
+};
+
+type ReadRange = {
+  type: "ReadRange";
+  prefix: string;
+};
 
 export type WriteDesc =
   | { type: "Insert"; after: VersionedValue }

@@ -83,7 +83,7 @@ function MessageTable(props: {
     chat,
     props.client,
     {
-      name: "latestMessagesRead",
+      name: "latestMessagesForUser",
       args: [props.user],
     }
   );
@@ -354,13 +354,12 @@ const queries: TSQueryDefns = {
     return db.read("messages", [["threadID", threadID]]);
   },
   channels: (ctx) => {
-    const db = new DBQueryCtx(schema, ctx);
-    return db.readAll("channels", []);
+    // TODO: use DB
+    return ctx.readAll("/channels");
   },
   latestMessagesForUser: (ctx, [userID]) => {
-    const db = new DBQueryCtx(schema, ctx);
-    // TODO: ... read other stuff???
-    return db.read("latestMessageRead", [["userID", userID]]);
+    // TODO: use DB
+    return ctx.readAll(`/latestMessageRead/by_userID_threadID/${userID}`);
   },
 };
 

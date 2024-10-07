@@ -56,7 +56,12 @@ export function Inspector(props: { client: Client }) {
             getKey={(_, idx) => idx.toString()}
             columns={[
               { name: "Op", render: (op) => op.type },
-              { name: "Key", render: (op) => <code>{op.key}</code> },
+              {
+                name: "Key",
+                render: (op) => (
+                  <code>{op.type === "ReadRange" ? op.prefix : op.key}</code>
+                ),
+              },
               {
                 name: "Value",
                 render: (op) =>
@@ -67,7 +72,9 @@ export function Inspector(props: { client: Client }) {
               {
                 name: "TxnID",
                 render: (op) =>
-                  op.type === "Read" ? <code>{op.transactionID}</code> : null,
+                  op.type === "Read" ? (
+                    <code>{op.value.transactionID}</code>
+                  ) : null,
               },
             ]}
           />

@@ -49,23 +49,26 @@ export class MutationContextImpl implements MutationCtx, QueryCtx {
     this.trace.push({
       type: "Read",
       key,
-      transactionID: val.transactionID,
+      value: val,
     });
     return val;
   }
 
-  readAll(tableName: string, equalities: [string, Json][]): QueryResults {
+  readAll(prefix: string): QueryResults {
     const out: QueryResults = {};
 
     for (const key in this.kvData) {
-      if (key.startsWith(`${tableName}/primary/`)) {
+      if (key.startsWith(prefix)) {
         const value = getVisibleValue(this.isTxnCommitted, this.kvData, key);
 
-        if (recordMatches(value, equalities)) {
-          out[key] = value;
-        }
+        out[key] = value;
       }
     }
+
+    this.trace.push({
+      type: "ReadRange",
+      prefix,
+    });
 
     return out;
   }
@@ -81,18 +84,6 @@ export class MutationContextImpl implements MutationCtx, QueryCtx {
     this.kvData = newKVData;
     this.trace.push(writeOp);
   }
-}
-
-function recordMatches(
-  value: VersionedValue,
-  equalities: [string, Json][]
-): boolean {
-  for (const [attr, val] of equalities) {
-    if (value.value[attr] !== val) {
-      return false;
-    }
-  }
-  return true;
 }
 
 function doWrite(

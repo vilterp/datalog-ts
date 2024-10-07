@@ -4,8 +4,19 @@ import { QueryCtx, QueryInvocation, Trace } from "./types";
 
 export function keyInTrace(key: string, trace: Trace): boolean {
   for (const op of trace) {
-    if (op.key === key) {
-      return true;
+    switch (op.type) {
+      case "Read":
+        if (op.key === key) {
+          return true;
+        }
+        break;
+      case "ReadRange":
+        if (key.startsWith(op.prefix)) {
+          return true;
+        }
+        break;
+      default:
+        throw new Error("trace not expected");
     }
   }
 

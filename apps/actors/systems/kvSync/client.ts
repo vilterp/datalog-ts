@@ -281,9 +281,11 @@ function processLiveQueryResponse(
   const newTransactions = getNewTransactions(resp.transactionMetadata);
 
   let newData = { ...state.data };
-  for (const [key, value] of Object.entries(resp.results)) {
+  for (const op of resp.trace) {
     // add latest transaction onto the end
-    newData[key] = addNewVersion(newData, key, value);
+    if (op.type === "Read") {
+      newData[op.key] = addNewVersion(newData, op.key, op.value);
+    }
   }
 
   return {

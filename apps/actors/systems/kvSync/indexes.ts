@@ -71,7 +71,7 @@ export class DBQueryCtx {
   }
 
   readAll(tableName: string, equalities: Equalities): QueryResults {
-    return this.queryCtx.readAll(tableName, equalities);
+    throw new Error(`readAll not implemented`);
   }
 }
 
@@ -138,9 +138,10 @@ export function getInitialData(schema: Schema, data: InitialData): KVPairs {
     write: (key, value) => {
       out[key] = value;
     },
-    readAll: (tableName, equalities) => {
+    readAll: (prefix) => {
       throw new Error(`ReadAll not supported in initial data`);
     },
+    trace: [],
   };
 
   const ctx = new DBCtx(schema, simpleMutationCtx);
