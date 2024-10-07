@@ -1,35 +1,7 @@
+import { diff } from "deep-diff";
+
 export type Json = number | string | boolean | { [key: string]: Json } | Json[];
 
 export function jsonEq(left: Json, right: Json): boolean {
-  if (typeof left !== typeof right) {
-    return false;
-  }
-  // TODO: DRY this up?
-  if (left === null && right !== null) {
-    return false;
-  }
-  if (left !== null && right === null) {
-    return false;
-  }
-  if (left === null && right === null) {
-    return true;
-  }
-  switch (typeof left) {
-    case "number":
-    case "boolean":
-    case "string":
-      return left === right;
-    case "object":
-      const leftKeys = Object.keys(left);
-      if (leftKeys.length !== Object.keys(right).length) {
-        return false;
-      }
-      for (let i = 0; i < leftKeys.length; i++) {
-        const key = leftKeys[i];
-        if (!jsonEq(left[key], right[key])) {
-          return false;
-        }
-      }
-      return true;
-  }
+  return diff(left, right) === undefined;
 }

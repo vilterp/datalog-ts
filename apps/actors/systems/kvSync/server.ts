@@ -21,6 +21,7 @@ import { Json, jsonEq } from "../../../../util/json";
 import { keyInTrace, runQuery } from "./query";
 import { MutationContextImpl } from "./common";
 import { KVApp } from "./kvApp";
+import { diff } from "deep-diff";
 
 export type ServerState = {
   type: "ServerState";
@@ -180,12 +181,16 @@ function runMutationOnServer(
     },
     data: ctx.kvData,
   };
-  if (!jsonEq(ctx.trace, req.trace)) {
+  const serverTrace = ctx.trace;
+  const clientTrace = req.trace;
+
+  if (!jsonEq(serverTrace, clientTrace)) {
     console.warn("SERVER: rejecting txn due to trace mismatch", {
       invocation: req.invocation,
       from: clientID,
-      serverTrace: ctx.trace,
-      clientTrace: req.trace,
+      serverTrace,
+      clientTrace,
+      diff: diff(serverTrace, clientTrace),
     });
     return [
       state,

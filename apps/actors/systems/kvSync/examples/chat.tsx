@@ -103,6 +103,8 @@ function MessageTable(props: {
     usersSeenBySeqNo[seqNo] = users;
   });
 
+  console.log("messages", messages);
+
   return (
     <>
       <Table<MessageWithTxnID>
@@ -276,7 +278,7 @@ type LatestMessageRead = {
 
 const schema: Schema = {
   messages: {
-    primaryKey: ["threadID", "id"],
+    primaryKey: ["id"],
     fields: {
       id: { type: "string" },
       threadID: { type: "string" },
@@ -351,15 +353,23 @@ const mutations: TSMutationDefns = {
 const queries: TSQueryDefns = {
   messagesForThread: (ctx, [threadID]) => {
     // TODO: use DB
-    return ctx.readAll(`/messages/by_threadID/${threadID}`);
+    const keys = ctx.readAll(
+      `/messages/by_threadID/${JSON.stringify(threadID)}`
+    );
+    return Object.values(keys).map((vv) => {
+      const value = vv.value[0];
+      return ctx.read(`/messages/primary/${JSON.stringify(value)}`);
+    });
   },
   channels: (ctx) => {
     // TODO: use DB
-    return ctx.readAll("/channels");
+    return ctx.readAll("/channels/primary");
   },
   latestMessagesForUser: (ctx, [userID]) => {
     // TODO: use DB
-    return ctx.readAll(`/latestMessageRead/by_userID_threadID/${userID}`);
+    return ctx.readAll(
+      `/latestMessageRead/by_userID_threadID/${JSON.stringify(userID)}`
+    );
   },
 };
 
