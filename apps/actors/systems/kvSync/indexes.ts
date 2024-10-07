@@ -141,11 +141,13 @@ function getPrimaryKeyStr(table: string, values: Json[]): string {
   return `/${table}/primary/${values.map((v) => JSON.stringify(v)).join("/")}`;
 }
 
-function getIndexKeyStr(table: string, equalities: Equalities): string {
+export function getIndexKeyStr(table: string, equalities: Equalities): string {
   const attrs = equalities.map(([attr, _]) => attr);
   const values = equalities.map(([_, value]) => value);
 
-  return `/${table}/by_${attrs.join("_")}/${JSON.stringify(values)}`;
+  return `/${table}/by_${attrs.join("_")}/${values
+    .map((v) => JSON.stringify(v))
+    .join("/")}`;
 }
 
 // initial data loading

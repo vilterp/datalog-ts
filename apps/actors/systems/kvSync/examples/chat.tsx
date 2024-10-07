@@ -93,6 +93,14 @@ function MessageTable(props: {
       ["userID", props.user],
     ]
   );
+  const [latestMessageSeen2, latestMessageSeenStatus2] = useTablePointQuery(
+    ctx,
+    "latestMessageRead",
+    [
+      ["userID", props.user],
+      ["threadID", props.threadID],
+    ]
+  );
 
   if (messagesStatus === "Loading") {
     return <em>Loading...</em>;
@@ -217,9 +225,13 @@ function ThreadList(props: {
     props.client,
     "latest-message-read",
     {
-      prefix: `/latestMessageRead/by_userID/${props.user}`,
+      prefix: `/latestMessageRead/by_userID_threadID/${JSON.stringify(
+        props.user
+      )}`,
     }
   );
+
+  console.log("latestMessageRead", props.client.state.id, latestMessageRead);
 
   return (
     <div style={{ width: 100 }}>
@@ -229,7 +241,9 @@ function ThreadList(props: {
         // TODO: need full keys
         const latestMessageInThread = latestMessage[`/channels/${threadID}`];
 
-        const key = `/latestMessageRead/by_userID/${props.user}/${threadID}`;
+        const key = `/latestMessageRead/by_userID_threadID/${JSON.stringify(
+          props.user
+        )}/${JSON.stringify(threadID)}`;
         const latestMessageReadInThread = latestMessageRead[key];
         const numUnread =
           ((latestMessageInThread?.value as number) || 0) -
