@@ -7,12 +7,12 @@ import {
   LiveQueryUpdate,
   MsgToClient,
   MsgToServer,
+  MutationCtx,
   MutationRequest,
   MutationResponse,
   QueryInvocation,
   Trace,
   TransactionMetadata,
-  TSMutationDefns,
   WriteOp,
 } from "./types";
 import * as effects from "../../effects";
@@ -28,14 +28,16 @@ export type ServerState = {
   data: KVData;
   users: { [name: string]: string }; // password
   userSessions: { [token: string]: string }; // username
-  liveQueries: {
-    clientID: string;
-    invocation: QueryInvocation;
-    trace: Trace;
-  }[]; // TODO: index
+  liveQueries: LiveQueryRec[]; // TODO: index
   transactionMetadata: TransactionMetadata;
   randSeed: number;
   time: number;
+};
+
+type LiveQueryRec = {
+  clientID: string;
+  invocation: QueryInvocation;
+  trace: Trace;
 };
 
 export function initialServerState(
@@ -123,7 +125,7 @@ function processLiveQueryRequest(
 }
 
 function runMutationOnServer(
-  mutationDefns: TSMutationDefns,
+  app: KVApp,
   state: ServerState,
   user: string,
   req: MutationRequest,
@@ -141,7 +143,7 @@ function runMutationOnServer(
   );
 
   try {
-    const mutation = mutationDefns[req.invocation.name];
+    const mutation = app.mutations[req.invocation.name];
     if (!mutation) {
       throw new Error(`Unknown mutation: ${req.invocation.name}`);
     }
@@ -211,42 +213,13 @@ function runMutationOnServer(
     ];
   }
   // live query updates
-  const writes: WriteOp[] = ctx.trace.filter(
-    (op) => op.type === "Write"
-  ) as WriteOp[];
-  const liveQueryUpdates: LiveQueryUpdate[] = filterMap(
-    state.liveQueries,
-    (liveQuery) => {
-      const matchingWrites = writes.filter((write) =>
-        keyInTrace(write.key, liveQuery.trace)
-      );
-      if (matchingWrites.length === 0) {
-        return null;
-      }
-      // skip originating client
-      if (liveQuery.clientID === clientID) {
-        return null;
-      }
-
-      console.log("matchingWrites", matchingWrites);
-
-      return {
-        type: "LiveQueryUpdate",
-        clientID: liveQuery.clientID,
-        transactionMetadata: {
-          [req.txnID]: { serverTimestamp: txnTime, invocation: req.invocation },
-        },
-        updates: matchingWrites.map((write) =>
-          write.desc.type === "Delete"
-            ? { type: "Deleted", key: write.key }
-            : {
-                type: "Updated",
-                key: write.key,
-                value: write.desc.after,
-              }
-        ),
-      };
-    }
+  const liveQueryUpdates = getLiveQueryUpdates(
+    app,
+    newState,
+    ctx,
+    req,
+    clientID,
+    txnTime
   );
   return [
     newState,
@@ -257,6 +230,72 @@ function runMutationOnServer(
     },
     liveQueryUpdates,
   ];
+}
+
+function getLiveQueryUpdates(
+  app: KVApp,
+  state: ServerState,
+  ctx: MutationCtx,
+  req: MutationRequest,
+  clientID: string,
+  txnTime: number
+): LiveQueryUpdate[] {
+  const writes: WriteOp[] = ctx.trace.filter(
+    (op) => op.type === "Write"
+  ) as WriteOp[];
+
+  const matchingLiveQueries = getMatchingInvocations(state, writes);
+
+  // re-invoke the matching invocations
+  const out: LiveQueryUpdate[] = [];
+
+  for (const liveQuery of matchingLiveQueries) {
+    const [newRes, newTrace] = runQuery(app, ctx, liveQuery.invocation);
+
+    for (const op of newTrace) {
+      switch (op.type) {
+        case "Write":
+          out.push({
+            type: "LiveQueryUpdate",
+            clientID: liveQuery.clientID,
+            transactionMetadata: {
+              [req.txnID]: {
+                serverTimestamp: txnTime,
+                invocation: req.invocation,
+              },
+            },
+            updates: [
+              op.desc.type === "Delete"
+                ? { type: "Deleted", key: op.key }
+                : {
+                    type: "Updated",
+                    key: op.key,
+                    value: op.desc.after,
+                  },
+            ],
+          });
+      }
+    }
+  }
+
+  return out;
+}
+
+function getMatchingInvocations(
+  state: ServerState,
+  writes: WriteOp[]
+): LiveQueryRec[] {
+  const out: LiveQueryRec[] = [];
+
+  for (const write of writes) {
+    for (const liveQuery of state.liveQueries) {
+      if (keyInTrace(write.key, liveQuery.trace)) {
+        out.push(liveQuery);
+      }
+    }
+  }
+
+  return out;
 }
 
 // TODO: maybe move this out to index.ts? idk
@@ -335,7 +374,7 @@ export function updateServer(
             }
             case "MutationRequest": {
               const [newState, mutationResp, updates] = runMutationOnServer(
-                app.mutations,
+                app,
                 state,
                 user,
                 innerMsg,
