@@ -1,15 +1,17 @@
 import { Json, jsonEq } from "../../../../util/json";
 import { QueryStatus } from "./client";
 import { Client, QueryResults, useLiveQuery } from "./hooks";
-import { KVData, MutationCtx, Query } from "./types";
+import { MutationCtx, Query } from "./types";
 
 export type Schema = { [tableName: string]: TableSchema };
 
 export type TableSchema = {
-  primaryKey: string[];
+  primaryKey: IndexDef;
   fields: { [fieldName: string]: FieldSchema };
-  indexes: { [indexName: string]: boolean };
+  indexes: IndexDef[];
 };
+
+type IndexDef = string[];
 
 export type FieldSchema = {
   type: "string" | "number";
@@ -24,39 +26,55 @@ export type QueryCtx = {
 export function useTablePointQuery(
   ctx: QueryCtx,
   table: string,
-  attr: string,
-  value: Json
+  equalities: [string, Json][]
 ): [QueryResults, QueryStatus] {
+  const vals = equalities.map(
+    ([attr, value]) => `${attr}-${JSON.stringify(value)}`
+  );
   return useLiveQuery(
     ctx.client,
-    `${table}-${attr}-${JSON.stringify(value)}`,
-    getQuery(ctx.schema, table, attr, value)
+    `${table}-${vals}`,
+    getQuery(ctx.schema, table, equalities)
   );
 }
 
 function getQuery(
   schema: Schema,
   table: string,
-  attr: string,
-  value: Json
+  equalities: [string, Json][]
 ): Query {
-  const tableSchema = schema[table];
-  if (tableSchema.indexes[attr]) {
+  const attrs = equalities.map(([attr, _]) => attr);
+  const values = equalities.map(([_, value]) => value);
+  const index = getIndex(schema, table, attrs);
+  if (index !== null) {
     return {
-      prefix: getPrimaryKeyStr(table, [value]),
+      prefix: getPrimaryKeyStr(table, values),
     };
   }
 
-  if (jsonEq([attr], tableSchema.primaryKey)) {
-    return {
-      prefix: getIndexKeyStr(table, attr, value),
-    };
-  }
-
-  // TODO: map back to main schema?
-
-  throw new Error(`No index for ${table}.${attr}`);
+  throw new Error(`No index for ${table}.[${attrs.join("_")}]`);
 }
+
+function getIndex(
+  schema: Schema,
+  table: string,
+  attrs: string[]
+): IndexDef | null {
+  const tableSchema = schema[table];
+
+  if (jsonEq(attrs, tableSchema.primaryKey)) {
+    return tableSchema.primaryKey;
+  }
+
+  const res = tableSchema.indexes.find((index) => jsonEq(attrs, index));
+
+  if (!res) {
+    return null;
+  }
+  return res;
+}
+
+type Equalities = [string, Json][];
 
 export class DBCtx {
   schema: Schema;
@@ -86,24 +104,28 @@ export class DBCtx {
     this.mutationCtx.write(keyStr, row);
 
     // write indexes
-    for (const indexName in tableSchema.indexes) {
-      const indexVal = row[indexName];
-      const indexKey = getIndexKeyStr(table, indexName, indexVal);
+    for (const index of tableSchema.indexes) {
+      const equalities: Equalities = index.map((col) => [col, row[col]]);
+
+      const indexKey = getIndexKeyStr(table, equalities);
       this.mutationCtx.write(indexKey, primaryKey);
     }
   }
 
-  read(table: string, attr: string, value: Json): Json {
+  read(table: string, equalities: Equalities): Json {
     const tableSchema = this.schema[table];
+    const attrs = equalities.map(([attr, _]) => attr);
+    const values = equalities.map(([_, value]) => value);
 
     // read primary key
-    if (jsonEq([attr], tableSchema.primaryKey)) {
-      const keyStr = getPrimaryKeyStr(table, [value]);
+    if (jsonEq(attrs, tableSchema.primaryKey)) {
+      const keyStr = getPrimaryKeyStr(table, values);
       return this.mutationCtx.read(keyStr);
     }
 
-    if (tableSchema.indexes[attr]) {
-      const keyStr = getIndexKeyStr(table, attr, value);
+    const index = getIndex(this.schema, table, attrs);
+    if (index) {
+      const keyStr = getIndexKeyStr(table, equalities);
       const primaryKeyStr = this.mutationCtx.read(keyStr) as string;
       if (!primaryKeyStr) {
         return null;
@@ -111,7 +133,7 @@ export class DBCtx {
       return this.mutationCtx.read(primaryKeyStr);
     }
 
-    throw new Error(`No index for ${table}.${attr}`);
+    throw new Error(`No index for ${table}.${attrs}`);
   }
 }
 
@@ -119,8 +141,11 @@ function getPrimaryKeyStr(table: string, values: Json[]): string {
   return `/${table}/primary/${values.map((v) => JSON.stringify(v)).join("/")}`;
 }
 
-function getIndexKeyStr(table: string, indexName: string, value: Json): string {
-  return `/${table}/by_${indexName}/${JSON.stringify(value)}`;
+function getIndexKeyStr(table: string, equalities: Equalities): string {
+  const attrs = equalities.map(([attr, _]) => attr);
+  const values = equalities.map(([_, value]) => value);
+
+  return `/${table}/by_${attrs.join("_")}/${JSON.stringify(values)}`;
 }
 
 // initial data loading

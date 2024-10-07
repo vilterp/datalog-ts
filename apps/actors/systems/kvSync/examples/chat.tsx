@@ -82,17 +82,13 @@ function MessageTable(props: {
   user: string;
 }) {
   const ctx: QueryCtx = { client: props.client, schema };
-  const [messages, messagesStatus] = useTablePointQuery(
-    ctx,
-    "messages",
-    "threadID",
-    props.threadID
-  );
+  const [messages, messagesStatus] = useTablePointQuery(ctx, "messages", [
+    ["threadID", props.threadID],
+  ]);
   const [latestMessageSeen, latestMessageSeenStatus] = useTablePointQuery(
     ctx,
     "latestMessageRead",
-    "threadID",
-    props.threadID
+    [["threadID", props.threadID]]
   );
 
   if (messagesStatus === "Loading") {
@@ -183,7 +179,9 @@ function useLatestSeqNo(
   threadID: string
 ): [number, QueryStatus] {
   const ctx: QueryCtx = { client, schema };
-  const [results, status] = useTablePointQuery(ctx, "channels", "id", threadID);
+  const [results, status] = useTablePointQuery(ctx, "channels", [
+    ["id", threadID],
+  ]);
   if (status === "Loading") {
     return [0, status];
   }
@@ -290,9 +288,7 @@ const schema: Schema = {
       sender: { type: "string" },
       message: { type: "string" },
     },
-    indexes: {
-      threadID: true,
-    },
+    indexes: [["threadID"]],
   },
   channels: {
     primaryKey: ["id"],
@@ -301,7 +297,7 @@ const schema: Schema = {
       name: { type: "string" },
       latestMessageID: { type: "string" },
     },
-    indexes: {},
+    indexes: [],
   },
   latestMessageRead: {
     primaryKey: ["userID", "threadID"],
@@ -310,10 +306,10 @@ const schema: Schema = {
       threadID: { type: "string" },
       messageID: { type: "string" },
     },
-    indexes: {
-      userID: true,
-      threadID: true,
-    },
+    indexes: [
+      ["userID", "threadID"],
+      ["threadID", "userID"],
+    ],
   },
 };
 
@@ -321,7 +317,7 @@ const mutations: TSMutationDefns = {
   sendMessage: (ctx, [threadID, message]) => {
     const db = new DBCtx(schema, ctx);
 
-    const channel = db.read("channels", "id", threadID) as Channel;
+    const channel = db.read("channels", [["id", threadID]]) as Channel;
     const latestSeqNo = channel.latestMessageID;
     const newSeqNo = latestSeqNo + 1;
     const newID = ctx.rand();
