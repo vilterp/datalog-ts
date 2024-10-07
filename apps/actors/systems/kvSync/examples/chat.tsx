@@ -9,6 +9,7 @@ import { LoggedIn, LoginWrapper } from "../uiCommon/loginWrapper";
 import { Table } from "../../../../../uiCommon/generic/table";
 import { DBCtx, DBQueryCtx, getInitialData, Schema } from "../indexes";
 import { KVApp } from "../kvApp";
+import { lastItem } from "../../../../../util/util";
 
 function ChatUI(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
@@ -356,9 +357,11 @@ const queries: TSQueryDefns = {
     const keys = ctx.readAll(
       `/messages/by_threadID/${JSON.stringify(threadID)}`
     );
-    return Object.values(keys).map((vv) => {
-      const value = vv.value[0];
-      return ctx.read(`/messages/primary/${JSON.stringify(value)}`);
+    return Object.keys(keys).map((key) => {
+      const segments = key.split("/");
+      const value = parseFloat(lastItem(segments));
+      const primaryKey = `/messages/primary/${JSON.stringify(value)}`;
+      return ctx.read(primaryKey);
     });
   },
   channels: (ctx) => {

@@ -37,11 +37,11 @@ function getIndex(
 
 type Equalities = [string, Json][];
 
-export class DBQueryCtx {
+export class DBQueryCtx<T extends QueryCtx = QueryCtx> {
   schema: Schema;
-  queryCtx: QueryCtx;
+  queryCtx: T;
 
-  constructor(schema: Schema, queryCtx: QueryCtx) {
+  constructor(schema: Schema, queryCtx: T) {
     this.schema = schema;
     this.queryCtx = queryCtx;
   }
@@ -75,7 +75,7 @@ export class DBQueryCtx {
   }
 }
 
-export class DBCtx extends DBQueryCtx {
+export class DBCtx extends DBQueryCtx<MutationCtx> {
   constructor(schema: Schema, mutationCtx: MutationCtx) {
     super(schema, mutationCtx);
   }
@@ -102,8 +102,9 @@ export class DBCtx extends DBQueryCtx {
     for (const index of tableSchema.indexes) {
       const equalities: Equalities = index.map((col) => [col, row[col]]);
 
-      const indexKey = getIndexKeyStr(table, equalities);
-      this.queryCtx.write(indexKey, primaryKey);
+      const indexKey =
+        getIndexKeyStr(table, equalities) + "/" + primaryKey.join("/");
+      this.queryCtx.write(indexKey, null);
     }
   }
 }
