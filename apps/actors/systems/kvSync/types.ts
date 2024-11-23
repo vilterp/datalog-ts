@@ -219,7 +219,7 @@ export type LiveQueryResponse = {
   transactionMetadata: TransactionMetadata;
 };
 
-type KeyUpdate =
+export type KeyUpdate =
   | {
       type: "Updated";
       key: string;

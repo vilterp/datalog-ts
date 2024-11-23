@@ -1,6 +1,7 @@
 import { ActorResp, LoadedTickInitiator, OutgoingMessage } from "../../types";
 import {
   AbortError,
+  KeyUpdate,
   KVData,
   LiveQueryRequest,
   LiveQueryResponse,
@@ -13,6 +14,7 @@ import {
   QueryInvocation,
   Trace,
   TransactionMetadata,
+  WriteDesc,
   WriteOp,
 } from "./types";
 import * as effects from "../../effects";
@@ -275,6 +277,42 @@ function getLiveQueryUpdates(
             ],
           });
       }
+    }
+  }
+
+  return consolidateByClientIDAndKey(out);
+}
+
+function consolidateByClientIDAndKey(
+  updates: LiveQueryUpdate[]
+): LiveQueryUpdate[] {
+  const out: LiveQueryUpdate[] = [];
+
+  const keyToUpdates: { [clientID: string]: { [key: string]: KeyUpdate[] } } =
+    {};
+
+  for (const update of updates) {
+    if (!keyToUpdates[update.clientID]) {
+      keyToUpdates[update.clientID] = {};
+    }
+
+    for (const keyUpdate of update.updates) {
+      if (!keyToUpdates[update.clientID][keyUpdate.key]) {
+        keyToUpdates[update.clientID][keyUpdate.key] = [];
+      }
+
+      keyToUpdates[update.clientID][keyUpdate.key].push(keyUpdate);
+    }
+  }
+
+  for (const clientID in keyToUpdates) {
+    for (const key in keyToUpdates[clientID]) {
+      out.push({
+        type: "LiveQueryUpdate",
+        clientID,
+        transactionMetadata: updates[0].transactionMetadata,
+        updates: keyToUpdates[clientID][key],
+      });
     }
   }
 
