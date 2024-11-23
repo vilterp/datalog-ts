@@ -150,8 +150,8 @@ const mutations: TSMutationDefns = {
   },
 };
 
-export const market: KVApp = {
-  name: "Market",
+export const itemMarket: KVApp = {
+  name: "Item Market",
   mutations,
   ui: MarketUI,
 };
