@@ -7,7 +7,7 @@ import {
   UserInput,
 } from "../types";
 
-type ChooseFn = (
+export type ChooseFn = (
   clients: {
     [id: string]: ClientState;
   },

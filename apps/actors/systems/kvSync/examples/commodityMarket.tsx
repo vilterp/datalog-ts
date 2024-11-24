@@ -2,20 +2,20 @@ import React, { useState } from "react";
 import { KVApp } from "./types";
 import {
   MutationCtx,
-  TraceOp,
+  MutationInvocation,
   TSMutationDefns,
   UserInput,
   WriteOp,
 } from "../types";
 import { Client, makeClient, useLiveQuery } from "../hooks";
-import { UIProps } from "../../../types";
+import { ChooseFn, UIProps } from "../../../types";
 import { ClientState, QueryStatus, TransactionState } from "../client";
 import { LoginWrapper } from "../uiCommon/loginWrapper";
 import { Inspector } from "../uiCommon/inspector";
 import { Table } from "../../../../../uiCommon/generic/table";
 import { LoggedInHeader } from "../uiCommon/loggedInHeader";
 import { Json } from "../../../../../util/json";
-import { id } from "vega";
+import { randomFromList, randStep2 } from "../../../../../util/util";
 
 function MarketUI(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
@@ -286,6 +286,34 @@ function matchOrders(ctx: MutationCtx, evt: WriteOp) {
   }
 }
 
+function choose(
+  clients: {
+    [id: string]: ClientState;
+  },
+  randomSeed: number
+): [{ clientID: string; invocation: MutationInvocation } | null, number] {
+  const [clientID, randomSeed1] = randomFromList(
+    randomSeed,
+    Object.keys(clients)
+  );
+
+  const [amount1, randomSeed2] = randStep2(randomSeed1);
+  const [price, randomSeed3] = randStep2(randomSeed2);
+  const side = randomFromList(randomSeed3, ["buy", "sell"])[0] as OrderSide;
+
+  return [
+    {
+      clientID,
+      invocation: {
+        type: "Invocation",
+        name: "Order",
+        args: [price * 100, amount1 * 100, side],
+      },
+    },
+    randomSeed3,
+  ];
+}
+
 export const commodityMarket: KVApp = {
   name: "Commodity Market",
   mutations,
@@ -296,4 +324,5 @@ export const commodityMarket: KVApp = {
       fn: matchOrders,
     },
   ],
+  choose,
 };
