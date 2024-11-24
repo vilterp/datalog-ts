@@ -267,7 +267,7 @@ function matchOrders(ctx: MutationCtx, evt: WriteOp) {
         };
         ctx.write(`/orders/${sell.id}`, newSell);
 
-        console.log("matchOrders", { newBuy, newSell });
+        // console.log("matchOrders", { newBuy, newSell });
 
         const tradeID = ctx.rand();
         ctx.write(`/trades/${tradeID}`, {

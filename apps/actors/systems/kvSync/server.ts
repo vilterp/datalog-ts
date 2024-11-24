@@ -176,7 +176,7 @@ function runMutationOnServer(
   // live query updates
   const writes: WriteOp[] = getJustWrites(ctx);
 
-  console.log("live queries for writes", writes);
+  // console.log("live queries for writes", writes);
 
   const liveQueryUpdates: LiveQueryUpdate[] = filterMap(
     state.liveQueries,
@@ -185,7 +185,7 @@ function runMutationOnServer(
         keyInQuery(write.key, liveQuery.query)
       );
 
-      console.log("matching writes", liveQuery, matchingWrites);
+      // console.log("matching writes", liveQuery, matchingWrites);
 
       if (matchingWrites.length === 0) {
         return null;
