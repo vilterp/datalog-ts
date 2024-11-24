@@ -23,6 +23,7 @@ import {
 import { explore } from "../../explore";
 import { mapObj } from "../../../../util/util";
 import { counter } from "./examples/counter";
+import { commodityMarket } from "./examples/commodityMarket";
 
 export function kvSyncTests(writeResults: boolean): Suite {
   return [
@@ -46,6 +47,16 @@ export function kvSyncTests(writeResults: boolean): Suite {
         );
       },
     },
+    {
+      name: "commodityMarket",
+      test() {
+        runDDTestAtPath(
+          "apps/actors/systems/kvSync/examples/commodityMarket.dd.txt",
+          (inputs) => kvSyncTest(commodityMarket, inputs),
+          writeResults
+        );
+      },
+    },
   ];
 }
 
@@ -56,7 +67,7 @@ function kvSyncTest(app: KVApp, testCases: string[]): TestOutput[] {
     state: KVSyncState,
     init: LoadedTickInitiator<KVSyncState, KVSyncMsg>
   ) => {
-    return update(app.mutations, state, init);
+    return update(app, state, init);
   };
 
   return testCases.map((testCase) => {

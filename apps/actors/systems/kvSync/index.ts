@@ -28,7 +28,7 @@ export function makeActorSystem(app: KVApp): System<KVSyncState, KVSyncMsg> {
     state: KVSyncState,
     init: LoadedTickInitiator<KVSyncState, KVSyncMsg>
   ) => {
-    return update(app.mutations, state, init);
+    return update(app, state, init);
   };
   return {
     name: `KV: ${app.name}`,
@@ -74,20 +74,20 @@ function kvSyncChooseMove(app: KVApp): ChooseFn<KVSyncState, KVSyncMsg> {
 }
 
 export function update(
-  mutations: TSMutationDefns,
+  app: KVApp,
   state: KVSyncState,
   init: LoadedTickInitiator<KVSyncState, KVSyncMsg>
 ): ActorResp<KVSyncState, KVSyncMsg> {
   switch (state.type) {
     case "ClientState":
       return updateClient(
-        mutations,
+        app.mutations,
         state,
         init as LoadedTickInitiator<ClientState, MsgToClient>
       );
     case "ServerState":
       return updateServer(
-        mutations,
+        app,
         state,
         init as LoadedTickInitiator<ServerState, MsgToServer>
       );

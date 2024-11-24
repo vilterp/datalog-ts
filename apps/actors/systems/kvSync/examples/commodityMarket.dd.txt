@@ -1,0 +1,2088 @@
+addClient{id: "0"}.
+signUp{clientID: "0", username: "alice", password: ""}.
+addClient{id: "1"}.
+signUp{clientID: "1", username: "bob", password: ""}.
+runMutation{from: "0", name: "Order", args: [10, 100, "sell"]}.
+runMutation{from: "1", name: "Order", args: [10, 50, "buy"]}.
+.jsonState
+----
+application/json
+{
+  "server": {
+    "/orders/0.31381383055244927": [
+      {
+        "transactionID": "0.00037566525896607457",
+        "value": {
+          "id": 0.31381383055244927,
+          "price": 10,
+          "amount": 100,
+          "side": "sell",
+          "status": "open",
+          "user": "alice"
+        }
+      },
+      {
+        "transactionID": "0.0003834916282291446",
+        "value": {
+          "id": 0.31381383055244927,
+          "price": 10,
+          "amount": 50,
+          "status": "open",
+          "side": "sell",
+          "user": "alice"
+        }
+      }
+    ],
+    "/orders/0.4453516187568676": [
+      {
+        "transactionID": "0.0003834916282291446",
+        "value": {
+          "id": 0.4453516187568676,
+          "price": 10,
+          "amount": 50,
+          "side": "buy",
+          "status": "open",
+          "user": "bob"
+        }
+      },
+      {
+        "transactionID": "0.0003834916282291446",
+        "value": {
+          "id": 0.4453516187568676,
+          "price": 10,
+          "amount": 0,
+          "status": "sold",
+          "side": "buy",
+          "user": "bob"
+        }
+      }
+    ],
+    "/trades/0.02466078710245042": [
+      {
+        "transactionID": "0.0003834916282291446",
+        "value": {
+          "id": 0.02466078710245042,
+          "buyOrder": 0.4453516187568676,
+          "sellOrder": 0.31381383055244927,
+          "amount": 50,
+          "price": 10
+        }
+      }
+    ]
+  },
+  "user0": {},
+  "client0": {
+    "/orders/0.31381383055244927": [
+      {
+        "transactionID": "0.00037566525896607457",
+        "value": {
+          "id": 0.31381383055244927,
+          "price": 10,
+          "amount": 100,
+          "side": "sell",
+          "status": "open",
+          "user": "alice"
+        }
+      }
+    ]
+  },
+  "user1": {},
+  "client1": {
+    "/orders/0.4453516187568676": [
+      {
+        "transactionID": "0.0003834916282291446",
+        "value": {
+          "id": 0.4453516187568676,
+          "price": 10,
+          "amount": 50,
+          "side": "buy",
+          "status": "open",
+          "user": "bob"
+        }
+      }
+    ]
+  }
+}
+
+addClient{id: "0"}.
+signUp{clientID: "0", username: "alice", password: ""}.
+addClient{id: "1"}.
+signUp{clientID: "1", username: "bob", password: ""}.
+explore{seed: 123548762349586, steps: 100}.
+.jsonState
+----
+application/json
+{
+  "server": {
+    "/orders/0.31381383055244927": [
+      {
+        "transactionID": "0.00037566525896607457",
+        "value": {
+          "id": 0.31381383055244927,
+          "price": 37.316768604625736,
+          "amount": 20.142637957020327,
+          "side": "sell",
+          "status": "open",
+          "user": "alice"
+        }
+      },
+      {
+        "transactionID": "0.5728273955852048",
+        "value": {
+          "id": 0.31381383055244927,
+          "price": 37.316768604625736,
+          "amount": 0,
+          "status": "sold",
+          "side": "sell",
+          "user": "alice"
+        }
+      }
+    ],
+    "/orders/0.015206331866985496": [
+      {
+        "transactionID": "0.26905546502122235",
+        "value": {
+          "id": 0.015206331866985496,
+          "price": 16.929892745735025,
+          "amount": 85.09055332754791,
+          "side": "buy",
+          "status": "open",
+          "user": "alice"
+        }
+      },
+      {
+        "transactionID": "0.2581415779498793",
+        "value": {
+          "id": 0.015206331866985496,
+          "price": 16.929892745735025,
+          "amount": 74.38574868662819,
+          "status": "open",
+          "side": "buy",
+          "user": "alice"
+        }
+      },
+      {
+        "transactionID": "0.619620117004607",
+        "value": {
+          "id": 0.015206331866985496,
+          "price": 16.929892745735025,
+          "amount": 67.19771946519401,
+          "status": "open",
+          "side": "buy",
+          "user": "alice"
+        }
+      },
+      {
+        "transactionID": "0.787366886890835",
+        "value": {
+          "id": 0.015206331866985496,
+          "price": 16.929892745735025,
+          "amount": 32.872100763835114,
+          "status": "open",
+          "side": "buy",
+          "user": "alice"
+        }
+      },
+      {
+        "transactionID": "0.8598554999193694",
+        "value": {
+          "id": 0.015206331866985496,
+          "price": 16.929892745735025,
+          "amount": 0,
+          "status": "sold",
+          "side": "buy",
+          "user": "alice"
+        }
+      }
+    ],
+    "/orders/0.5100409435201818": [
+      {
+        "transactionID": "0.5728273955852048",
+        "value": {
+          "id": 0.5100409435201818,
+          "price": 60.20900012013409,
+          "amount": 88.19302724506056,
+          "side": "buy",
+          "status": "open",
+          "user": "alice"
+        }
+      },
+      {
+        "transactionID": "0.5728273955852048",
+        "value": {
+          "id": 0.5100409435201818,
+          "price": 60.20900012013409,
+          "amount": 68.05038928804024,
+          "status": "open",
+          "side": "buy",
+          "user": "alice"
+        }
+      },
+      {
+        "transactionID": "0.2581415779498793",
+        "value": {
+          "id": 0.5100409435201818,
+          "price": 60.20900012013409,
+          "amount": 57.34558464712052,
+          "status": "open",
+          "side": "buy",
+          "user": "alice"
+        }
+      },
+      {
+        "transactionID": "0.0003834916282291446",
+        "value": {
+          "id": 0.5100409435201818,
+          "price": 60.20900012013409,
+          "amount": 0,
+          "status": "sold",
+          "side": "buy",
+          "user": "alice"
+        }
+      }
+    ],
+    "/trades/0.2581415779498793": [
+      {
+        "transactionID": "0.5728273955852048",
+        "value": {
+          "id": 0.2581415779498793,
+          "buyOrder": 0.5100409435201818,
+          "sellOrder": 0.31381383055244927,
+          "amount": 20.142637957020327,
+          "price": 48.762884362379914
+        }
+      }
+    ],
+    "/orders/0.5855064094862961": [
+      {
+        "transactionID": "0.2581415779498793",
+        "value": {
+          "id": 0.5855064094862961,
+          "price": 15.652298755619952,
+          "amount": 10.70480464091972,
+          "side": "sell",
+          "status": "open",
+          "user": "alice"
+        }
+      },
+      {
+        "transactionID": "0.2581415779498793",
+        "value": {
+          "id": 0.5855064094862961,
+          "price": 15.652298755619952,
+          "amount": 0,
+          "status": "sold",
+          "side": "sell",
+          "user": "alice"
+        }
+      },
+      {
+        "transactionID": "0.2581415779498793",
+        "value": {
+          "id": 0.5855064094862961,
+          "price": 15.652298755619952,
+          "amount": 0,
+          "status": "sold",
+          "side": "sell",
+          "user": "alice"
+        }
+      }
+    ],
+    "/trades/0.6062274799740198": [
+      {
+        "transactionID": "0.2581415779498793",
+        "value": {
+          "id": 0.6062274799740198,
+          "buyOrder": 0.5100409435201818,
+          "sellOrder": 0.5855064094862961,
+          "amount": 10.70480464091972,
+          "price": 37.93064943787702
+        }
+      }
+    ],
+    "/trades/0.8652590050969823": [
+      {
+        "transactionID": "0.2581415779498793",
+        "value": {
+          "id": 0.8652590050969823,
+          "buyOrder": 0.015206331866985496,
+          "sellOrder": 0.5855064094862961,
+          "amount": 10.70480464091972,
+          "price": 16.29109575067749
+        }
+      }
+    ],
+    "/orders/0.4453516187568676": [
+      {
+        "transactionID": "0.0003834916282291446",
+        "value": {
+          "id": 0.4453516187568676,
+          "price": 45.81208093633138,
+          "amount": 91.73236223099042,
+          "side": "sell",
+          "status": "open",
+          "user": "bob"
+        }
+      },
+      {
+        "transactionID": "0.0003834916282291446",
+        "value": {
+          "id": 0.4453516187568676,
+          "price": 45.81208093633138,
+          "amount": 34.3867775838699,
+          "status": "open",
+          "side": "sell",
+          "user": "bob"
+        }
+      },
+      {
+        "transactionID": "0.40809971923762905",
+        "value": {
+          "id": 0.4453516187568676,
+          "price": 45.81208093633138,
+          "amount": 4.377739461490645,
+          "status": "open",
+          "side": "sell",
+          "user": "bob"
+        }
+      },
+      {
+        "transactionID": "0.8601966894792362",
+        "value": {
+          "id": 0.4453516187568676,
+          "price": 45.81208093633138,
+          "amount": 0,
+          "status": "sold",
+          "side": "sell",
+          "user": "bob"
+        }
+      }
+    ],
+    "/trades/0.02466078710245042": [
+      {
+        "transactionID": "0.0003834916282291446",
+        "value": {
+          "id": 0.02466078710245042,
+          "buyOrder": 0.5100409435201818,
+          "sellOrder": 0.4453516187568676,
+          "amount": 57.34558464712052,
+          "price": 53.01054052823274
+        }
+      }
+    ],
+    "/orders/0.8652590050969823": [
+      {
+        "transactionID": "0.6062274799740198",
+        "value": {
+          "id": 0.8652590050969823,
+          "price": 40.85953444322528,
+          "amount": 5.2026452545101245,
+          "side": "buy",
+          "status": "open",
+          "user": "alice"
+        }
+      },
+      {
+        "transactionID": "0.2855238856612927",
+        "value": {
+          "id": 0.8652590050969823,
+          "price": 40.85953444322528,
+          "amount": 0,
+          "status": "sold",
+          "side": "buy",
+          "user": "alice"
+        }
+      }
+    ],
+    "/orders/0.6594613051595737": [
+      {
+        "transactionID": "0.8863366133406168",
+        "value": {
+          "id": 0.6594613051595737,
+          "price": 50.936840475478064,
+          "amount": 22.160465058088736,
+          "side": "sell",
+          "status": "open",
+          "user": "alice"
+        }
+      },
+      {
+        "transactionID": "0.8601966894792362",
+        "value": {
+          "id": 0.6594613051595737,
+          "price": 50.936840475478064,
+          "amount": 0,
+          "status": "sold",
+          "side": "sell",
+          "user": "alice"
+        }
+      }
+    ],
+    "/orders/0.4738564640040104": [
+      {
+        "transactionID": "0.02466078710245042",
+        "value": {
+          "id": 0.4738564640040104,
+          "price": 33.81343161111086,
+          "amount": 13.419040444697291,
+          "side": "buy",
+          "status": "open",
+          "user": "bob"
+        }
+      },
+      {
+        "transactionID": "0.2855238856612927",
+        "value": {
+          "id": 0.4738564640040104,
+          "price": 33.81343161111086,
+          "amount": 0,
+          "status": "sold",
+          "side": "buy",
+          "user": "bob"
+        }
+      }
+    ],
+    "/orders/0.2643711262050747": [
+      {
+        "transactionID": "0.3051861941862723",
+        "value": {
+          "id": 0.2643711262050747,
+          "price": 43.23453176136551,
+          "amount": 3.453515426678132,
+          "side": "buy",
+          "status": "open",
+          "user": "bob"
+        }
+      },
+      {
+        "transactionID": "0.2855238856612927",
+        "value": {
+          "id": 0.2643711262050747,
+          "price": 43.23453176136551,
+          "amount": 0,
+          "status": "sold",
+          "side": "buy",
+          "user": "bob"
+        }
+      }
+    ],
+    "/orders/0.9319858592301475": [
+      {
+        "transactionID": "0.40809971923762905",
+        "value": {
+          "id": 0.9319858592301475,
+          "price": 61.90427058553721,
+          "amount": 30.009038122379255,
+          "side": "buy",
+          "status": "open",
+          "user": "alice"
+        }
+      },
+      {
+        "transactionID": "0.40809971923762905",
+        "value": {
+          "id": 0.9319858592301475,
+          "price": 61.90427058553721,
+          "amount": 0,
+          "status": "sold",
+          "side": "buy",
+          "user": "alice"
+        }
+      }
+    ],
+    "/trades/0.8863366133406168": [
+      {
+        "transactionID": "0.40809971923762905",
+        "value": {
+          "id": 0.8863366133406168,
+          "buyOrder": 0.9319858592301475,
+          "sellOrder": 0.4453516187568676,
+          "amount": 30.009038122379255,
+          "price": 53.858175760934294
+        }
+      }
+    ],
+    "/orders/0.7999519010073989": [
+      {
+        "transactionID": "0.2855238856612927",
+        "value": {
+          "id": 0.7999519010073989,
+          "price": 26.76166373003429,
+          "amount": 62.511260865732346,
+          "side": "sell",
+          "status": "open",
+          "user": "bob"
+        }
+      },
+      {
+        "transactionID": "0.2855238856612927",
+        "value": {
+          "id": 0.7999519010073989,
+          "price": 26.76166373003429,
+          "amount": 59.057745439054216,
+          "status": "open",
+          "side": "sell",
+          "user": "bob"
+        }
+      },
+      {
+        "transactionID": "0.2855238856612927",
+        "value": {
+          "id": 0.7999519010073989,
+          "price": 26.76166373003429,
+          "amount": 57.30861561122222,
+          "status": "open",
+          "side": "sell",
+          "user": "bob"
+        }
+      },
+      {
+        "transactionID": "0.2855238856612927",
+        "value": {
+          "id": 0.7999519010073989,
+          "price": 26.76166373003429,
+          "amount": 49.09222042103505,
+          "status": "open",
+          "side": "sell",
+          "user": "bob"
+        }
+      },
+      {
+        "transactionID": "0.10559463277980186",
+        "value": {
+          "id": 0.7999519010073989,
+          "price": 26.76166373003429,
+          "amount": 8.353928996579661,
+          "status": "open",
+          "side": "sell",
+          "user": "bob"
+        }
+      },
+      {
+        "transactionID": "0.8601966894792362",
+        "value": {
+          "id": 0.7999519010073989,
+          "price": 26.76166373003429,
+          "amount": 0,
+          "status": "sold",
+          "side": "sell",
+          "user": "bob"
+        }
+      }
+    ],
+    "/trades/0.7916017969060706": [
+      {
+        "transactionID": "0.2855238856612927",
+        "value": {
+          "id": 0.7916017969060706,
+          "buyOrder": 0.2643711262050747,
+          "sellOrder": 0.7999519010073989,
+          "amount": 3.453515426678132,
+          "price": 34.9980977456999
+        }
+      }
+    ],
+    "/trades/0.45140223107431293": [
+      {
+        "transactionID": "0.2855238856612927",
+        "value": {
+          "id": 0.45140223107431293,
+          "buyOrder": 0.8652590050969823,
+          "sellOrder": 0.7999519010073989,
+          "amount": 5.2026452545101245,
+          "price": 33.810599086629786
+        }
+      }
+    ],
+    "/trades/0.7173019593742694": [
+      {
+        "transactionID": "0.2855238856612927",
+        "value": {
+          "id": 0.7173019593742694,
+          "buyOrder": 0.4738564640040104,
+          "sellOrder": 0.7999519010073989,
+          "amount": 13.419040444697291,
+          "price": 30.28754767057257
+        }
+      }
+    ],
+    "/orders/0.7290001299502329": [
+      {
+        "transactionID": "0.10559463277980186",
+        "value": {
+          "id": 0.7290001299502329,
+          "price": 88.46443462042551,
+          "amount": 40.73829142445539,
+          "side": "buy",
+          "status": "open",
+          "user": "bob"
+        }
+      },
+      {
+        "transactionID": "0.10559463277980186",
+        "value": {
+          "id": 0.7290001299502329,
+          "price": 88.46443462042551,
+          "amount": 0,
+          "status": "sold",
+          "side": "buy",
+          "user": "bob"
+        }
+      }
+    ],
+    "/trades/0.3051861941862723": [
+      {
+        "transactionID": "0.10559463277980186",
+        "value": {
+          "id": 0.3051861941862723,
+          "buyOrder": 0.7290001299502329,
+          "sellOrder": 0.7999519010073989,
+          "amount": 40.73829142445539,
+          "price": 57.6130491752299
+        }
+      }
+    ],
+    "/orders/0.45140223107431293": [
+      {
+        "transactionID": "0.7916017969060706",
+        "value": {
+          "id": 0.45140223107431293,
+          "price": 18.17019928076323,
+          "amount": 66.58643243516464,
+          "side": "sell",
+          "status": "open",
+          "user": "bob"
+        }
+      },
+      {
+        "transactionID": "0.5661584819351868",
+        "value": {
+          "id": 0.45140223107431293,
+          "price": 18.17019928076323,
+          "amount": 55.41070527901008,
+          "status": "open",
+          "side": "sell",
+          "user": "bob"
+        }
+      },
+      {
+        "transactionID": "0.7173019593742694",
+        "value": {
+          "id": 0.45140223107431293,
+          "price": 18.17019928076323,
+          "amount": 28.678633997848856,
+          "status": "open",
+          "side": "sell",
+          "user": "bob"
+        }
+      },
+      {
+        "transactionID": "0.8601966894792362",
+        "value": {
+          "id": 0.45140223107431293,
+          "price": 18.17019928076323,
+          "amount": 0,
+          "status": "sold",
+          "side": "sell",
+          "user": "bob"
+        }
+      }
+    ],
+    "/orders/0.42560927982033164": [
+      {
+        "transactionID": "0.5661584819351868",
+        "value": {
+          "id": 0.42560927982033164,
+          "price": 30.447008628814487,
+          "amount": 11.175727156154558,
+          "side": "buy",
+          "status": "open",
+          "user": "alice"
+        }
+      },
+      {
+        "transactionID": "0.5661584819351868",
+        "value": {
+          "id": 0.42560927982033164,
+          "price": 30.447008628814487,
+          "amount": 0,
+          "status": "sold",
+          "side": "buy",
+          "user": "alice"
+        }
+      }
+    ],
+    "/trades/0.21517043534216512": [
+      {
+        "transactionID": "0.5661584819351868",
+        "value": {
+          "id": 0.21517043534216512,
+          "buyOrder": 0.42560927982033164,
+          "sellOrder": 0.45140223107431293,
+          "amount": 11.175727156154558,
+          "price": 24.308603954788857
+        }
+      }
+    ],
+    "/orders/0.694033415703134": [
+      {
+        "transactionID": "0.7173019593742694",
+        "value": {
+          "id": 0.694033415703134,
+          "price": 85.92259589202943,
+          "amount": 26.732071281161225,
+          "side": "buy",
+          "status": "open",
+          "user": "bob"
+        }
+      },
+      {
+        "transactionID": "0.7173019593742694",
+        "value": {
+          "id": 0.694033415703134,
+          "price": 85.92259589202943,
+          "amount": 0,
+          "status": "sold",
+          "side": "buy",
+          "user": "bob"
+        }
+      }
+    ],
+    "/trades/0.619620117004607": [
+      {
+        "transactionID": "0.7173019593742694",
+        "value": {
+          "id": 0.619620117004607,
+          "buyOrder": 0.694033415703134,
+          "sellOrder": 0.45140223107431293,
+          "amount": 26.732071281161225,
+          "price": 52.04639758639633
+        }
+      }
+    ],
+    "/orders/0.9553094734021551": [
+      {
+        "transactionID": "0.619620117004607",
+        "value": {
+          "id": 0.9553094734021551,
+          "price": 9.207850982628624,
+          "amount": 7.188029221434173,
+          "side": "sell",
+          "status": "open",
+          "user": "bob"
+        }
+      },
+      {
+        "transactionID": "0.619620117004607",
+        "value": {
+          "id": 0.9553094734021551,
+          "price": 9.207850982628624,
+          "amount": 0,
+          "status": "sold",
+          "side": "sell",
+          "user": "bob"
+        }
+      }
+    ],
+    "/trades/0.8863198197319357": [
+      {
+        "transactionID": "0.619620117004607",
+        "value": {
+          "id": 0.8863198197319357,
+          "buyOrder": 0.015206331866985496,
+          "sellOrder": 0.9553094734021551,
+          "amount": 7.188029221434173,
+          "price": 13.068871864181824
+        }
+      }
+    ],
+    "/orders/0.37721112405621554": [
+      {
+        "transactionID": "0.8863198197319357",
+        "value": {
+          "id": 0.37721112405621554,
+          "price": 45.103340684532505,
+          "amount": 40.76546099108221,
+          "side": "sell",
+          "status": "open",
+          "user": "bob"
+        }
+      },
+      {
+        "transactionID": "0.8601966894792362",
+        "value": {
+          "id": 0.37721112405621554,
+          "price": 45.103340684532505,
+          "amount": 0,
+          "status": "sold",
+          "side": "sell",
+          "user": "bob"
+        }
+      }
+    ],
+    "/orders/0.3695129378414833": [
+      {
+        "transactionID": "0.21517043534216512",
+        "value": {
+          "id": 0.3695129378414833,
+          "price": 54.946238738434616,
+          "amount": 38.136190025262714,
+          "side": "sell",
+          "status": "open",
+          "user": "alice"
+        }
+      },
+      {
+        "transactionID": "0.8601966894792362",
+        "value": {
+          "id": 0.3695129378414833,
+          "price": 54.946238738434616,
+          "amount": 0,
+          "status": "sold",
+          "side": "sell",
+          "user": "alice"
+        }
+      }
+    ],
+    "/orders/0.20842740052233208": [
+      {
+        "transactionID": "0.4039512359573983",
+        "value": {
+          "id": 0.20842740052233208,
+          "price": 18.209919676380157,
+          "amount": 53.90124409822863,
+          "side": "sell",
+          "status": "open",
+          "user": "alice"
+        }
+      },
+      {
+        "transactionID": "0.8601966894792362",
+        "value": {
+          "id": 0.20842740052233208,
+          "price": 18.209919676380157,
+          "amount": 0,
+          "status": "sold",
+          "side": "sell",
+          "user": "alice"
+        }
+      }
+    ],
+    "/orders/0.9650901932875534": [
+      {
+        "transactionID": "0.03932677352738266",
+        "value": {
+          "id": 0.9650901932875534,
+          "price": 44.04468768652965,
+          "amount": 65.18974501191614,
+          "side": "sell",
+          "status": "open",
+          "user": "alice"
+        }
+      },
+      {
+        "transactionID": "0.8601966894792362",
+        "value": {
+          "id": 0.9650901932875534,
+          "price": 44.04468768652965,
+          "amount": 0,
+          "status": "sold",
+          "side": "sell",
+          "user": "alice"
+        }
+      }
+    ],
+    "/orders/0.6609517467775864": [
+      {
+        "transactionID": "0.27087885678827656",
+        "value": {
+          "id": 0.6609517467775864,
+          "price": 53.02912770121277,
+          "amount": 25.849528681346705,
+          "side": "sell",
+          "status": "open",
+          "user": "alice"
+        }
+      },
+      {
+        "transactionID": "0.8601966894792362",
+        "value": {
+          "id": 0.6609517467775864,
+          "price": 53.02912770121277,
+          "amount": 0,
+          "status": "sold",
+          "side": "sell",
+          "user": "alice"
+        }
+      }
+    ],
+    "/orders/0.2752696380720191": [
+      {
+        "transactionID": "0.787366886890835",
+        "value": {
+          "id": 0.2752696380720191,
+          "price": 10.674027689429026,
+          "amount": 34.3256187013589,
+          "side": "sell",
+          "status": "open",
+          "user": "bob"
+        }
+      },
+      {
+        "transactionID": "0.787366886890835",
+        "value": {
+          "id": 0.2752696380720191,
+          "price": 10.674027689429026,
+          "amount": 0,
+          "status": "sold",
+          "side": "sell",
+          "user": "bob"
+        }
+      }
+    ],
+    "/trades/0.4568127481795966": [
+      {
+        "transactionID": "0.787366886890835",
+        "value": {
+          "id": 0.4568127481795966,
+          "buyOrder": 0.015206331866985496,
+          "sellOrder": 0.2752696380720191,
+          "amount": 34.3256187013589,
+          "price": 13.801960217582025
+        }
+      }
+    ],
+    "/orders/0.5913882414730156": [
+      {
+        "transactionID": "0.8598554999193694",
+        "value": {
+          "id": 0.5913882414730156,
+          "price": 5.453274869782175,
+          "amount": 70.84580550049041,
+          "side": "sell",
+          "status": "open",
+          "user": "bob"
+        }
+      },
+      {
+        "transactionID": "0.8598554999193694",
+        "value": {
+          "id": 0.5913882414730156,
+          "price": 5.453274869782175,
+          "amount": 37.9737047366553,
+          "status": "open",
+          "side": "sell",
+          "user": "bob"
+        }
+      },
+      {
+        "transactionID": "0.4568127481795966",
+        "value": {
+          "id": 0.5913882414730156,
+          "price": 5.453274869782175,
+          "amount": 31.72038945529646,
+          "status": "open",
+          "side": "sell",
+          "user": "bob"
+        }
+      },
+      {
+        "transactionID": "0.46217763466963324",
+        "value": {
+          "id": 0.5913882414730156,
+          "price": 5.453274869782175,
+          "amount": 17.41572694612269,
+          "status": "open",
+          "side": "sell",
+          "user": "bob"
+        }
+      },
+      {
+        "transactionID": "0.6953998633617534",
+        "value": {
+          "id": 0.5913882414730156,
+          "price": 5.453274869782175,
+          "amount": 8.517618438711033,
+          "status": "open",
+          "side": "sell",
+          "user": "bob"
+        }
+      },
+      {
+        "transactionID": "0.8601966894792362",
+        "value": {
+          "id": 0.5913882414730156,
+          "price": 5.453274869782175,
+          "amount": 0,
+          "status": "sold",
+          "side": "sell",
+          "user": "bob"
+        }
+      }
+    ],
+    "/trades/0.46217763466963324": [
+      {
+        "transactionID": "0.8598554999193694",
+        "value": {
+          "id": 0.46217763466963324,
+          "buyOrder": 0.015206331866985496,
+          "sellOrder": 0.5913882414730156,
+          "amount": 32.872100763835114,
+          "price": 11.1915838077586
+        }
+      }
+    ],
+    "/orders/0.6518629055021916": [
+      {
+        "transactionID": "0.4568127481795966",
+        "value": {
+          "id": 0.6518629055021916,
+          "price": 99.47066749396795,
+          "amount": 6.253315281358842,
+          "side": "buy",
+          "status": "open",
+          "user": "bob"
+        }
+      },
+      {
+        "transactionID": "0.4568127481795966",
+        "value": {
+          "id": 0.6518629055021916,
+          "price": 99.47066749396795,
+          "amount": 0,
+          "status": "sold",
+          "side": "buy",
+          "user": "bob"
+        }
+      }
+    ],
+    "/trades/0.8598554999193694": [
+      {
+        "transactionID": "0.4568127481795966",
+        "value": {
+          "id": 0.8598554999193694,
+          "buyOrder": 0.6518629055021916,
+          "sellOrder": 0.5913882414730156,
+          "amount": 6.253315281358842,
+          "price": 52.461971181875064
+        }
+      }
+    ],
+    "/orders/0.29258132380673785": [
+      {
+        "transactionID": "0.6160107442326944",
+        "value": {
+          "id": 0.29258132380673785,
+          "price": 21.071714974075288,
+          "amount": 71.29892732137715,
+          "side": "sell",
+          "status": "open",
+          "user": "alice"
+        }
+      },
+      {
+        "transactionID": "0.8601966894792362",
+        "value": {
+          "id": 0.29258132380673785,
+          "price": 21.071714974075288,
+          "amount": 0,
+          "status": "sold",
+          "side": "sell",
+          "user": "alice"
+        }
+      }
+    ],
+    "/orders/0.8195101016382781": [
+      {
+        "transactionID": "0.46217763466963324",
+        "value": {
+          "id": 0.8195101016382781,
+          "price": 18.463462328969932,
+          "amount": 14.30466250917377,
+          "side": "buy",
+          "status": "open",
+          "user": "bob"
+        }
+      },
+      {
+        "transactionID": "0.46217763466963324",
+        "value": {
+          "id": 0.8195101016382781,
+          "price": 18.463462328969932,
+          "amount": 0,
+          "status": "sold",
+          "side": "buy",
+          "user": "bob"
+        }
+      }
+    ],
+    "/trades/0.5062796468904983": [
+      {
+        "transactionID": "0.46217763466963324",
+        "value": {
+          "id": 0.5062796468904983,
+          "buyOrder": 0.8195101016382781,
+          "sellOrder": 0.5913882414730156,
+          "amount": 14.30466250917377,
+          "price": 11.958368599376053
+        }
+      }
+    ],
+    "/orders/0.3881101900600923": [
+      {
+        "transactionID": "0.4143147560901146",
+        "value": {
+          "id": 0.3881101900600923,
+          "price": 63.037587481585874,
+          "amount": 57.545251220041195,
+          "side": "sell",
+          "status": "open",
+          "user": "alice"
+        }
+      },
+      {
+        "transactionID": "0.8601966894792362",
+        "value": {
+          "id": 0.3881101900600923,
+          "price": 63.037587481585874,
+          "amount": 0,
+          "status": "sold",
+          "side": "sell",
+          "user": "alice"
+        }
+      }
+    ],
+    "/orders/0.04202915219779047": [
+      {
+        "transactionID": "0.5062796468904983",
+        "value": {
+          "id": 0.04202915219779047,
+          "price": 14.714031819919155,
+          "amount": 26.07334524027383,
+          "side": "sell",
+          "status": "open",
+          "user": "bob"
+        }
+      },
+      {
+        "transactionID": "0.8601966894792362",
+        "value": {
+          "id": 0.04202915219779047,
+          "price": 14.714031819919155,
+          "amount": 0,
+          "status": "sold",
+          "side": "sell",
+          "user": "bob"
+        }
+      }
+    ],
+    "/orders/0.34770394428419316": [
+      {
+        "transactionID": "0.6057206938096514",
+        "value": {
+          "id": 0.34770394428419316,
+          "price": 85.3441100896747,
+          "amount": 68.30995084560472,
+          "side": "sell",
+          "status": "open",
+          "user": "bob"
+        }
+      }
+    ],
+    "/orders/0.3583391274868875": [
+      {
+        "transactionID": "0.3839684854112272",
+        "value": {
+          "id": 0.3583391274868875,
+          "price": 0.08381153464672299,
+          "amount": 35.15202494817974,
+          "side": "buy",
+          "status": "open",
+          "user": "bob"
+        }
+      }
+    ],
+    "/orders/0.6571485331814256": [
+      {
+        "transactionID": "0.9679691288321923",
+        "value": {
+          "id": 0.6571485331814256,
+          "price": 59.59723588041703,
+          "amount": 38.92185379650616,
+          "side": "sell",
+          "status": "open",
+          "user": "alice"
+        }
+      },
+      {
+        "transactionID": "0.8601966894792362",
+        "value": {
+          "id": 0.6571485331814256,
+          "price": 59.59723588041703,
+          "amount": 0,
+          "status": "sold",
+          "side": "sell",
+          "user": "alice"
+        }
+      }
+    ],
+    "/orders/0.5855059047094602": [
+      {
+        "transactionID": "0.6953998633617534",
+        "value": {
+          "id": 0.5855059047094602,
+          "price": 50.51039704169183,
+          "amount": 8.898108507411656,
+          "side": "buy",
+          "status": "open",
+          "user": "alice"
+        }
+      },
+      {
+        "transactionID": "0.6953998633617534",
+        "value": {
+          "id": 0.5855059047094602,
+          "price": 50.51039704169183,
+          "amount": 0,
+          "status": "sold",
+          "side": "buy",
+          "user": "alice"
+        }
+      }
+    ],
+    "/trades/0.5977436956928519": [
+      {
+        "transactionID": "0.6953998633617534",
+        "value": {
+          "id": 0.5977436956928519,
+          "buyOrder": 0.5855059047094602,
+          "sellOrder": 0.5913882414730156,
+          "amount": 8.898108507411656,
+          "price": 27.981835955737004
+        }
+      }
+    ],
+    "/orders/0.3257611713612091": [
+      {
+        "transactionID": "0.8601966894792362",
+        "value": {
+          "id": 0.3257611713612091,
+          "price": 82.06709235167791,
+          "amount": 72.08794352792943,
+          "side": "buy",
+          "status": "open",
+          "user": "bob"
+        }
+      },
+      {
+        "transactionID": "0.8601966894792362",
+        "value": {
+          "id": 0.3257611713612091,
+          "price": 82.06709235167791,
+          "amount": 63.57032508921839,
+          "status": "open",
+          "side": "buy",
+          "user": "bob"
+        }
+      },
+      {
+        "transactionID": "0.8601966894792362",
+        "value": {
+          "id": 0.3257611713612091,
+          "price": 82.06709235167791,
+          "amount": 46.014598287655595,
+          "status": "open",
+          "side": "buy",
+          "user": "bob"
+        }
+      },
+      {
+        "transactionID": "0.8601966894792362",
+        "value": {
+          "id": 0.3257611713612091,
+          "price": 82.06709235167791,
+          "amount": 43.40930953008057,
+          "status": "open",
+          "side": "buy",
+          "user": "bob"
+        }
+      },
+      {
+        "transactionID": "0.8601966894792362",
+        "value": {
+          "id": 0.3257611713612091,
+          "price": 82.06709235167791,
+          "amount": 18.186699429700795,
+          "status": "open",
+          "side": "buy",
+          "user": "bob"
+        }
+      },
+      {
+        "transactionID": "0.8601966894792362",
+        "value": {
+          "id": 0.3257611713612091,
+          "price": 82.06709235167791,
+          "amount": 0.7890162065522759,
+          "status": "open",
+          "side": "buy",
+          "user": "bob"
+        }
+      },
+      {
+        "transactionID": "0.8601966894792362",
+        "value": {
+          "id": 0.3257611713612091,
+          "price": 82.06709235167791,
+          "amount": 63.734014531349764,
+          "status": "open",
+          "side": "buy",
+          "user": "bob"
+        }
+      },
+      {
+        "transactionID": "0.8601966894792362",
+        "value": {
+          "id": 0.3257611713612091,
+          "price": 82.06709235167791,
+          "amount": 6.898198516013281,
+          "status": "open",
+          "side": "buy",
+          "user": "bob"
+        }
+      },
+      {
+        "transactionID": "0.8601966894792362",
+        "value": {
+          "id": 0.3257611713612091,
+          "price": 82.06709235167791,
+          "amount": 31.322482536847218,
+          "status": "open",
+          "side": "buy",
+          "user": "bob"
+        }
+      },
+      {
+        "transactionID": "0.8601966894792362",
+        "value": {
+          "id": 0.3257611713612091,
+          "price": 82.06709235167791,
+          "amount": 67.71020406643878,
+          "status": "open",
+          "side": "buy",
+          "user": "bob"
+        }
+      },
+      {
+        "transactionID": "0.8601966894792362",
+        "value": {
+          "id": 0.3257611713612091,
+          "price": 82.06709235167791,
+          "amount": 49.92747846984069,
+          "status": "open",
+          "side": "buy",
+          "user": "bob"
+        }
+      },
+      {
+        "transactionID": "0.8601966894792362",
+        "value": {
+          "id": 0.3257611713612091,
+          "price": 82.06709235167791,
+          "amount": 46.23841484658272,
+          "status": "open",
+          "side": "buy",
+          "user": "bob"
+        }
+      },
+      {
+        "transactionID": "0.8601966894792362",
+        "value": {
+          "id": 0.3257611713612091,
+          "price": 82.06709235167791,
+          "amount": 33.95175350266671,
+          "status": "open",
+          "side": "buy",
+          "user": "bob"
+        }
+      },
+      {
+        "transactionID": "0.8601966894792362",
+        "value": {
+          "id": 0.3257611713612091,
+          "price": 82.06709235167791,
+          "amount": 33.16608973142326,
+          "status": "open",
+          "side": "buy",
+          "user": "bob"
+        }
+      },
+      {
+        "transactionID": "0.8601966894792362",
+        "value": {
+          "id": 0.3257611713612091,
+          "price": 82.06709235167791,
+          "amount": 14.542692307888231,
+          "status": "open",
+          "side": "buy",
+          "user": "bob"
+        }
+      }
+    ],
+    "/trades/0.06801234424860435": [
+      {
+        "transactionID": "0.8601966894792362",
+        "value": {
+          "id": 0.06801234424860435,
+          "buyOrder": 0.3257611713612091,
+          "sellOrder": 0.5913882414730156,
+          "amount": 8.517618438711033,
+          "price": 43.760183610730046
+        }
+      }
+    ],
+    "/trades/0.08347707994606074": [
+      {
+        "transactionID": "0.8601966894792362",
+        "value": {
+          "id": 0.08347707994606074,
+          "buyOrder": 0.3257611713612091,
+          "sellOrder": 0.04202915219779047,
+          "amount": 26.07334524027383,
+          "price": 48.390562085798535
+        }
+      }
+    ],
+    "/trades/0.9992898264893236": [
+      {
+        "transactionID": "0.8601966894792362",
+        "value": {
+          "id": 0.9992898264893236,
+          "buyOrder": 0.3257611713612091,
+          "sellOrder": 0.45140223107431293,
+          "amount": 28.678633997848856,
+          "price": 50.11864581622057
+        }
+      }
+    ],
+    "/trades/0.06411381118382682": [
+      {
+        "transactionID": "0.8601966894792362",
+        "value": {
+          "id": 0.06411381118382682,
+          "buyOrder": 0.3257611713612091,
+          "sellOrder": 0.20842740052233208,
+          "amount": 53.90124409822863,
+          "price": 50.13850601402903
+        }
+      }
+    ],
+    "/trades/0.5608318909637927": [
+      {
+        "transactionID": "0.8601966894792362",
+        "value": {
+          "id": 0.5608318909637927,
+          "buyOrder": 0.3257611713612091,
+          "sellOrder": 0.29258132380673785,
+          "amount": 71.29892732137715,
+          "price": 51.5694036628766
+        }
+      }
+    ],
+    "/trades/0.9015948655098629": [
+      {
+        "transactionID": "0.8601966894792362",
+        "value": {
+          "id": 0.9015948655098629,
+          "buyOrder": 0.3257611713612091,
+          "sellOrder": 0.7999519010073989,
+          "amount": 8.353928996579661,
+          "price": 54.4143780408561
+        }
+      }
+    ],
+    "/trades/0.10490539400363844": [
+      {
+        "transactionID": "0.8601966894792362",
+        "value": {
+          "id": 0.10490539400363844,
+          "buyOrder": 0.3257611713612091,
+          "sellOrder": 0.9650901932875534,
+          "amount": 65.18974501191614,
+          "price": 63.055890019103785
+        }
+      }
+    ],
+    "/trades/0.14496402409389988": [
+      {
+        "transactionID": "0.8601966894792362",
+        "value": {
+          "id": 0.14496402409389988,
+          "buyOrder": 0.3257611713612091,
+          "sellOrder": 0.37721112405621554,
+          "amount": 40.76546099108221,
+          "price": 63.58521651810521
+        }
+      }
+    ],
+    "/trades/0.41035963772829587": [
+      {
+        "transactionID": "0.8601966894792362",
+        "value": {
+          "id": 0.41035963772829587,
+          "buyOrder": 0.3257611713612091,
+          "sellOrder": 0.4453516187568676,
+          "amount": 4.377739461490645,
+          "price": 63.93958664400465
+        }
+      }
+    ],
+    "/trades/0.9144359141722656": [
+      {
+        "transactionID": "0.8601966894792362",
+        "value": {
+          "id": 0.9144359141722656,
+          "buyOrder": 0.3257611713612091,
+          "sellOrder": 0.6594613051595737,
+          "amount": 22.160465058088736,
+          "price": 66.50196641357799
+        }
+      }
+    ],
+    "/trades/0.9244101628888493": [
+      {
+        "transactionID": "0.8601966894792362",
+        "value": {
+          "id": 0.9244101628888493,
+          "buyOrder": 0.3257611713612091,
+          "sellOrder": 0.6609517467775864,
+          "amount": 25.849528681346705,
+          "price": 67.54811002644534
+        }
+      }
+    ],
+    "/trades/0.5616082642801183": [
+      {
+        "transactionID": "0.8601966894792362",
+        "value": {
+          "id": 0.5616082642801183,
+          "buyOrder": 0.3257611713612091,
+          "sellOrder": 0.3695129378414833,
+          "amount": 38.136190025262714,
+          "price": 68.50666554505626
+        }
+      }
+    ],
+    "/trades/0.9501011869405407": [
+      {
+        "transactionID": "0.8601966894792362",
+        "value": {
+          "id": 0.9501011869405407,
+          "buyOrder": 0.3257611713612091,
+          "sellOrder": 0.6571485331814256,
+          "amount": 38.92185379650616,
+          "price": 70.83216411604747
+        }
+      }
+    ],
+    "/trades/0.3506492998922703": [
+      {
+        "transactionID": "0.8601966894792362",
+        "value": {
+          "id": 0.3506492998922703,
+          "buyOrder": 0.3257611713612091,
+          "sellOrder": 0.3881101900600923,
+          "amount": 57.545251220041195,
+          "price": 72.5523399166319
+        }
+      }
+    ],
+    "/orders/0.06411381118382682": [
+      {
+        "transactionID": "0.9992898264893236",
+        "value": {
+          "id": 0.06411381118382682,
+          "price": 15.311881075903663,
+          "amount": 72.79795987792123,
+          "side": "buy",
+          "status": "open",
+          "user": "bob"
+        }
+      }
+    ],
+    "/orders/0.08347707994606074": [
+      {
+        "transactionID": "0.06801234424860435",
+        "value": {
+          "id": 0.08347707994606074,
+          "price": 51.974749287566866,
+          "amount": 84.354850635263,
+          "side": "buy",
+          "status": "open",
+          "user": "bob"
+        }
+      }
+    ]
+  },
+  "user0": {},
+  "client0": {
+    "/orders/0.31381383055244927": [
+      {
+        "transactionID": "0.00037566525896607457",
+        "value": {
+          "id": 0.31381383055244927,
+          "price": 37.316768604625736,
+          "amount": 20.142637957020327,
+          "side": "sell",
+          "status": "open",
+          "user": "alice"
+        }
+      }
+    ],
+    "/orders/0.015206331866985496": [
+      {
+        "transactionID": "0.26905546502122235",
+        "value": {
+          "id": 0.015206331866985496,
+          "price": 16.929892745735025,
+          "amount": 85.09055332754791,
+          "side": "buy",
+          "status": "open",
+          "user": "alice"
+        }
+      }
+    ],
+    "/orders/0.5100409435201818": [
+      {
+        "transactionID": "0.5728273955852048",
+        "value": {
+          "id": 0.5100409435201818,
+          "price": 60.20900012013409,
+          "amount": 88.19302724506056,
+          "side": "buy",
+          "status": "open",
+          "user": "alice"
+        }
+      }
+    ],
+    "/orders/0.5855064094862961": [
+      {
+        "transactionID": "0.2581415779498793",
+        "value": {
+          "id": 0.5855064094862961,
+          "price": 15.652298755619952,
+          "amount": 10.70480464091972,
+          "side": "sell",
+          "status": "open",
+          "user": "alice"
+        }
+      }
+    ],
+    "/orders/0.8652590050969823": [
+      {
+        "transactionID": "0.6062274799740198",
+        "value": {
+          "id": 0.8652590050969823,
+          "price": 40.85953444322528,
+          "amount": 5.2026452545101245,
+          "side": "buy",
+          "status": "open",
+          "user": "alice"
+        }
+      }
+    ],
+    "/orders/0.9319858592301475": [
+      {
+        "transactionID": "0.40809971923762905",
+        "value": {
+          "id": 0.9319858592301475,
+          "price": 61.90427058553721,
+          "amount": 30.009038122379255,
+          "side": "buy",
+          "status": "open",
+          "user": "alice"
+        }
+      }
+    ],
+    "/orders/0.6594613051595737": [
+      {
+        "transactionID": "0.8863366133406168",
+        "value": {
+          "id": 0.6594613051595737,
+          "price": 50.936840475478064,
+          "amount": 22.160465058088736,
+          "side": "sell",
+          "status": "open",
+          "user": "alice"
+        }
+      }
+    ],
+    "/orders/0.42560927982033164": [
+      {
+        "transactionID": "0.5661584819351868",
+        "value": {
+          "id": 0.42560927982033164,
+          "price": 30.447008628814487,
+          "amount": 11.175727156154558,
+          "side": "buy",
+          "status": "open",
+          "user": "alice"
+        }
+      }
+    ],
+    "/orders/0.3695129378414833": [
+      {
+        "transactionID": "0.21517043534216512",
+        "value": {
+          "id": 0.3695129378414833,
+          "price": 54.946238738434616,
+          "amount": 38.136190025262714,
+          "side": "sell",
+          "status": "open",
+          "user": "alice"
+        }
+      }
+    ],
+    "/orders/0.20842740052233208": [
+      {
+        "transactionID": "0.4039512359573983",
+        "value": {
+          "id": 0.20842740052233208,
+          "price": 18.209919676380157,
+          "amount": 53.90124409822863,
+          "side": "sell",
+          "status": "open",
+          "user": "alice"
+        }
+      }
+    ],
+    "/orders/0.9650901932875534": [
+      {
+        "transactionID": "0.03932677352738266",
+        "value": {
+          "id": 0.9650901932875534,
+          "price": 44.04468768652965,
+          "amount": 65.18974501191614,
+          "side": "sell",
+          "status": "open",
+          "user": "alice"
+        }
+      }
+    ],
+    "/orders/0.6609517467775864": [
+      {
+        "transactionID": "0.27087885678827656",
+        "value": {
+          "id": 0.6609517467775864,
+          "price": 53.02912770121277,
+          "amount": 25.849528681346705,
+          "side": "sell",
+          "status": "open",
+          "user": "alice"
+        }
+      }
+    ],
+    "/orders/0.29258132380673785": [
+      {
+        "transactionID": "0.6160107442326944",
+        "value": {
+          "id": 0.29258132380673785,
+          "price": 21.071714974075288,
+          "amount": 71.29892732137715,
+          "side": "sell",
+          "status": "open",
+          "user": "alice"
+        }
+      }
+    ],
+    "/orders/0.3881101900600923": [
+      {
+        "transactionID": "0.4143147560901146",
+        "value": {
+          "id": 0.3881101900600923,
+          "price": 63.037587481585874,
+          "amount": 57.545251220041195,
+          "side": "sell",
+          "status": "open",
+          "user": "alice"
+        }
+      }
+    ],
+    "/orders/0.6571485331814256": [
+      {
+        "transactionID": "0.9679691288321923",
+        "value": {
+          "id": 0.6571485331814256,
+          "price": 59.59723588041703,
+          "amount": 38.92185379650616,
+          "side": "sell",
+          "status": "open",
+          "user": "alice"
+        }
+      }
+    ],
+    "/orders/0.5855059047094602": [
+      {
+        "transactionID": "0.6953998633617534",
+        "value": {
+          "id": 0.5855059047094602,
+          "price": 50.51039704169183,
+          "amount": 8.898108507411656,
+          "side": "buy",
+          "status": "open",
+          "user": "alice"
+        }
+      }
+    ]
+  },
+  "user1": {},
+  "client1": {
+    "/orders/0.4453516187568676": [
+      {
+        "transactionID": "0.0003834916282291446",
+        "value": {
+          "id": 0.4453516187568676,
+          "price": 45.81208093633138,
+          "amount": 91.73236223099042,
+          "side": "sell",
+          "status": "open",
+          "user": "bob"
+        }
+      }
+    ],
+    "/orders/0.4738564640040104": [
+      {
+        "transactionID": "0.02466078710245042",
+        "value": {
+          "id": 0.4738564640040104,
+          "price": 33.81343161111086,
+          "amount": 13.419040444697291,
+          "side": "buy",
+          "status": "open",
+          "user": "bob"
+        }
+      }
+    ],
+    "/orders/0.7290001299502329": [
+      {
+        "transactionID": "0.10559463277980186",
+        "value": {
+          "id": 0.7290001299502329,
+          "price": 88.46443462042551,
+          "amount": 40.73829142445539,
+          "side": "buy",
+          "status": "open",
+          "user": "bob"
+        }
+      }
+    ],
+    "/orders/0.2643711262050747": [
+      {
+        "transactionID": "0.3051861941862723",
+        "value": {
+          "id": 0.2643711262050747,
+          "price": 43.23453176136551,
+          "amount": 3.453515426678132,
+          "side": "buy",
+          "status": "open",
+          "user": "bob"
+        }
+      }
+    ],
+    "/orders/0.7999519010073989": [
+      {
+        "transactionID": "0.2855238856612927",
+        "value": {
+          "id": 0.7999519010073989,
+          "price": 26.76166373003429,
+          "amount": 62.511260865732346,
+          "side": "sell",
+          "status": "open",
+          "user": "bob"
+        }
+      }
+    ],
+    "/orders/0.45140223107431293": [
+      {
+        "transactionID": "0.7916017969060706",
+        "value": {
+          "id": 0.45140223107431293,
+          "price": 18.17019928076323,
+          "amount": 66.58643243516464,
+          "side": "sell",
+          "status": "open",
+          "user": "bob"
+        }
+      }
+    ],
+    "/orders/0.694033415703134": [
+      {
+        "transactionID": "0.7173019593742694",
+        "value": {
+          "id": 0.694033415703134,
+          "price": 85.92259589202943,
+          "amount": 26.732071281161225,
+          "side": "buy",
+          "status": "open",
+          "user": "bob"
+        }
+      }
+    ],
+    "/orders/0.9553094734021551": [
+      {
+        "transactionID": "0.619620117004607",
+        "value": {
+          "id": 0.9553094734021551,
+          "price": 9.207850982628624,
+          "amount": 7.188029221434173,
+          "side": "sell",
+          "status": "open",
+          "user": "bob"
+        }
+      }
+    ],
+    "/orders/0.37721112405621554": [
+      {
+        "transactionID": "0.8863198197319357",
+        "value": {
+          "id": 0.37721112405621554,
+          "price": 45.103340684532505,
+          "amount": 40.76546099108221,
+          "side": "sell",
+          "status": "open",
+          "user": "bob"
+        }
+      }
+    ],
+    "/orders/0.2752696380720191": [
+      {
+        "transactionID": "0.787366886890835",
+        "value": {
+          "id": 0.2752696380720191,
+          "price": 10.674027689429026,
+          "amount": 34.3256187013589,
+          "side": "sell",
+          "status": "open",
+          "user": "bob"
+        }
+      }
+    ],
+    "/orders/0.6518629055021916": [
+      {
+        "transactionID": "0.4568127481795966",
+        "value": {
+          "id": 0.6518629055021916,
+          "price": 99.47066749396795,
+          "amount": 6.253315281358842,
+          "side": "buy",
+          "status": "open",
+          "user": "bob"
+        }
+      }
+    ],
+    "/orders/0.5913882414730156": [
+      {
+        "transactionID": "0.8598554999193694",
+        "value": {
+          "id": 0.5913882414730156,
+          "price": 5.453274869782175,
+          "amount": 70.84580550049041,
+          "side": "sell",
+          "status": "open",
+          "user": "bob"
+        }
+      }
+    ],
+    "/orders/0.8195101016382781": [
+      {
+        "transactionID": "0.46217763466963324",
+        "value": {
+          "id": 0.8195101016382781,
+          "price": 18.463462328969932,
+          "amount": 14.30466250917377,
+          "side": "buy",
+          "status": "open",
+          "user": "bob"
+        }
+      }
+    ],
+    "/orders/0.04202915219779047": [
+      {
+        "transactionID": "0.5062796468904983",
+        "value": {
+          "id": 0.04202915219779047,
+          "price": 14.714031819919155,
+          "amount": 26.07334524027383,
+          "side": "sell",
+          "status": "open",
+          "user": "bob"
+        }
+      }
+    ],
+    "/orders/0.3583391274868875": [
+      {
+        "transactionID": "0.3839684854112272",
+        "value": {
+          "id": 0.3583391274868875,
+          "price": 0.08381153464672299,
+          "amount": 35.15202494817974,
+          "side": "buy",
+          "status": "open",
+          "user": "bob"
+        }
+      }
+    ],
+    "/orders/0.34770394428419316": [
+      {
+        "transactionID": "0.6057206938096514",
+        "value": {
+          "id": 0.34770394428419316,
+          "price": 85.3441100896747,
+          "amount": 68.30995084560472,
+          "side": "sell",
+          "status": "open",
+          "user": "bob"
+        }
+      }
+    ],
+    "/orders/0.3257611713612091": [
+      {
+        "transactionID": "0.8601966894792362",
+        "value": {
+          "id": 0.3257611713612091,
+          "price": 82.06709235167791,
+          "amount": 72.08794352792943,
+          "side": "buy",
+          "status": "open",
+          "user": "bob"
+        }
+      }
+    ],
+    "/orders/0.08347707994606074": [
+      {
+        "transactionID": "0.06801234424860435",
+        "value": {
+          "id": 0.08347707994606074,
+          "price": 51.974749287566866,
+          "amount": 84.354850635263,
+          "side": "buy",
+          "status": "open",
+          "user": "bob"
+        }
+      }
+    ],
+    "/orders/0.06411381118382682": [
+      {
+        "transactionID": "0.9992898264893236",
+        "value": {
+          "id": 0.06411381118382682,
+          "price": 15.311881075903663,
+          "amount": 72.79795987792123,
+          "side": "buy",
+          "status": "open",
+          "user": "bob"
+        }
+      }
+    ]
+  }
+}

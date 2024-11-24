@@ -94,6 +94,7 @@ export type MutationCtx = {
   curUser: string;
   rand: () => number;
   read: (key: string, _default?: Json) => Json;
+  scan: (prefix: string) => Json[];
   write: (key: string, value: Json) => void;
 };
 
@@ -197,4 +198,13 @@ export type MutationInvocation = {
   type: "Invocation";
   name: string;
   args: Json[];
+};
+
+// Triggers
+
+type TriggerFn = (ctx: MutationCtx, evt: WriteOp) => void;
+
+export type TriggerDefn = {
+  prefix: string;
+  fn: TriggerFn;
 };

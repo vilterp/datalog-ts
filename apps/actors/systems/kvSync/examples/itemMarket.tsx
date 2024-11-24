@@ -36,7 +36,7 @@ function MarketInner(props: { client: Client; user: string }) {
       ) : (
         <Table<Offer>
           data={offers}
-          getKey={(offer) => offer.item}
+          getKey={(offer) => offer.id.toString()}
           columns={[
             { name: "item", render: (offer) => offer.item },
             { name: "price", render: (offer) => offer.price },
@@ -110,7 +110,7 @@ type Offer = {
 };
 
 function useOffers(client: Client): [Offer[], QueryStatus] {
-  const [rawOffers, queryStatus] = useLiveQuery(client, "list-todos", {
+  const [rawOffers, queryStatus] = useLiveQuery(client, "list-offers", {
     prefix: "/offers/",
   });
 
@@ -150,8 +150,8 @@ const mutations: TSMutationDefns = {
   },
 };
 
-export const market: KVApp = {
-  name: "Market",
+export const itemMarket: KVApp = {
+  name: "Item Market",
   mutations,
   ui: MarketUI,
 };

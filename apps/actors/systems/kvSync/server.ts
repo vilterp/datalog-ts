@@ -11,7 +11,6 @@ import {
   MutationResponse,
   Query,
   TransactionMetadata,
-  TSMutationDefns,
   WriteOp,
 } from "./types";
 import * as effects from "../../effects";
@@ -19,6 +18,7 @@ import { filterMap, mapObj, randStep2, removeKey } from "../../../../util/util";
 import { Json, jsonEq } from "../../../../util/json";
 import { keyInQuery, runQuery } from "./query";
 import { MutationContextImpl } from "./common";
+import { KVApp } from "./examples/types";
 
 export type ServerState = {
   type: "ServerState";
@@ -86,12 +86,13 @@ function processLiveQueryRequest(
 }
 
 function runMutationOnServer(
-  mutationDefns: TSMutationDefns,
+  app: KVApp,
   state: ServerState,
   user: string,
   req: MutationRequest,
   clientID: string
 ): [ServerState, MutationResponse, LiveQueryUpdate[]] {
+  const mutationDefns = app.mutations;
   const isTxnCommitted = (txnID: string) => true;
   const txnTime = state.time;
 
@@ -134,16 +135,6 @@ function runMutationOnServer(
     throw e;
   }
 
-  const newState: ServerState = {
-    ...state,
-    time: state.time + 1,
-    randSeed: ctx.randState,
-    transactionMetadata: {
-      ...state.transactionMetadata,
-      [req.txnID]: { serverTimestamp: txnTime, invocation: req.invocation },
-    },
-    data: ctx.kvData,
-  };
   if (!jsonEq(ctx.trace, req.trace)) {
     console.warn("SERVER: rejecting txn due to trace mismatch", {
       serverTrace: ctx.trace,
@@ -167,23 +158,42 @@ function runMutationOnServer(
       [],
     ];
   }
+
+  // run triggers
+  runTriggers(app, ctx);
+
+  const newState: ServerState = {
+    ...state,
+    time: state.time + 1,
+    randSeed: ctx.randState,
+    transactionMetadata: {
+      ...state.transactionMetadata,
+      [req.txnID]: { serverTimestamp: txnTime, invocation: req.invocation },
+    },
+    data: ctx.kvData,
+  };
+
   // live query updates
-  const writes: WriteOp[] = ctx.trace.filter(
-    (op) => op.type === "Write"
-  ) as WriteOp[];
+  const writes: WriteOp[] = getJustWrites(ctx);
+
+  // console.log("live queries for writes", writes);
+
   const liveQueryUpdates: LiveQueryUpdate[] = filterMap(
     state.liveQueries,
     (liveQuery) => {
       const matchingWrites = writes.filter((write) =>
         keyInQuery(write.key, liveQuery.query)
       );
+
+      // console.log("matching writes", liveQuery, matchingWrites);
+
       if (matchingWrites.length === 0) {
         return null;
       }
       // skip originating client
-      if (liveQuery.clientID === clientID) {
-        return null;
-      }
+      // if (liveQuery.clientID === clientID) {
+      //   return null;
+      // }
 
       return {
         type: "LiveQueryUpdate",
@@ -214,9 +224,40 @@ function runMutationOnServer(
   ];
 }
 
+const MAX_ITERS = 100;
+
+function runTriggers(app: KVApp, ctx: MutationContextImpl) {
+  let iters = 0;
+  const queue: WriteOp[] = getJustWrites(ctx);
+  while (queue.length > 0) {
+    if (iters > MAX_ITERS) {
+      throw new Error("Infinite loop in triggers");
+    }
+
+    const op = queue.shift();
+    const lengthBefore = getJustWrites(ctx).length;
+
+    for (const trigger of app.triggers || []) {
+      if (op.key.startsWith(trigger.prefix)) {
+        trigger.fn(ctx, op);
+      }
+    }
+
+    const newTriggers = getJustWrites(ctx).slice(lengthBefore);
+    for (const trigger of newTriggers) {
+      queue.push(trigger);
+    }
+    iters++;
+  }
+}
+
+function getJustWrites(ctx: MutationContextImpl): WriteOp[] {
+  return ctx.trace.filter((op) => op.type === "Write") as WriteOp[];
+}
+
 // TODO: maybe move this out to index.ts? idk
 export function updateServer(
-  mutations: TSMutationDefns,
+  app: KVApp,
   state: ServerState,
   init: LoadedTickInitiator<ServerState, MsgToServer>
 ): ActorResp<ServerState, MsgToClient> {
@@ -289,12 +330,13 @@ export function updateServer(
             }
             case "MutationRequest": {
               const [newState, mutationResp, updates] = runMutationOnServer(
-                mutations,
+                app,
                 state,
                 user,
                 innerMsg,
                 init.from
               );
+
               const outgoing: OutgoingMessage<MsgToClient>[] = [
                 { to: init.from, msg: mutationResp },
                 ...updates.map((update) => ({

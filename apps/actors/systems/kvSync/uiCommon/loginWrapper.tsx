@@ -39,6 +39,7 @@ function LoginSignupForm(props: { client: Client }) {
           <input
             type="text"
             value={username}
+            autoComplete="off"
             onChange={(evt) => setUsername(evt.target.value)}
           />
         </p>
@@ -48,6 +49,7 @@ function LoginSignupForm(props: { client: Client }) {
           <input
             type="password"
             value={password}
+            autoComplete="off"
             onChange={(evt) => setPassword(evt.target.value)}
           />
         </p>
