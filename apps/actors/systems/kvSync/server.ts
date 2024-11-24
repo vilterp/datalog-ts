@@ -171,20 +171,7 @@ function runMutationOnServer(
   }
 
   // run triggers
-  const queue: WriteOp[] = getJustWrites(ctx);
-  while (queue.length > 0) {
-    const op = queue.shift();
-    const lengthBefore = queue.length;
-
-    for (const trigger of app.triggers || []) {
-      trigger.fn(ctx, op);
-    }
-
-    const newTriggers = getJustWrites(ctx).slice(lengthBefore);
-    for (const trigger of newTriggers) {
-      queue.push(trigger);
-    }
-  }
+  runTriggers(app, ctx);
 
   // live query updates
   const writes: WriteOp[] = getJustWrites(ctx);
@@ -229,6 +216,34 @@ function runMutationOnServer(
     },
     liveQueryUpdates,
   ];
+}
+
+const MAX_ITERS = 100;
+
+// TODO: prevent infinite looping
+function runTriggers(app: KVApp, ctx: MutationContextImpl) {
+  let iters = 0;
+  const queue: WriteOp[] = getJustWrites(ctx);
+  while (queue.length > 0) {
+    if (iters > MAX_ITERS) {
+      throw new Error("Infinite loop in triggers");
+    }
+
+    const op = queue.shift();
+    const lengthBefore = queue.length;
+
+    for (const trigger of app.triggers || []) {
+      if (op.key.startsWith(trigger.prefix)) {
+        trigger.fn(ctx, op);
+      }
+    }
+
+    const newTriggers = getJustWrites(ctx).slice(lengthBefore);
+    for (const trigger of newTriggers) {
+      queue.push(trigger);
+    }
+    iters++;
+  }
 }
 
 function getJustWrites(ctx: MutationContextImpl): WriteOp[] {
