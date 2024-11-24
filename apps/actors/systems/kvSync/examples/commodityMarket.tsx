@@ -38,7 +38,7 @@ function MarketInner(props: { client: Client; user: string }) {
           data={orders}
           getKey={(order) => order.id.toString()}
           columns={[
-            { name: "price", render: (order) => order.price },
+            { name: "price", render: (order) => `$${order.price}` },
             { name: "amount", render: (order) => order.amount },
             { name: "side", render: (order) => order.side },
             { name: "offered by", render: (order) => order.user },
@@ -73,19 +73,19 @@ function OrderForm(props: { client: Client }) {
         props.client.runMutation("Order", [price, amount, side]);
       }}
     >
-      Price:{" "}
-      <input
-        type="number"
-        placeholder="Price"
-        value={price}
-        onChange={(evt) => setPrice(parseInt(evt.target.value))}
-      />{" "}
       Amount:{" "}
       <input
         type="number"
         placeholder="Amount"
         value={amount}
         onChange={(evt) => setAmount(parseInt(evt.target.value))}
+      />{" "}
+      Price:{" "}
+      <input
+        type="number"
+        placeholder="Price"
+        value={price}
+        onChange={(evt) => setPrice(parseInt(evt.target.value))}
       />
       <div>
         <label>
