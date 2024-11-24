@@ -15,6 +15,7 @@ import { Inspector } from "../uiCommon/inspector";
 import { Table } from "../../../../../uiCommon/generic/table";
 import { LoggedInHeader } from "../uiCommon/loggedInHeader";
 import { Json } from "../../../../../util/json";
+import { id } from "vega";
 
 function MarketUI(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
@@ -28,7 +29,8 @@ function MarketUI(props: UIProps<ClientState, UserInput>) {
 }
 
 function MarketInner(props: { client: Client; user: string }) {
-  const [orders, queryStatus] = useOrders(props.client);
+  const [orders, orderQueryStatus] = useOrders(props.client);
+  const [trades, tradeQueryStatus] = useTrades(props.client);
 
   return (
     <>
@@ -38,7 +40,7 @@ function MarketInner(props: { client: Client; user: string }) {
 
       <h3>Orders</h3>
 
-      {queryStatus === "Loading" ? (
+      {orderQueryStatus === "Loading" ? (
         <em>Loading...</em>
       ) : (
         <Table<Order>
@@ -58,6 +60,23 @@ function MarketInner(props: { client: Client; user: string }) {
 
       <OrderForm client={props.client} />
 
+      <h3>Trades</h3>
+
+      {tradeQueryStatus === "Loading" ? (
+        <em>Loading...</em>
+      ) : (
+        <Table<Trade>
+          data={trades}
+          getKey={(trade) => trade.id.toString()}
+          columns={[
+            { name: "price", render: (trade) => `$${trade.price}` },
+            { name: "amount", render: (trade) => trade.amount },
+            { name: "buy order", render: (trade) => trade.buyOrder },
+            { name: "sell order", render: (trade) => trade.sellOrder },
+          ]}
+        />
+      )}
+
       <Inspector client={props.client} />
     </>
   );
@@ -72,10 +91,6 @@ function OrderForm(props: { client: Client }) {
     <form
       onSubmit={(evt) => {
         evt.preventDefault();
-
-        setPrice(0);
-        setSide("buy");
-        setAmount(0);
 
         props.client.runMutation("Order", [price, amount, side]);
       }}
@@ -132,6 +147,14 @@ type Order = {
   status: OfferStatus;
 };
 
+type Trade = {
+  id: number;
+  price: number;
+  amount: number;
+  buyOrder: number;
+  sellOrder: number;
+};
+
 type OrderWithState = Order & { state: TransactionState };
 
 function useOrders(client: Client): [OrderWithState[], QueryStatus] {
@@ -162,6 +185,30 @@ function readOrder(rawOrder: Json): Order {
     status: order.status as OfferStatus,
     side: order.side as OrderSide,
     user: order.user as string,
+  };
+}
+
+function useTrades(client: Client): [Trade[], QueryStatus] {
+  const [rawTrades, queryStatus] = useLiveQuery(client, "list-trades", {
+    prefix: "/trades/",
+  });
+
+  const trades = Object.entries(rawTrades).map(([id, rawTrade]): Trade => {
+    const trade = rawTrade.value as any;
+    return readTrade(trade);
+  });
+
+  return [trades, queryStatus];
+}
+
+function readTrade(rawTrade: Json): Trade {
+  const trade = rawTrade as any;
+  return {
+    id: trade.id as number,
+    price: trade.price as number,
+    amount: trade.amount as number,
+    buyOrder: trade.buyOrder as number,
+    sellOrder: trade.sellOrder as number,
   };
 }
 
@@ -211,7 +258,10 @@ function matchOrders(ctx: MutationCtx, evt: WriteOp) {
           amount: sell.amount - amount,
           status: sell.amount - amount === 0 ? "sold" : "open",
         });
-        ctx.write(`/trades/${ctx.rand()}`, {
+
+        const tradeID = ctx.rand();
+        ctx.write(`/trades/${tradeID}`, {
+          id: tradeID,
           buyOrder: buy.id,
           sellOrder: sell.id,
           amount,
