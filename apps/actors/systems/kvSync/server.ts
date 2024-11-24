@@ -136,16 +136,6 @@ function runMutationOnServer(
     throw e;
   }
 
-  const newState: ServerState = {
-    ...state,
-    time: state.time + 1,
-    randSeed: ctx.randState,
-    transactionMetadata: {
-      ...state.transactionMetadata,
-      [req.txnID]: { serverTimestamp: txnTime, invocation: req.invocation },
-    },
-    data: ctx.kvData,
-  };
   if (!jsonEq(ctx.trace, req.trace)) {
     console.warn("SERVER: rejecting txn due to trace mismatch", {
       serverTrace: ctx.trace,
@@ -172,6 +162,17 @@ function runMutationOnServer(
 
   // run triggers
   runTriggers(app, ctx);
+
+  const newState: ServerState = {
+    ...state,
+    time: state.time + 1,
+    randSeed: ctx.randState,
+    transactionMetadata: {
+      ...state.transactionMetadata,
+      [req.txnID]: { serverTimestamp: txnTime, invocation: req.invocation },
+    },
+    data: ctx.kvData,
+  };
 
   // live query updates
   const writes: WriteOp[] = getJustWrites(ctx);

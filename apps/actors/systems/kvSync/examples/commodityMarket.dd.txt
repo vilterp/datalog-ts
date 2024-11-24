@@ -20,6 +20,17 @@ application/json
           "status": "open",
           "user": "alice"
         }
+      },
+      {
+        "transactionID": "0.0003834916282291446",
+        "value": {
+          "id": 0.31381383055244927,
+          "price": 10,
+          "amount": 50,
+          "status": "open",
+          "side": "sell",
+          "user": "alice"
+        }
       }
     ],
     "/orders/0.4453516187568676": [
@@ -32,6 +43,18 @@ application/json
           "side": "buy",
           "status": "open",
           "user": "bob"
+        }
+      }
+    ],
+    "/trades/0.02466078710245042": [
+      {
+        "transactionID": "0.0003834916282291446",
+        "value": {
+          "id": 0.02466078710245042,
+          "buyOrder": 0.4453516187568676,
+          "sellOrder": 0.31381383055244927,
+          "amount": 50,
+          "price": 10
         }
       }
     ]

@@ -118,10 +118,19 @@ function processLiveQueryUpdate(
   updateMsg: LiveQueryUpdate
 ): ClientState {
   const newData = { ...state.data };
+
   for (const update of updateMsg.updates) {
     const key = update.key;
     switch (update.type) {
       case "Updated":
+        console.log(
+          "processLiveQueryUpdate",
+          "adding new version",
+          state.id,
+          key,
+          update
+        );
+
         newData[key] = addNewVersion(newData, key, update.value);
         break;
       case "Deleted":
