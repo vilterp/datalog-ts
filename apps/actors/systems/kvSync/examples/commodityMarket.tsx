@@ -43,17 +43,6 @@ function MarketInner(props: { client: Client; user: string }) {
             { name: "side", render: (order) => order.side },
             { name: "offered by", render: (order) => order.user },
             { name: "status", render: (order) => order.status },
-            {
-              name: "buy",
-              render: (offer) => (
-                <button
-                  disabled={offer.status === "sold"}
-                  onClick={() => props.client.runMutation("Buy", [offer.id])}
-                >
-                  Buy
-                </button>
-              ),
-            },
           ]}
         />
       )}
@@ -159,22 +148,15 @@ function useOrders(client: Client): [Order[], QueryStatus] {
 }
 
 const mutations: TSMutationDefns = {
-  Offer: (ctx, [item, price]) => {
+  Order: (ctx, [price, amount, side]) => {
     const id = ctx.rand();
     ctx.write(`/orders/${id}`, {
       id,
-      item,
       price,
+      amount,
+      side,
       status: "open",
       user: ctx.curUser,
-    });
-  },
-  Buy: (ctx, [id]) => {
-    const key = `/orders/${id}`;
-    const current = ctx.read(key) as Order;
-    ctx.write(key, {
-      ...current,
-      status: "sold",
     });
   },
 };
