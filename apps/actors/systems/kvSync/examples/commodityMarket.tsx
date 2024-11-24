@@ -21,7 +21,7 @@ function MarketUI(props: UIProps<ClientState, UserInput>) {
 }
 
 function MarketInner(props: { client: Client; user: string }) {
-  const [offers, queryStatus] = useOffers(props.client);
+  const [orders, queryStatus] = useOrders(props.client);
 
   return (
     <>
@@ -29,19 +29,20 @@ function MarketInner(props: { client: Client; user: string }) {
         <h2>Market</h2>
       </LoggedInHeader>
 
-      <h3>Offers</h3>
+      <h3>Orders</h3>
 
       {queryStatus === "Loading" ? (
         <em>Loading...</em>
       ) : (
-        <Table<Offer>
-          data={offers}
-          getKey={(offer) => offer.item}
+        <Table<Order>
+          data={orders}
+          getKey={(order) => order.id.toString()}
           columns={[
-            { name: "item", render: (offer) => offer.item },
-            { name: "price", render: (offer) => offer.price },
-            { name: "offered by", render: (offer) => offer.user },
-            { name: "status", render: (offer) => offer.status },
+            { name: "price", render: (order) => order.price },
+            { name: "amount", render: (order) => order.amount },
+            { name: "side", render: (order) => order.side },
+            { name: "offered by", render: (order) => order.user },
+            { name: "status", render: (order) => order.status },
             {
               name: "buy",
               render: (offer) => (
@@ -57,82 +58,110 @@ function MarketInner(props: { client: Client; user: string }) {
         />
       )}
 
-      <h3>Create Offer</h3>
+      <h3>Create Order</h3>
 
-      <OfferForm client={props.client} />
+      <OrderForm client={props.client} />
 
       <Inspector client={props.client} />
     </>
   );
 }
 
-function OfferForm(props: { client: Client }) {
-  const [item, setItem] = useState("");
+function OrderForm(props: { client: Client }) {
   const [price, setPrice] = useState(0);
+  const [amount, setAmount] = useState(0);
+  const [side, setSide] = useState<OrderSide>("buy");
 
   return (
     <form
       onSubmit={(evt) => {
         evt.preventDefault();
 
-        setItem("");
         setPrice(0);
+        setSide("buy");
+        setAmount(0);
 
-        props.client.runMutation("Offer", [item, price]);
+        props.client.runMutation("Order", [price, amount, side]);
       }}
     >
-      <input
-        type="text"
-        placeholder="Item"
-        value={item}
-        onChange={(evt) => setItem(evt.target.value)}
-      />
+      Price:{" "}
       <input
         type="number"
         placeholder="Price"
         value={price}
         onChange={(evt) => setPrice(parseInt(evt.target.value))}
+      />{" "}
+      Amount:{" "}
+      <input
+        type="number"
+        placeholder="Amount"
+        value={amount}
+        onChange={(evt) => setAmount(parseInt(evt.target.value))}
       />
-      <button type="submit">Create Offer</button>
+      <div>
+        <label>
+          <input
+            type="radio"
+            value="buy"
+            checked={side === "buy"}
+            onChange={(evt) => setSide("buy")}
+          />
+          Buy
+        </label>
+        <label>
+          <input
+            type="radio"
+            value="sell"
+            checked={side === "sell"}
+            onChange={(evt) => setSide("sell")}
+          />
+          Sell
+        </label>
+      </div>
+      <button type="submit">Create Order</button>
     </form>
   );
 }
 
 type OfferStatus = "open" | "sold";
 
-type Offer = {
+type OrderSide = "sell" | "buy";
+
+type Order = {
   id: number;
-  item: string;
   price: number;
+  amount: number;
+  side: OrderSide;
   user: string;
   status: OfferStatus;
   state: TransactionState;
 };
 
-function useOffers(client: Client): [Offer[], QueryStatus] {
-  const [rawOffers, queryStatus] = useLiveQuery(client, "list-todos", {
-    prefix: "/offers/",
+function useOrders(client: Client): [Order[], QueryStatus] {
+  const [rawOrders, queryStatus] = useLiveQuery(client, "list-orders", {
+    prefix: "/orders/",
   });
 
-  const offers = Object.entries(rawOffers).map(([id, rawOffer]) => {
-    const offer = rawOffer.value as any;
+  const orders = Object.entries(rawOrders).map(([id, rawOrder]): Order => {
+    const order = rawOrder.value as any;
     return {
-      id: offer.id as number,
-      item: offer.item as string,
-      price: offer.price as number,
-      status: offer.status as OfferStatus,
-      user: offer.user as string,
-      state: client.state.transactions[rawOffer.transactionID]?.state,
+      id: order.id as number,
+      price: order.price as number,
+      amount: order.amount as number,
+      status: order.status as OfferStatus,
+      side: order.side as OrderSide,
+      user: order.user as string,
+      state: client.state.transactions[rawOrder.transactionID]?.state,
     };
   });
 
-  return [offers, queryStatus];
+  return [orders, queryStatus];
 }
 
 const mutations: TSMutationDefns = {
   Offer: (ctx, [item, price]) => {
     const id = ctx.rand();
-    ctx.write(`/offers/${id}`, {
+    ctx.write(`/orders/${id}`, {
       id,
       item,
       price,
@@ -141,8 +170,8 @@ const mutations: TSMutationDefns = {
     });
   },
   Buy: (ctx, [id]) => {
-    const key = `/offers/${id}`;
-    const current = ctx.read(key) as Offer;
+    const key = `/orders/${id}`;
+    const current = ctx.read(key) as Order;
     ctx.write(key, {
       ...current,
       status: "sold",
