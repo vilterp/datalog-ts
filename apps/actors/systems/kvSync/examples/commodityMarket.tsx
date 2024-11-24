@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { KVApp } from "./types";
-import { TSMutationDefns, UserInput } from "../types";
+import { MutationCtx, TraceOp, TSMutationDefns, UserInput } from "../types";
 import { Client, makeClient, useLiveQuery } from "../hooks";
 import { UIProps } from "../../../types";
 import { ClientState, QueryStatus, TransactionState } from "../client";
@@ -8,6 +8,7 @@ import { LoginWrapper } from "../uiCommon/loginWrapper";
 import { Inspector } from "../uiCommon/inspector";
 import { Table } from "../../../../../uiCommon/generic/table";
 import { LoggedInHeader } from "../uiCommon/loggedInHeader";
+import { Json } from "../../../../../util/json";
 
 function MarketUI(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
@@ -123,28 +124,39 @@ type Order = {
   side: OrderSide;
   user: string;
   status: OfferStatus;
-  state: TransactionState;
 };
 
-function useOrders(client: Client): [Order[], QueryStatus] {
+type OrderWithState = Order & { state: TransactionState };
+
+function useOrders(client: Client): [OrderWithState[], QueryStatus] {
   const [rawOrders, queryStatus] = useLiveQuery(client, "list-orders", {
     prefix: "/orders/",
   });
 
-  const orders = Object.entries(rawOrders).map(([id, rawOrder]): Order => {
-    const order = rawOrder.value as any;
-    return {
-      id: order.id as number,
-      price: order.price as number,
-      amount: order.amount as number,
-      status: order.status as OfferStatus,
-      side: order.side as OrderSide,
-      user: order.user as string,
-      state: client.state.transactions[rawOrder.transactionID]?.state,
-    };
-  });
+  const orders = Object.entries(rawOrders).map(
+    ([id, rawOrder]): OrderWithState => {
+      const order = rawOrder.value as any;
+      const mapped = readOrder(order);
+      return {
+        ...mapped,
+        state: client.state.transactions[rawOrder.transactionID]?.state,
+      };
+    }
+  );
 
   return [orders, queryStatus];
+}
+
+function readOrder(rawOrder: Json): Order {
+  const order = rawOrder as any;
+  return {
+    id: order.id as number,
+    price: order.price as number,
+    amount: order.amount as number,
+    status: order.status as OfferStatus,
+    side: order.side as OrderSide,
+    user: order.user as string,
+  };
 }
 
 const mutations: TSMutationDefns = {
@@ -161,8 +173,56 @@ const mutations: TSMutationDefns = {
   },
 };
 
+function matchOrders(ctx: MutationCtx, evt: TraceOp) {
+  const orders = ctx.scan("/orders/").map(readOrder);
+
+  const buys = orders
+    .filter((order) => order.side === "buy")
+    .sort((a, b) => b.price - a.price);
+  const sells = orders
+    .filter((order) => order.side === "sell")
+    .sort((a, b) => a.price - b.price);
+
+  for (const buy of buys) {
+    for (const sell of sells) {
+      if (buy.price >= sell.price) {
+        const amount = Math.min(buy.amount, sell.amount);
+        const price = (buy.price + sell.price) / 2;
+
+        // Execute the trade
+        ctx.write(`/orders/${buy.id}`, {
+          ...buy,
+          amount: buy.amount - amount,
+          status: buy.amount - amount === 0 ? "sold" : "open",
+        });
+        ctx.write(`/orders/${sell.id}`, {
+          ...sell,
+          amount: sell.amount - amount,
+          status: sell.amount - amount === 0 ? "sold" : "open",
+        });
+        ctx.write(`/trades/${ctx.rand()}`, {
+          buyOrder: buy.id,
+          sellOrder: sell.id,
+          amount,
+          price,
+        });
+
+        if (buy.amount - amount === 0) {
+          break;
+        }
+      }
+    }
+  }
+}
+
 export const commodityMarket: KVApp = {
   name: "Commodity Market",
   mutations,
   ui: MarketUI,
+  triggers: [
+    {
+      prefix: "/orders/",
+      fn: matchOrders,
+    },
+  ],
 };

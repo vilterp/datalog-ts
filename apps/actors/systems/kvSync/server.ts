@@ -19,6 +19,7 @@ import { filterMap, mapObj, randStep2, removeKey } from "../../../../util/util";
 import { Json, jsonEq } from "../../../../util/json";
 import { keyInQuery, runQuery } from "./query";
 import { MutationContextImpl } from "./common";
+import { KVApp } from "./examples/types";
 
 export type ServerState = {
   type: "ServerState";
@@ -86,12 +87,13 @@ function processLiveQueryRequest(
 }
 
 function runMutationOnServer(
-  mutationDefns: TSMutationDefns,
+  app: KVApp,
   state: ServerState,
   user: string,
   req: MutationRequest,
   clientID: string
 ): [ServerState, MutationResponse, LiveQueryUpdate[]] {
+  const mutationDefns = app.mutations;
   const isTxnCommitted = (txnID: string) => true;
   const txnTime = state.time;
 
@@ -167,6 +169,15 @@ function runMutationOnServer(
       [],
     ];
   }
+
+  // run triggers
+  // TODO: run triggers caused by these triggers, until fixpoint
+  for (const op of ctx.trace) {
+    for (const trigger of app.triggers || []) {
+      trigger.fn(ctx, op);
+    }
+  }
+
   // live query updates
   const writes: WriteOp[] = ctx.trace.filter(
     (op) => op.type === "Write"
@@ -216,7 +227,7 @@ function runMutationOnServer(
 
 // TODO: maybe move this out to index.ts? idk
 export function updateServer(
-  mutations: TSMutationDefns,
+  app: KVApp,
   state: ServerState,
   init: LoadedTickInitiator<ServerState, MsgToServer>
 ): ActorResp<ServerState, MsgToClient> {
@@ -289,12 +300,13 @@ export function updateServer(
             }
             case "MutationRequest": {
               const [newState, mutationResp, updates] = runMutationOnServer(
-                mutations,
+                app,
                 state,
                 user,
                 innerMsg,
                 init.from
               );
+
               const outgoing: OutgoingMessage<MsgToClient>[] = [
                 { to: init.from, msg: mutationResp },
                 ...updates.map((update) => ({

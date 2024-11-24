@@ -52,6 +52,16 @@ export class MutationContextImpl implements MutationCtx {
     return val.value;
   }
 
+  scan(prefix: string): Json[] {
+    const out: Json[] = [];
+    for (const [key, value] of Object.entries(this.kvData)) {
+      if (key.startsWith(prefix)) {
+        out.push(value);
+      }
+    }
+    return out;
+  }
+
   write(key: string, value: Json) {
     const [newKVData, writeOp] = doWrite(
       this.kvData,
