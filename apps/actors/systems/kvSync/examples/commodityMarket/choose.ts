@@ -24,7 +24,7 @@ export function choose(
       invocation: {
         type: "Invocation",
         name: "Order",
-        args: [price * 100, amount1 * 100, side],
+        args: [Math.round(price * 100), Math.round(amount1 * 100), side],
       },
     },
     randomSeed3,
