@@ -47,6 +47,7 @@ function MarketInner(props: { client: Client; user: string }) {
           data={orders}
           getKey={(order) => order.id.toString()}
           columns={[
+            { name: "id", render: (order) => order.id },
             { name: "price", render: (order) => `$${order.price}` },
             { name: "amount", render: (order) => order.amount },
             { name: "side", render: (order) => order.side },
@@ -69,6 +70,7 @@ function MarketInner(props: { client: Client; user: string }) {
           data={trades}
           getKey={(trade) => trade.id.toString()}
           columns={[
+            { name: "id", render: (trade) => trade.id },
             { name: "price", render: (trade) => `$${trade.price}` },
             { name: "amount", render: (trade) => trade.amount },
             { name: "buy order", render: (trade) => trade.buyOrder },
@@ -235,10 +237,10 @@ function matchOrders(ctx: MutationCtx, evt: WriteOp) {
   const orders = ctx.scan("/orders/").map(readOrder);
 
   const buys = orders
-    .filter((order) => order.side === "buy")
+    .filter((order) => order.side === "buy" && order.status === "open")
     .sort((a, b) => b.price - a.price);
   const sells = orders
-    .filter((order) => order.side === "sell")
+    .filter((order) => order.side === "sell" && order.status === "open")
     .sort((a, b) => a.price - b.price);
 
   for (const buy of buys) {
@@ -248,16 +250,23 @@ function matchOrders(ctx: MutationCtx, evt: WriteOp) {
         const price = (buy.price + sell.price) / 2;
 
         // Execute the trade
-        ctx.write(`/orders/${buy.id}`, {
+        const newBuyAmount = buy.amount - amount;
+        const newBuy: Order = {
           ...buy,
-          amount: buy.amount - amount,
-          status: buy.amount - amount === 0 ? "sold" : "open",
-        });
-        ctx.write(`/orders/${sell.id}`, {
+          amount: newBuyAmount,
+          status: newBuyAmount === 0 ? "sold" : "open",
+        };
+        ctx.write(`/orders/${buy.id}`, newBuy);
+
+        const newSellAmount = sell.amount - amount;
+        const newSell: Order = {
           ...sell,
-          amount: sell.amount - amount,
-          status: sell.amount - amount === 0 ? "sold" : "open",
-        });
+          amount: newSellAmount,
+          status: newSellAmount === 0 ? "sold" : "open",
+        };
+        ctx.write(`/orders/${sell.id}`, newSell);
+
+        console.log("matchOrders", { newBuy, newSell });
 
         const tradeID = ctx.rand();
         ctx.write(`/trades/${tradeID}`, {
