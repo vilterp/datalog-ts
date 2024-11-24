@@ -230,7 +230,7 @@ function runTriggers(app: KVApp, ctx: MutationContextImpl) {
     }
 
     const op = queue.shift();
-    const lengthBefore = queue.length;
+    const lengthBefore = getJustWrites(ctx).length;
 
     for (const trigger of app.triggers || []) {
       if (op.key.startsWith(trigger.prefix)) {

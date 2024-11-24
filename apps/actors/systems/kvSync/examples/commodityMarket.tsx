@@ -64,8 +64,8 @@ function MarketInner(props: { client: Client; user: string }) {
 }
 
 function OrderForm(props: { client: Client }) {
-  const [price, setPrice] = useState(0);
-  const [amount, setAmount] = useState(0);
+  const [price, setPrice] = useState(10);
+  const [amount, setAmount] = useState(100);
   const [side, setSide] = useState<OrderSide>("buy");
 
   return (
