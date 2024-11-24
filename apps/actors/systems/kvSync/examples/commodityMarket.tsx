@@ -50,7 +50,7 @@ function MarketInner(props: { client: Client; user: string }) {
             { name: "price", render: (order) => `$${order.price}` },
             { name: "amount", render: (order) => order.amount },
             { name: "side", render: (order) => order.side },
-            { name: "offered by", render: (order) => order.user },
+            { name: "user", render: (order) => order.user },
             { name: "status", render: (order) => order.status },
           ]}
         />

@@ -1,0 +1,71 @@
+addClient{id: "0"}.
+signUp{clientID: "0", username: "alice", password: ""}.
+addClient{id: "1"}.
+signUp{clientID: "1", username: "bob", password: ""}.
+runMutation{from: "0", name: "Order", args: [10, 100, "sell"]}.
+runMutation{from: "1", name: "Order", args: [10, 50, "buy"]}.
+.jsonState
+----
+application/json
+{
+  "server": {
+    "/orders/0.31381383055244927": [
+      {
+        "transactionID": "0.00037566525896607457",
+        "value": {
+          "id": 0.31381383055244927,
+          "price": 10,
+          "amount": 100,
+          "side": "sell",
+          "status": "open",
+          "user": "alice"
+        }
+      }
+    ],
+    "/orders/0.4453516187568676": [
+      {
+        "transactionID": "0.0003834916282291446",
+        "value": {
+          "id": 0.4453516187568676,
+          "price": 10,
+          "amount": 50,
+          "side": "buy",
+          "status": "open",
+          "user": "bob"
+        }
+      }
+    ]
+  },
+  "user0": {},
+  "client0": {
+    "/orders/0.31381383055244927": [
+      {
+        "transactionID": "0.00037566525896607457",
+        "value": {
+          "id": 0.31381383055244927,
+          "price": 10,
+          "amount": 100,
+          "side": "sell",
+          "status": "open",
+          "user": "alice"
+        }
+      }
+    ]
+  },
+  "user1": {},
+  "client1": {
+    "/orders/0.4453516187568676": [
+      {
+        "transactionID": "0.0003834916282291446",
+        "value": {
+          "id": 0.4453516187568676,
+          "price": 10,
+          "amount": 50,
+          "side": "buy",
+          "status": "open",
+          "user": "bob"
+        }
+      }
+    ]
+  }
+}
