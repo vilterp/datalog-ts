@@ -44,6 +44,17 @@ application/json
           "status": "open",
           "user": "bob"
         }
+      },
+      {
+        "transactionID": "0.0003834916282291446",
+        "value": {
+          "id": 0.4453516187568676,
+          "price": 10,
+          "amount": 0,
+          "status": "sold",
+          "side": "buy",
+          "user": "bob"
+        }
       }
     ],
     "/trades/0.02466078710245042": [

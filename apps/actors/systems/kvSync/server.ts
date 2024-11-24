@@ -11,7 +11,6 @@ import {
   MutationResponse,
   Query,
   TransactionMetadata,
-  TSMutationDefns,
   WriteOp,
 } from "./types";
 import * as effects from "../../effects";

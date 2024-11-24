@@ -27,8 +27,8 @@ export function addNewVersion(
   // Check if the transactionID is already in the list
   // This can result from overlapping live queries
   // TODO: this is O(n) and could be O(1)
-  if (versions.some((v) => v.transactionID === newVersion.transactionID)) {
-    return versions;
-  }
+  // if (versions.some((v) => v.transactionID === newVersion.transactionID)) {
+  //   return versions;
+  // }
   return [...versions, newVersion];
 }
