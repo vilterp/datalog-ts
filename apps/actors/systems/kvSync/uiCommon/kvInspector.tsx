@@ -34,7 +34,7 @@ export function KVInspector(props: {
         {
           name: "Statuses",
           render: ([key, vvs]) =>
-            vvs.map((vv) => (
+            vvs.map((vv, idx) => (
               // TODO: clicking on this should show the txn trace
               <span
                 title={vv.transactionID}
@@ -45,7 +45,8 @@ export function KVInspector(props: {
                       ? "underline"
                       : "none",
                 }}
-                key={vv.transactionID}
+                // TODO: currently there can be multiple writes with the same txn id
+                key={`${vv.transactionID}-${idx}`}
                 onClick={() => props.onSelectTxn(vv.transactionID)}
               >
                 {iconForState(
