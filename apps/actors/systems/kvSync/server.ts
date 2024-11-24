@@ -175,19 +175,25 @@ function runMutationOnServer(
 
   // live query updates
   const writes: WriteOp[] = getJustWrites(ctx);
+
+  console.log("live queries for writes", writes);
+
   const liveQueryUpdates: LiveQueryUpdate[] = filterMap(
     state.liveQueries,
     (liveQuery) => {
       const matchingWrites = writes.filter((write) =>
         keyInQuery(write.key, liveQuery.query)
       );
+
+      console.log("matching writes", liveQuery, matchingWrites);
+
       if (matchingWrites.length === 0) {
         return null;
       }
       // skip originating client
-      if (liveQuery.clientID === clientID) {
-        return null;
-      }
+      // if (liveQuery.clientID === clientID) {
+      //   return null;
+      // }
 
       return {
         type: "LiveQueryUpdate",
@@ -220,7 +226,6 @@ function runMutationOnServer(
 
 const MAX_ITERS = 100;
 
-// TODO: prevent infinite looping
 function runTriggers(app: KVApp, ctx: MutationContextImpl) {
   let iters = 0;
   const queue: WriteOp[] = getJustWrites(ctx);

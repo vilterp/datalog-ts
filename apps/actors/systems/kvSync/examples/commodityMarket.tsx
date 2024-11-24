@@ -244,6 +244,7 @@ function matchOrders(ctx: MutationCtx, evt: WriteOp) {
     .sort((a, b) => a.price - b.price);
 
   for (const buy of buys) {
+    // TODO: keep buying while there's more to buy
     for (const sell of sells) {
       if (buy.price >= sell.price) {
         const amount = Math.min(buy.amount, sell.amount);
@@ -277,7 +278,7 @@ function matchOrders(ctx: MutationCtx, evt: WriteOp) {
           price,
         });
 
-        if (buy.amount - amount === 0) {
+        if (newBuyAmount === 0) {
           break;
         }
       }
