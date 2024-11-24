@@ -152,17 +152,6 @@ application/json
           "status": "open",
           "user": "alice"
         }
-      },
-      {
-        "transactionID": "0.2581415779498793",
-        "value": {
-          "id": 0.015206331866985496,
-          "price": 10,
-          "amount": 0,
-          "status": "sold",
-          "side": "buy",
-          "user": "alice"
-        }
       }
     ],
     "/orders/0.5100409435201818": [
@@ -174,17 +163,6 @@ application/json
           "amount": 100,
           "side": "buy",
           "status": "open",
-          "user": "alice"
-        }
-      },
-      {
-        "transactionID": "0.2581415779498793",
-        "value": {
-          "id": 0.5100409435201818,
-          "price": 10,
-          "amount": 0,
-          "status": "sold",
-          "side": "buy",
           "user": "alice"
         }
       }
@@ -211,28 +189,6 @@ application/json
           "side": "sell",
           "user": "alice"
         }
-      },
-      {
-        "transactionID": "0.2581415779498793",
-        "value": {
-          "id": 0.5855064094862961,
-          "price": 10,
-          "amount": 0,
-          "status": "sold",
-          "side": "sell",
-          "user": "alice"
-        }
-      },
-      {
-        "transactionID": "0.2581415779498793",
-        "value": {
-          "id": 0.5855064094862961,
-          "price": 10,
-          "amount": 0,
-          "status": "sold",
-          "side": "sell",
-          "user": "alice"
-        }
       }
     ],
     "/trades/0.6062274799740198": [
@@ -241,30 +197,6 @@ application/json
         "value": {
           "id": 0.6062274799740198,
           "buyOrder": 0.31381383055244927,
-          "sellOrder": 0.5855064094862961,
-          "amount": 100,
-          "price": 10
-        }
-      }
-    ],
-    "/trades/0.8652590050969823": [
-      {
-        "transactionID": "0.2581415779498793",
-        "value": {
-          "id": 0.8652590050969823,
-          "buyOrder": 0.015206331866985496,
-          "sellOrder": 0.5855064094862961,
-          "amount": 100,
-          "price": 10
-        }
-      }
-    ],
-    "/trades/0.40809971923762905": [
-      {
-        "transactionID": "0.2581415779498793",
-        "value": {
-          "id": 0.40809971923762905,
-          "buyOrder": 0.5100409435201818,
           "sellOrder": 0.5855064094862961,
           "amount": 100,
           "price": 10
@@ -378,22 +310,11 @@ application/json
         }
       },
       {
-        "transactionID": "0.2581415779498793",
-        "value": {
-          "id": 0.015206331866985496,
-          "price": 17,
-          "amount": 74,
-          "status": "open",
-          "side": "buy",
-          "user": "alice"
-        }
-      },
-      {
         "transactionID": "0.619620117004607",
         "value": {
           "id": 0.015206331866985496,
           "price": 17,
-          "amount": 67,
+          "amount": 78,
           "status": "open",
           "side": "buy",
           "user": "alice"
@@ -404,7 +325,7 @@ application/json
         "value": {
           "id": 0.015206331866985496,
           "price": 17,
-          "amount": 33,
+          "amount": 44,
           "status": "open",
           "side": "buy",
           "user": "alice"
@@ -502,17 +423,6 @@ application/json
           "side": "sell",
           "user": "alice"
         }
-      },
-      {
-        "transactionID": "0.2581415779498793",
-        "value": {
-          "id": 0.5855064094862961,
-          "price": 16,
-          "amount": 0,
-          "status": "sold",
-          "side": "sell",
-          "user": "alice"
-        }
       }
     ],
     "/trades/0.6062274799740198": [
@@ -524,18 +434,6 @@ application/json
           "sellOrder": 0.5855064094862961,
           "amount": 11,
           "price": 38
-        }
-      }
-    ],
-    "/trades/0.8652590050969823": [
-      {
-        "transactionID": "0.2581415779498793",
-        "value": {
-          "id": 0.8652590050969823,
-          "buyOrder": 0.015206331866985496,
-          "sellOrder": 0.5855064094862961,
-          "amount": 11,
-          "price": 16.5
         }
       }
     ],
@@ -569,17 +467,6 @@ application/json
           "price": 46,
           "amount": 5,
           "status": "open",
-          "side": "sell",
-          "user": "bob"
-        }
-      },
-      {
-        "transactionID": "0.8601966894792362",
-        "value": {
-          "id": 0.4453516187568676,
-          "price": 46,
-          "amount": 0,
-          "status": "sold",
           "side": "sell",
           "user": "bob"
         }
@@ -630,17 +517,6 @@ application/json
           "amount": 22,
           "side": "sell",
           "status": "open",
-          "user": "alice"
-        }
-      },
-      {
-        "transactionID": "0.8601966894792362",
-        "value": {
-          "id": 0.6594613051595737,
-          "price": 51,
-          "amount": 0,
-          "status": "sold",
-          "side": "sell",
           "user": "alice"
         }
       }
@@ -757,7 +633,7 @@ application/json
         "value": {
           "id": 0.7999519010073989,
           "price": 27,
-          "amount": 58,
+          "amount": 55,
           "status": "open",
           "side": "sell",
           "user": "bob"
@@ -768,7 +644,7 @@ application/json
         "value": {
           "id": 0.7999519010073989,
           "price": 27,
-          "amount": 50,
+          "amount": 42,
           "status": "open",
           "side": "sell",
           "user": "bob"
@@ -779,19 +655,8 @@ application/json
         "value": {
           "id": 0.7999519010073989,
           "price": 27,
-          "amount": 9,
+          "amount": 1,
           "status": "open",
-          "side": "sell",
-          "user": "bob"
-        }
-      },
-      {
-        "transactionID": "0.8601966894792362",
-        "value": {
-          "id": 0.7999519010073989,
-          "price": 27,
-          "amount": 0,
-          "status": "sold",
           "side": "sell",
           "user": "bob"
         }
@@ -1034,17 +899,6 @@ application/json
           "status": "open",
           "user": "bob"
         }
-      },
-      {
-        "transactionID": "0.8601966894792362",
-        "value": {
-          "id": 0.37721112405621554,
-          "price": 45,
-          "amount": 0,
-          "status": "sold",
-          "side": "sell",
-          "user": "bob"
-        }
       }
     ],
     "/orders/0.3695129378414833": [
@@ -1056,17 +910,6 @@ application/json
           "amount": 38,
           "side": "sell",
           "status": "open",
-          "user": "alice"
-        }
-      },
-      {
-        "transactionID": "0.8601966894792362",
-        "value": {
-          "id": 0.3695129378414833,
-          "price": 55,
-          "amount": 0,
-          "status": "sold",
-          "side": "sell",
           "user": "alice"
         }
       }
@@ -1088,6 +931,17 @@ application/json
         "value": {
           "id": 0.20842740052233208,
           "price": 18,
+          "amount": 35,
+          "status": "open",
+          "side": "sell",
+          "user": "alice"
+        }
+      },
+      {
+        "transactionID": "0.06801234424860435",
+        "value": {
+          "id": 0.20842740052233208,
+          "price": 18,
           "amount": 0,
           "status": "sold",
           "side": "sell",
@@ -1106,17 +960,6 @@ application/json
           "status": "open",
           "user": "alice"
         }
-      },
-      {
-        "transactionID": "0.8601966894792362",
-        "value": {
-          "id": 0.9650901932875534,
-          "price": 44,
-          "amount": 0,
-          "status": "sold",
-          "side": "sell",
-          "user": "alice"
-        }
       }
     ],
     "/orders/0.6609517467775864": [
@@ -1128,17 +971,6 @@ application/json
           "amount": 26,
           "side": "sell",
           "status": "open",
-          "user": "alice"
-        }
-      },
-      {
-        "transactionID": "0.8601966894792362",
-        "value": {
-          "id": 0.6609517467775864,
-          "price": 53,
-          "amount": 0,
-          "status": "sold",
-          "side": "sell",
           "user": "alice"
         }
       }
@@ -1196,7 +1028,7 @@ application/json
         "value": {
           "id": 0.5913882414730156,
           "price": 5,
-          "amount": 38,
+          "amount": 27,
           "status": "open",
           "side": "sell",
           "user": "bob"
@@ -1207,7 +1039,7 @@ application/json
         "value": {
           "id": 0.5913882414730156,
           "price": 5,
-          "amount": 32,
+          "amount": 21,
           "status": "open",
           "side": "sell",
           "user": "bob"
@@ -1218,7 +1050,7 @@ application/json
         "value": {
           "id": 0.5913882414730156,
           "price": 5,
-          "amount": 18,
+          "amount": 7,
           "status": "open",
           "side": "sell",
           "user": "bob"
@@ -1226,17 +1058,6 @@ application/json
       },
       {
         "transactionID": "0.6953998633617534",
-        "value": {
-          "id": 0.5913882414730156,
-          "price": 5,
-          "amount": 9,
-          "status": "open",
-          "side": "sell",
-          "user": "bob"
-        }
-      },
-      {
-        "transactionID": "0.8601966894792362",
         "value": {
           "id": 0.5913882414730156,
           "price": 5,
@@ -1254,7 +1075,7 @@ application/json
           "id": 0.46217763466963324,
           "buyOrder": 0.015206331866985496,
           "sellOrder": 0.5913882414730156,
-          "amount": 33,
+          "amount": 44,
           "price": 11
         }
       }
@@ -1308,12 +1129,12 @@ application/json
         }
       },
       {
-        "transactionID": "0.8601966894792362",
+        "transactionID": "0.06801234424860435",
         "value": {
           "id": 0.29258132380673785,
           "price": 21,
-          "amount": 0,
-          "status": "sold",
+          "amount": 22,
+          "status": "open",
           "side": "sell",
           "user": "alice"
         }
@@ -1366,17 +1187,6 @@ application/json
           "status": "open",
           "user": "alice"
         }
-      },
-      {
-        "transactionID": "0.8601966894792362",
-        "value": {
-          "id": 0.3881101900600923,
-          "price": 63,
-          "amount": 0,
-          "status": "sold",
-          "side": "sell",
-          "user": "alice"
-        }
       }
     ],
     "/orders/0.04202915219779047": [
@@ -1388,6 +1198,17 @@ application/json
           "amount": 26,
           "side": "sell",
           "status": "open",
+          "user": "bob"
+        }
+      },
+      {
+        "transactionID": "0.6953998633617534",
+        "value": {
+          "id": 0.04202915219779047,
+          "price": 15,
+          "amount": 24,
+          "status": "open",
+          "side": "sell",
           "user": "bob"
         }
       },
@@ -1440,17 +1261,6 @@ application/json
           "status": "open",
           "user": "alice"
         }
-      },
-      {
-        "transactionID": "0.8601966894792362",
-        "value": {
-          "id": 0.6571485331814256,
-          "price": 60,
-          "amount": 0,
-          "status": "sold",
-          "side": "sell",
-          "user": "alice"
-        }
       }
     ],
     "/orders/0.5855059047094602": [
@@ -1462,6 +1272,17 @@ application/json
           "amount": 9,
           "side": "buy",
           "status": "open",
+          "user": "alice"
+        }
+      },
+      {
+        "transactionID": "0.6953998633617534",
+        "value": {
+          "id": 0.5855059047094602,
+          "price": 51,
+          "amount": 2,
+          "status": "open",
+          "side": "buy",
           "user": "alice"
         }
       },
@@ -1484,8 +1305,20 @@ application/json
           "id": 0.5977436956928519,
           "buyOrder": 0.5855059047094602,
           "sellOrder": 0.5913882414730156,
-          "amount": 9,
+          "amount": 7,
           "price": 28
+        }
+      }
+    ],
+    "/trades/0.27829665763145": [
+      {
+        "transactionID": "0.6953998633617534",
+        "value": {
+          "id": 0.27829665763145,
+          "buyOrder": 0.5855059047094602,
+          "sellOrder": 0.04202915219779047,
+          "amount": 2,
+          "price": 33
         }
       }
     ],
@@ -1506,7 +1339,7 @@ application/json
         "value": {
           "id": 0.3257611713612091,
           "price": 82,
-          "amount": 63,
+          "amount": 48,
           "status": "open",
           "side": "buy",
           "user": "bob"
@@ -1517,7 +1350,7 @@ application/json
         "value": {
           "id": 0.3257611713612091,
           "price": 82,
-          "amount": 46,
+          "amount": 19,
           "status": "open",
           "side": "buy",
           "user": "bob"
@@ -1528,129 +1361,8 @@ application/json
         "value": {
           "id": 0.3257611713612091,
           "price": 82,
-          "amount": 43,
-          "status": "open",
-          "side": "buy",
-          "user": "bob"
-        }
-      },
-      {
-        "transactionID": "0.8601966894792362",
-        "value": {
-          "id": 0.3257611713612091,
-          "price": 82,
-          "amount": 18,
-          "status": "open",
-          "side": "buy",
-          "user": "bob"
-        }
-      },
-      {
-        "transactionID": "0.8601966894792362",
-        "value": {
-          "id": 0.3257611713612091,
-          "price": 82,
-          "amount": 1,
-          "status": "open",
-          "side": "buy",
-          "user": "bob"
-        }
-      },
-      {
-        "transactionID": "0.8601966894792362",
-        "value": {
-          "id": 0.3257611713612091,
-          "price": 82,
-          "amount": 63,
-          "status": "open",
-          "side": "buy",
-          "user": "bob"
-        }
-      },
-      {
-        "transactionID": "0.8601966894792362",
-        "value": {
-          "id": 0.3257611713612091,
-          "price": 82,
-          "amount": 7,
-          "status": "open",
-          "side": "buy",
-          "user": "bob"
-        }
-      },
-      {
-        "transactionID": "0.8601966894792362",
-        "value": {
-          "id": 0.3257611713612091,
-          "price": 82,
-          "amount": 31,
-          "status": "open",
-          "side": "buy",
-          "user": "bob"
-        }
-      },
-      {
-        "transactionID": "0.8601966894792362",
-        "value": {
-          "id": 0.3257611713612091,
-          "price": 82,
-          "amount": 67,
-          "status": "open",
-          "side": "buy",
-          "user": "bob"
-        }
-      },
-      {
-        "transactionID": "0.8601966894792362",
-        "value": {
-          "id": 0.3257611713612091,
-          "price": 82,
-          "amount": 50,
-          "status": "open",
-          "side": "buy",
-          "user": "bob"
-        }
-      },
-      {
-        "transactionID": "0.8601966894792362",
-        "value": {
-          "id": 0.3257611713612091,
-          "price": 82,
-          "amount": 46,
-          "status": "open",
-          "side": "buy",
-          "user": "bob"
-        }
-      },
-      {
-        "transactionID": "0.8601966894792362",
-        "value": {
-          "id": 0.3257611713612091,
-          "price": 82,
-          "amount": 34,
-          "status": "open",
-          "side": "buy",
-          "user": "bob"
-        }
-      },
-      {
-        "transactionID": "0.8601966894792362",
-        "value": {
-          "id": 0.3257611713612091,
-          "price": 82,
-          "amount": 33,
-          "status": "open",
-          "side": "buy",
-          "user": "bob"
-        }
-      },
-      {
-        "transactionID": "0.8601966894792362",
-        "value": {
-          "id": 0.3257611713612091,
-          "price": 82,
-          "amount": 14,
-          "status": "open",
+          "amount": 0,
+          "status": "sold",
           "side": "buy",
           "user": "bob"
         }
@@ -1662,9 +1374,9 @@ application/json
         "value": {
           "id": 0.06801234424860435,
           "buyOrder": 0.3257611713612091,
-          "sellOrder": 0.5913882414730156,
-          "amount": 9,
-          "price": 43.5
+          "sellOrder": 0.04202915219779047,
+          "amount": 24,
+          "price": 48.5
         }
       }
     ],
@@ -1674,9 +1386,9 @@ application/json
         "value": {
           "id": 0.08347707994606074,
           "buyOrder": 0.3257611713612091,
-          "sellOrder": 0.04202915219779047,
-          "amount": 26,
-          "price": 48.5
+          "sellOrder": 0.45140223107431293,
+          "amount": 29,
+          "price": 50
         }
       }
     ],
@@ -1686,141 +1398,19 @@ application/json
         "value": {
           "id": 0.9992898264893236,
           "buyOrder": 0.3257611713612091,
-          "sellOrder": 0.45140223107431293,
-          "amount": 29,
-          "price": 50
-        }
-      }
-    ],
-    "/trades/0.06411381118382682": [
-      {
-        "transactionID": "0.8601966894792362",
-        "value": {
-          "id": 0.06411381118382682,
-          "buyOrder": 0.3257611713612091,
           "sellOrder": 0.20842740052233208,
-          "amount": 54,
+          "amount": 19,
           "price": 50
         }
-      }
-    ],
-    "/trades/0.5608318909637927": [
+      },
       {
-        "transactionID": "0.8601966894792362",
+        "transactionID": "0.06801234424860435",
         "value": {
-          "id": 0.5608318909637927,
-          "buyOrder": 0.3257611713612091,
-          "sellOrder": 0.29258132380673785,
-          "amount": 71,
-          "price": 51.5
-        }
-      }
-    ],
-    "/trades/0.9015948655098629": [
-      {
-        "transactionID": "0.8601966894792362",
-        "value": {
-          "id": 0.9015948655098629,
-          "buyOrder": 0.3257611713612091,
-          "sellOrder": 0.7999519010073989,
-          "amount": 9,
-          "price": 54.5
-        }
-      }
-    ],
-    "/trades/0.10490539400363844": [
-      {
-        "transactionID": "0.8601966894792362",
-        "value": {
-          "id": 0.10490539400363844,
-          "buyOrder": 0.3257611713612091,
-          "sellOrder": 0.9650901932875534,
-          "amount": 65,
-          "price": 63
-        }
-      }
-    ],
-    "/trades/0.14496402409389988": [
-      {
-        "transactionID": "0.8601966894792362",
-        "value": {
-          "id": 0.14496402409389988,
-          "buyOrder": 0.3257611713612091,
-          "sellOrder": 0.37721112405621554,
-          "amount": 41,
-          "price": 63.5
-        }
-      }
-    ],
-    "/trades/0.41035963772829587": [
-      {
-        "transactionID": "0.8601966894792362",
-        "value": {
-          "id": 0.41035963772829587,
-          "buyOrder": 0.3257611713612091,
-          "sellOrder": 0.4453516187568676,
-          "amount": 5,
-          "price": 64
-        }
-      }
-    ],
-    "/trades/0.9144359141722656": [
-      {
-        "transactionID": "0.8601966894792362",
-        "value": {
-          "id": 0.9144359141722656,
-          "buyOrder": 0.3257611713612091,
-          "sellOrder": 0.6594613051595737,
-          "amount": 22,
-          "price": 66.5
-        }
-      }
-    ],
-    "/trades/0.9244101628888493": [
-      {
-        "transactionID": "0.8601966894792362",
-        "value": {
-          "id": 0.9244101628888493,
-          "buyOrder": 0.3257611713612091,
-          "sellOrder": 0.6609517467775864,
-          "amount": 26,
-          "price": 67.5
-        }
-      }
-    ],
-    "/trades/0.5616082642801183": [
-      {
-        "transactionID": "0.8601966894792362",
-        "value": {
-          "id": 0.5616082642801183,
-          "buyOrder": 0.3257611713612091,
-          "sellOrder": 0.3695129378414833,
-          "amount": 38,
-          "price": 68.5
-        }
-      }
-    ],
-    "/trades/0.9501011869405407": [
-      {
-        "transactionID": "0.8601966894792362",
-        "value": {
-          "id": 0.9501011869405407,
-          "buyOrder": 0.3257611713612091,
-          "sellOrder": 0.6571485331814256,
-          "amount": 39,
-          "price": 71
-        }
-      }
-    ],
-    "/trades/0.3506492998922703": [
-      {
-        "transactionID": "0.8601966894792362",
-        "value": {
-          "id": 0.3506492998922703,
-          "buyOrder": 0.3257611713612091,
-          "sellOrder": 0.3881101900600923,
-          "amount": 58,
-          "price": 72.5
+          "id": 0.9992898264893236,
+          "buyOrder": 0.08347707994606074,
+          "sellOrder": 0.20842740052233208,
+          "amount": 35,
+          "price": 35
         }
       }
     ],
@@ -1847,6 +1437,40 @@ application/json
           "side": "buy",
           "status": "open",
           "user": "bob"
+        }
+      },
+      {
+        "transactionID": "0.06801234424860435",
+        "value": {
+          "id": 0.08347707994606074,
+          "price": 52,
+          "amount": 49,
+          "status": "open",
+          "side": "buy",
+          "user": "bob"
+        }
+      },
+      {
+        "transactionID": "0.06801234424860435",
+        "value": {
+          "id": 0.08347707994606074,
+          "price": 52,
+          "amount": 0,
+          "status": "sold",
+          "side": "buy",
+          "user": "bob"
+        }
+      }
+    ],
+    "/trades/0.06411381118382682": [
+      {
+        "transactionID": "0.06801234424860435",
+        "value": {
+          "id": 0.06411381118382682,
+          "buyOrder": 0.08347707994606074,
+          "sellOrder": 0.29258132380673785,
+          "amount": 49,
+          "price": 36.5
         }
       }
     ]

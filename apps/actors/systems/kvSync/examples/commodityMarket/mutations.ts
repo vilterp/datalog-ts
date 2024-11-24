@@ -33,26 +33,38 @@ export function matchOrders(ctx: MutationCtx, evt: WriteOp) {
   for (const buy of buys) {
     // TODO: keep buying while there's more to buy
     for (const sell of sells) {
+      if (sell.status === "sold") {
+        continue;
+      }
+
       if (buy.price >= sell.price) {
         const amount = Math.min(buy.amount, sell.amount);
         const price = (buy.price + sell.price) / 2;
 
         // Execute the trade
         const newBuyAmount = buy.amount - amount;
+        const newBuyStatus = newBuyAmount === 0 ? "sold" : "open";
         const newBuy: Order = {
           ...buy,
           amount: newBuyAmount,
-          status: newBuyAmount === 0 ? "sold" : "open",
+          status: newBuyStatus,
         };
         ctx.write(`/orders/${buy.id}`, newBuy);
 
         const newSellAmount = sell.amount - amount;
+        const newSellStatus = newSellAmount === 0 ? "sold" : "open";
         const newSell: Order = {
           ...sell,
           amount: newSellAmount,
-          status: newSellAmount === 0 ? "sold" : "open",
+          status: newSellStatus,
         };
         ctx.write(`/orders/${sell.id}`, newSell);
+
+        // for future loops
+        buy.amount = newBuyAmount;
+        buy.status = newBuyStatus;
+        sell.amount = newSellAmount;
+        sell.status = newSellStatus;
 
         // console.log("matchOrders", { newBuy, newSell });
 
