@@ -140,16 +140,18 @@ function useOrders(client: Client): [OrderWithState[], QueryStatus] {
     prefix: "/orders/",
   });
 
-  const orders = Object.entries(rawOrders).map(
-    ([id, rawOrder]): OrderWithState => {
+  const cmpKey = (a: OrderWithState) => (a.side === "buy" ? a.price : -a.price);
+
+  const orders = Object.entries(rawOrders)
+    .map(([id, rawOrder]): OrderWithState => {
       const order = rawOrder.value as any;
       const mapped = readOrder(order);
       return {
         ...mapped,
         state: client.state.transactions[rawOrder.transactionID]?.state,
       };
-    }
-  );
+    })
+    .sort((a, b) => cmpKey(a) - cmpKey(b));
 
   return [orders, queryStatus];
 }
