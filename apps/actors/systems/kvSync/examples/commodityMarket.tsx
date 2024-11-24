@@ -1,6 +1,12 @@
 import React, { useState } from "react";
 import { KVApp } from "./types";
-import { MutationCtx, TraceOp, TSMutationDefns, UserInput } from "../types";
+import {
+  MutationCtx,
+  TraceOp,
+  TSMutationDefns,
+  UserInput,
+  WriteOp,
+} from "../types";
 import { Client, makeClient, useLiveQuery } from "../hooks";
 import { UIProps } from "../../../types";
 import { ClientState, QueryStatus, TransactionState } from "../client";
@@ -173,7 +179,12 @@ const mutations: TSMutationDefns = {
   },
 };
 
-function matchOrders(ctx: MutationCtx, evt: TraceOp) {
+function matchOrders(ctx: MutationCtx, evt: WriteOp) {
+  // Prevent us from going on forever
+  if (evt.desc.type !== "Insert") {
+    return;
+  }
+
   const orders = ctx.scan("/orders/").map(readOrder);
 
   const buys = orders

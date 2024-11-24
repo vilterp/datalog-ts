@@ -202,7 +202,7 @@ export type MutationInvocation = {
 
 // Triggers
 
-type TriggerFn = (ctx: MutationCtx, evt: TraceOp) => void;
+type TriggerFn = (ctx: MutationCtx, evt: WriteOp) => void;
 
 export type TriggerDefn = {
   prefix: string;

@@ -171,17 +171,23 @@ function runMutationOnServer(
   }
 
   // run triggers
-  // TODO: run triggers caused by these triggers, until fixpoint
-  for (const op of ctx.trace) {
+  const queue: WriteOp[] = getJustWrites(ctx);
+  while (queue.length > 0) {
+    const op = queue.shift();
+    const lengthBefore = queue.length;
+
     for (const trigger of app.triggers || []) {
       trigger.fn(ctx, op);
+    }
+
+    const newTriggers = getJustWrites(ctx).slice(lengthBefore);
+    for (const trigger of newTriggers) {
+      queue.push(trigger);
     }
   }
 
   // live query updates
-  const writes: WriteOp[] = ctx.trace.filter(
-    (op) => op.type === "Write"
-  ) as WriteOp[];
+  const writes: WriteOp[] = getJustWrites(ctx);
   const liveQueryUpdates: LiveQueryUpdate[] = filterMap(
     state.liveQueries,
     (liveQuery) => {
@@ -223,6 +229,10 @@ function runMutationOnServer(
     },
     liveQueryUpdates,
   ];
+}
+
+function getJustWrites(ctx: MutationContextImpl): WriteOp[] {
+  return ctx.trace.filter((op) => op.type === "Write") as WriteOp[];
 }
 
 // TODO: maybe move this out to index.ts? idk
