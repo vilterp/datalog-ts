@@ -51,7 +51,7 @@ export function kvSyncTests(writeResults: boolean): Suite {
       name: "commodityMarket",
       test() {
         runDDTestAtPath(
-          "apps/actors/systems/kvSync/examples/commodityMarket.dd.txt",
+          "apps/actors/systems/kvSync/examples/commodityMarket/commodityMarket.dd.txt",
           (inputs) => kvSyncTest(commodityMarket, inputs),
           writeResults
         );
