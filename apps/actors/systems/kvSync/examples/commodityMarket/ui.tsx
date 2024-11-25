@@ -15,6 +15,7 @@ import {
   Trade,
 } from "./types";
 import { Inspector } from "../../uiCommon/inspector";
+import { RadioGroup } from "../../../../../../uiCommon/generic/radioGroup";
 
 export function MarketUI(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
@@ -30,6 +31,7 @@ export function MarketUI(props: UIProps<ClientState, UserInput>) {
 function MarketInner(props: { client: Client; user: string }) {
   const [orders, orderQueryStatus] = useOrders(props.client);
   const [trades, tradeQueryStatus] = useTrades(props.client);
+  const [showSold, setShowSold] = useState(false);
 
   return (
     <>
@@ -110,26 +112,11 @@ function OrderForm(props: { client: Client }) {
         value={price}
         onChange={(evt) => setPrice(parseInt(evt.target.value))}
       />
-      <div>
-        <label>
-          <input
-            type="radio"
-            value="buy"
-            checked={side === "buy"}
-            onChange={(evt) => setSide("buy")}
-          />
-          Buy
-        </label>
-        <label>
-          <input
-            type="radio"
-            value="sell"
-            checked={side === "sell"}
-            onChange={(evt) => setSide("sell")}
-          />
-          Sell
-        </label>
-      </div>
+      <RadioGroup<OrderSide>
+        value={side}
+        onChange={(value) => setSide(value)}
+        options={["buy", "sell"]}
+      />
       <button type="submit">Create Order</button>
     </form>
   );
