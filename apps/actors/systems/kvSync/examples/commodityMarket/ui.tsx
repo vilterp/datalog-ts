@@ -1,13 +1,12 @@
-import React, { useState } from "react";
+import React, { CSSProperties, useState } from "react";
 import { UIProps } from "../../../../types";
-import { ClientState, QueryStatus } from "../../client";
+import { ClientState, QueryStatus, TransactionState } from "../../client";
 import { Client, makeClient, useLiveQuery } from "../../hooks";
 import { UserInput } from "../../types";
 import { LoginWrapper } from "../../uiCommon/loginWrapper";
 import { LoggedInHeader } from "../../uiCommon/loggedInHeader";
 import { Table } from "../../../../../../uiCommon/generic/table";
 import {
-  Order,
   OrderSide,
   OrderWithState,
   readOrder,
@@ -16,6 +15,8 @@ import {
 } from "./types";
 import { Inspector } from "../../uiCommon/inspector";
 import { RadioGroup } from "../../../../../../uiCommon/generic/radioGroup";
+import { BidStack } from "./bidStack";
+import { CollapsibleWithHeadingLocal } from "../../../../../../uiCommon/generic/collapsibleInner";
 
 export function MarketUI(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
@@ -42,54 +43,85 @@ function MarketInner(props: { client: Client; user: string }) {
       <LoggedInHeader user={props.user} client={props.client}>
         <h2>Market</h2>
       </LoggedInHeader>
-      <h3>Orders</h3>
 
-      <div>
-        Show sold:{" "}
-        <input
-          type="checkbox"
-          checked={showSold}
-          onChange={(evt) => setShowSold(evt.target.checked)}
-        />
-      </div>
+      <CollapsibleWithHeadingLocal
+        heading="Stack"
+        content={
+          <BidStack orders={shownOrders} size={{ width: 300, height: 300 }} />
+        }
+      />
 
-      {orderQueryStatus === "Loading" ? (
-        <em>Loading...</em>
-      ) : (
-        <Table<Order>
-          data={shownOrders}
-          getKey={(order) => order.id.toString()}
-          columns={[
-            { name: "id", render: (order) => order.id },
-            { name: "price", render: (order) => `$${order.price}` },
-            { name: "amount", render: (order) => order.amount },
-            { name: "side", render: (order) => order.side },
-            { name: "user", render: (order) => order.user },
-            { name: "status", render: (order) => order.status },
-          ]}
-        />
-      )}
+      <CollapsibleWithHeadingLocal
+        heading="Orders"
+        content={
+          <>
+            <div>
+              Show sold:{" "}
+              <input
+                type="checkbox"
+                checked={showSold}
+                onChange={(evt) => setShowSold(evt.target.checked)}
+              />
+            </div>
+            {orderQueryStatus === "Loading" ? (
+              <em>Loading...</em>
+            ) : (
+              <Table<OrderWithState>
+                data={shownOrders}
+                getKey={(order) => order.id.toString()}
+                getRowStyle={(order) => getRowStyle(order.state)}
+                columns={[
+                  { name: "id", render: (order) => order.id },
+                  { name: "price", render: (order) => `$${order.price}` },
+                  { name: "amount", render: (order) => order.amount },
+                  { name: "side", render: (order) => order.side },
+                  { name: "user", render: (order) => order.user },
+                  { name: "status", render: (order) => order.status },
+                ]}
+              />
+            )}
+          </>
+        }
+      />
+
       <h3>Create Order</h3>
       <OrderForm client={props.client} />
-      <h3>Trades</h3>
-      {tradeQueryStatus === "Loading" ? (
-        <em>Loading...</em>
-      ) : (
-        <Table<Trade>
-          data={trades}
-          getKey={(trade) => trade.id.toString()}
-          columns={[
-            { name: "id", render: (trade) => trade.id },
-            { name: "price", render: (trade) => `$${trade.price}` },
-            { name: "amount", render: (trade) => trade.amount },
-            { name: "buy order", render: (trade) => trade.buyOrder },
-            { name: "sell order", render: (trade) => trade.sellOrder },
-          ]}
-        />
-      )}
+
+      <CollapsibleWithHeadingLocal
+        heading="Trades"
+        content={
+          tradeQueryStatus === "Loading" ? (
+            <em>Loading...</em>
+          ) : (
+            <Table<Trade>
+              data={trades}
+              getKey={(trade) => trade.id.toString()}
+              columns={[
+                { name: "id", render: (trade) => trade.id },
+                { name: "price", render: (trade) => `$${trade.price}` },
+                { name: "amount", render: (trade) => trade.amount },
+                { name: "buy order", render: (trade) => trade.buyOrder },
+                { name: "sell order", render: (trade) => trade.sellOrder },
+              ]}
+            />
+          )
+        }
+      />
+
       <Inspector client={props.client} />
     </>
   );
+}
+
+function getRowStyle(status: TransactionState): CSSProperties {
+  switch (status.type) {
+    case "Aborted":
+      return { color: "red" };
+    case "Pending":
+      return { color: "gray" };
+    case "Committed":
+      return null;
+  }
 }
 
 function OrderForm(props: { client: Client }) {
