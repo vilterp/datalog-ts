@@ -43,41 +43,7 @@ export function matchOrders(ctx: MutationCtx, evt: WriteOp) {
         const price = (buy.price + sell.price) / 2;
 
         // Execute the trade
-        const newBuyAmount = buy.amount - amount;
-        const newBuyStatus = newBuyAmount === 0 ? "Sold" : "Open";
-        const newBuy: Order = {
-          ...buy,
-          amount: newBuyAmount,
-          status: newBuyStatus,
-        };
-        ctx.write(`/orders/${buy.id}`, newBuy);
-
-        const newSellAmount = sell.amount - amount;
-        const newSellStatus = newSellAmount === 0 ? "Sold" : "Open";
-        const newSell: Order = {
-          ...sell,
-          amount: newSellAmount,
-          status: newSellStatus,
-        };
-        ctx.write(`/orders/${sell.id}`, newSell);
-
-        // for future loops
-        buy.amount = newBuyAmount;
-        buy.status = newBuyStatus;
-        sell.amount = newSellAmount;
-        sell.status = newSellStatus;
-
-        // console.log("matchOrders", { newBuy, newSell });
-
-        const tradeID = ctx.rand();
-        ctx.write(`/trades/${tradeID}`, {
-          id: tradeID,
-          buyOrder: buy.id,
-          sellOrder: sell.id,
-          amount,
-          price,
-          timestamp: ctx.curTime,
-        });
+        const newBuyAmount = executeTrade(ctx, buy, sell, amount, price);
 
         if (newBuyAmount === 0) {
           break;
@@ -85,4 +51,51 @@ export function matchOrders(ctx: MutationCtx, evt: WriteOp) {
       }
     }
   }
+}
+
+// mutates buy and sell
+function executeTrade(
+  ctx: MutationCtx,
+  buy: Order,
+  sell: Order,
+  amount: number,
+  price: number
+) {
+  const newBuyAmount = buy.amount - amount;
+  const newBuyStatus = newBuyAmount === 0 ? "Sold" : "Open";
+  const newBuy: Order = {
+    ...buy,
+    amount: newBuyAmount,
+    status: newBuyStatus,
+  };
+  ctx.write(`/orders/${buy.id}`, newBuy);
+
+  const newSellAmount = sell.amount - amount;
+  const newSellStatus = newSellAmount === 0 ? "Sold" : "Open";
+  const newSell: Order = {
+    ...sell,
+    amount: newSellAmount,
+    status: newSellStatus,
+  };
+  ctx.write(`/orders/${sell.id}`, newSell);
+
+  // for future loops
+  buy.amount = newBuyAmount;
+  buy.status = newBuyStatus;
+  sell.amount = newSellAmount;
+  sell.status = newSellStatus;
+
+  // console.log("matchOrders", { newBuy, newSell });
+
+  const tradeID = ctx.rand();
+  ctx.write(`/trades/${tradeID}`, {
+    id: tradeID,
+    buyOrder: buy.id,
+    sellOrder: sell.id,
+    amount,
+    price,
+    timestamp: ctx.curTime,
+  });
+
+  return newBuyAmount;
 }
