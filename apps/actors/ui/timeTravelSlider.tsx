@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import useResizeObserver from "use-resize-observer";
 import { AbstractInterpreter } from "../../../core/abstractInterpreter";
 import { rec, varr } from "../../../core/types";
@@ -71,6 +71,9 @@ export function TimeTravelSlider<St, Msg>(props: {
         disabled={props.exploreEnabled}
         onExplore={(steps) => props.dispatch({ type: "Explore", steps })}
       />
+      <ExploreTicker
+        onExplore={(steps) => props.dispatch({ type: "Explore", steps })}
+      />
     </div>
   );
 }
@@ -136,5 +139,35 @@ function ExploreForm(props: {
       />{" "}
       steps
     </form>
+  );
+}
+
+function ExploreTicker(props: { onExplore: (steps: number) => void }) {
+  const [intervalID, setIntervalID] = useState<number | null>(null);
+  const [intervalMS, setIntervalMS] = useState(500);
+
+  const handleClick = () => {
+    if (intervalID === null) {
+      const intervalID = window.setInterval(() => {
+        props.onExplore(1);
+      });
+      setIntervalID(intervalID);
+    } else {
+      clearInterval(intervalID);
+    }
+  };
+
+  return (
+    <div>
+      <input
+        type="number"
+        value={intervalMS}
+        onChange={(evt) => setIntervalMS(parseInt(evt.target.value))}
+      />
+
+      <button onClick={() => handleClick()}>
+        {intervalID !== null ? "Stop Running" : "Start Exploring"}
+      </button>
+    </div>
   );
 }
