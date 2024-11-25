@@ -33,19 +33,31 @@ function MarketInner(props: { client: Client; user: string }) {
   const [trades, tradeQueryStatus] = useTrades(props.client);
   const [showSold, setShowSold] = useState(false);
 
+  const shownOrders = showSold
+    ? orders
+    : orders.filter((order) => order.status !== "Sold");
+
   return (
     <>
       <LoggedInHeader user={props.user} client={props.client}>
         <h2>Market</h2>
       </LoggedInHeader>
-
       <h3>Orders</h3>
+
+      <div>
+        Show sold:{" "}
+        <input
+          type="checkbox"
+          checked={showSold}
+          onChange={(evt) => setShowSold(evt.target.checked)}
+        />
+      </div>
 
       {orderQueryStatus === "Loading" ? (
         <em>Loading...</em>
       ) : (
         <Table<Order>
-          data={orders}
+          data={shownOrders}
           getKey={(order) => order.id.toString()}
           columns={[
             { name: "id", render: (order) => order.id },
@@ -57,13 +69,9 @@ function MarketInner(props: { client: Client; user: string }) {
           ]}
         />
       )}
-
       <h3>Create Order</h3>
-
       <OrderForm client={props.client} />
-
       <h3>Trades</h3>
-
       {tradeQueryStatus === "Loading" ? (
         <em>Loading...</em>
       ) : (
@@ -79,7 +87,6 @@ function MarketInner(props: { client: Client; user: string }) {
           ]}
         />
       )}
-
       <Inspector client={props.client} />
     </>
   );

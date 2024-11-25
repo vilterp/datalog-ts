@@ -1,17 +1,18 @@
 import { MutationCtx, TSMutationDefns, WriteOp } from "../../types";
-import { Order, readOrder } from "./types";
+import { Order, OrderSide, readOrder } from "./types";
 
 export const mutations: TSMutationDefns = {
   Order: (ctx, [price, amount, side]) => {
     const id = ctx.rand();
-    ctx.write(`/orders/${id}`, {
+    const order: Order = {
       id,
-      price,
-      amount,
-      side,
-      status: "open",
+      price: price as number,
+      amount: amount as number,
+      side: side as OrderSide,
+      status: "Open",
       user: ctx.curUser,
-    });
+    };
+    ctx.write(`/orders/${id}`, order);
   },
 };
 
