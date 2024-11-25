@@ -9,6 +9,7 @@ type Rect = {
   x2: number;
   y2: number;
   side: OrderSide;
+  tooltip: string;
 };
 
 export function BidStack(props: { orders: Order[]; size: Dimensions }) {
@@ -32,6 +33,7 @@ export function BidStack(props: { orders: Order[]; size: Dimensions }) {
         type: "nominal",
         scale: { range: ["#1f77b4", "#ff7f0e"] },
       },
+      tooltip: { field: "tooltip" },
     },
   };
 
@@ -51,6 +53,7 @@ function doLayout(orders: Order[]): Rect[] {
       x2: x + order.amount,
       y2: order.price,
       side: order.side,
+      tooltip: `ID: ${order.id}, Amount: ${order.amount}, Price: ${order.price}, User: ${order.user}`,
     });
     x += order.amount;
   }
