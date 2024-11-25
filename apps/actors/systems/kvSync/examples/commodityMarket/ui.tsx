@@ -15,6 +15,7 @@ import {
   Trade,
 } from "./types";
 import { Inspector } from "../../uiCommon/inspector";
+import { RadioGroup } from "../../../../../../uiCommon/generic/radioGroup";
 
 export function MarketUI(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
@@ -30,20 +31,33 @@ export function MarketUI(props: UIProps<ClientState, UserInput>) {
 function MarketInner(props: { client: Client; user: string }) {
   const [orders, orderQueryStatus] = useOrders(props.client);
   const [trades, tradeQueryStatus] = useTrades(props.client);
+  const [showSold, setShowSold] = useState(false);
+
+  const shownOrders = showSold
+    ? orders
+    : orders.filter((order) => order.status !== "Sold");
 
   return (
     <>
       <LoggedInHeader user={props.user} client={props.client}>
         <h2>Market</h2>
       </LoggedInHeader>
-
       <h3>Orders</h3>
+
+      <div>
+        Show sold:{" "}
+        <input
+          type="checkbox"
+          checked={showSold}
+          onChange={(evt) => setShowSold(evt.target.checked)}
+        />
+      </div>
 
       {orderQueryStatus === "Loading" ? (
         <em>Loading...</em>
       ) : (
         <Table<Order>
-          data={orders}
+          data={shownOrders}
           getKey={(order) => order.id.toString()}
           columns={[
             { name: "id", render: (order) => order.id },
@@ -55,13 +69,9 @@ function MarketInner(props: { client: Client; user: string }) {
           ]}
         />
       )}
-
       <h3>Create Order</h3>
-
       <OrderForm client={props.client} />
-
       <h3>Trades</h3>
-
       {tradeQueryStatus === "Loading" ? (
         <em>Loading...</em>
       ) : (
@@ -77,7 +87,6 @@ function MarketInner(props: { client: Client; user: string }) {
           ]}
         />
       )}
-
       <Inspector client={props.client} />
     </>
   );
@@ -86,7 +95,7 @@ function MarketInner(props: { client: Client; user: string }) {
 function OrderForm(props: { client: Client }) {
   const [price, setPrice] = useState(10);
   const [amount, setAmount] = useState(100);
-  const [side, setSide] = useState<OrderSide>("buy");
+  const [side, setSide] = useState<OrderSide>("Buy");
 
   return (
     <form
@@ -110,26 +119,11 @@ function OrderForm(props: { client: Client }) {
         value={price}
         onChange={(evt) => setPrice(parseInt(evt.target.value))}
       />
-      <div>
-        <label>
-          <input
-            type="radio"
-            value="buy"
-            checked={side === "buy"}
-            onChange={(evt) => setSide("buy")}
-          />
-          Buy
-        </label>
-        <label>
-          <input
-            type="radio"
-            value="sell"
-            checked={side === "sell"}
-            onChange={(evt) => setSide("sell")}
-          />
-          Sell
-        </label>
-      </div>
+      <RadioGroup<OrderSide>
+        value={side}
+        onChange={(value) => setSide(value)}
+        options={["Buy", "Sell"]}
+      />
       <button type="submit">Create Order</button>
     </form>
   );
@@ -140,7 +134,7 @@ function useOrders(client: Client): [OrderWithState[], QueryStatus] {
     prefix: "/orders/",
   });
 
-  const cmpKey = (a: OrderWithState) => (a.side === "buy" ? a.price : -a.price);
+  const cmpKey = (a: OrderWithState) => (a.side === "Buy" ? a.price : -a.price);
 
   const orders = Object.entries(rawOrders)
     .map(([id, rawOrder]): OrderWithState => {

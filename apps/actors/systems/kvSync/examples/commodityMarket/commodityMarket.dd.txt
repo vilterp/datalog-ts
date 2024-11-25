@@ -17,18 +17,7 @@ application/json
           "price": 10,
           "amount": 100,
           "side": "sell",
-          "status": "open",
-          "user": "alice"
-        }
-      },
-      {
-        "transactionID": "0.0003834916282291446",
-        "value": {
-          "id": 0.31381383055244927,
-          "price": 10,
-          "amount": 50,
-          "status": "open",
-          "side": "sell",
+          "status": "Open",
           "user": "alice"
         }
       }
@@ -41,31 +30,8 @@ application/json
           "price": 10,
           "amount": 50,
           "side": "buy",
-          "status": "open",
+          "status": "Open",
           "user": "bob"
-        }
-      },
-      {
-        "transactionID": "0.0003834916282291446",
-        "value": {
-          "id": 0.4453516187568676,
-          "price": 10,
-          "amount": 0,
-          "status": "sold",
-          "side": "buy",
-          "user": "bob"
-        }
-      }
-    ],
-    "/trades/0.02466078710245042": [
-      {
-        "transactionID": "0.0003834916282291446",
-        "value": {
-          "id": 0.02466078710245042,
-          "buyOrder": 0.4453516187568676,
-          "sellOrder": 0.31381383055244927,
-          "amount": 50,
-          "price": 10
         }
       }
     ]
@@ -80,7 +46,7 @@ application/json
           "price": 10,
           "amount": 100,
           "side": "sell",
-          "status": "open",
+          "status": "Open",
           "user": "alice"
         }
       }
@@ -96,7 +62,7 @@ application/json
           "price": 10,
           "amount": 50,
           "side": "buy",
-          "status": "open",
+          "status": "Open",
           "user": "bob"
         }
       }
@@ -125,18 +91,7 @@ application/json
           "price": 10,
           "amount": 100,
           "side": "buy",
-          "status": "open",
-          "user": "alice"
-        }
-      },
-      {
-        "transactionID": "0.2581415779498793",
-        "value": {
-          "id": 0.31381383055244927,
-          "price": 10,
-          "amount": 0,
-          "status": "sold",
-          "side": "buy",
+          "status": "Open",
           "user": "alice"
         }
       }
@@ -149,7 +104,7 @@ application/json
           "price": 10,
           "amount": 100,
           "side": "buy",
-          "status": "open",
+          "status": "Open",
           "user": "alice"
         }
       }
@@ -162,7 +117,7 @@ application/json
           "price": 10,
           "amount": 100,
           "side": "buy",
-          "status": "open",
+          "status": "Open",
           "user": "alice"
         }
       }
@@ -175,31 +130,8 @@ application/json
           "price": 10,
           "amount": 100,
           "side": "sell",
-          "status": "open",
+          "status": "Open",
           "user": "alice"
-        }
-      },
-      {
-        "transactionID": "0.2581415779498793",
-        "value": {
-          "id": 0.5855064094862961,
-          "price": 10,
-          "amount": 0,
-          "status": "sold",
-          "side": "sell",
-          "user": "alice"
-        }
-      }
-    ],
-    "/trades/0.6062274799740198": [
-      {
-        "transactionID": "0.2581415779498793",
-        "value": {
-          "id": 0.6062274799740198,
-          "buyOrder": 0.31381383055244927,
-          "sellOrder": 0.5855064094862961,
-          "amount": 100,
-          "price": 10
         }
       }
     ]
@@ -214,7 +146,7 @@ application/json
           "price": 10,
           "amount": 100,
           "side": "buy",
-          "status": "open",
+          "status": "Open",
           "user": "alice"
         }
       }
@@ -227,7 +159,7 @@ application/json
           "price": 10,
           "amount": 100,
           "side": "buy",
-          "status": "open",
+          "status": "Open",
           "user": "alice"
         }
       }
@@ -240,7 +172,7 @@ application/json
           "price": 10,
           "amount": 100,
           "side": "buy",
-          "status": "open",
+          "status": "Open",
           "user": "alice"
         }
       }
@@ -253,7 +185,7 @@ application/json
           "price": 10,
           "amount": 100,
           "side": "sell",
-          "status": "open",
+          "status": "Open",
           "user": "alice"
         }
       }
@@ -280,8 +212,8 @@ application/json
           "id": 0.31381383055244927,
           "price": 37,
           "amount": 20,
-          "side": "sell",
-          "status": "open",
+          "side": "Sell",
+          "status": "Open",
           "user": "alice"
         }
       },
@@ -291,8 +223,8 @@ application/json
           "id": 0.31381383055244927,
           "price": 37,
           "amount": 0,
-          "status": "sold",
-          "side": "sell",
+          "status": "Sold",
+          "side": "Sell",
           "user": "alice"
         }
       }
@@ -304,8 +236,8 @@ application/json
           "id": 0.015206331866985496,
           "price": 17,
           "amount": 85,
-          "side": "buy",
-          "status": "open",
+          "side": "Buy",
+          "status": "Open",
           "user": "alice"
         }
       },
@@ -315,8 +247,8 @@ application/json
           "id": 0.015206331866985496,
           "price": 17,
           "amount": 78,
-          "status": "open",
-          "side": "buy",
+          "status": "Open",
+          "side": "Buy",
           "user": "alice"
         }
       },
@@ -326,8 +258,8 @@ application/json
           "id": 0.015206331866985496,
           "price": 17,
           "amount": 44,
-          "status": "open",
-          "side": "buy",
+          "status": "Open",
+          "side": "Buy",
           "user": "alice"
         }
       },
@@ -337,8 +269,8 @@ application/json
           "id": 0.015206331866985496,
           "price": 17,
           "amount": 0,
-          "status": "sold",
-          "side": "buy",
+          "status": "Sold",
+          "side": "Buy",
           "user": "alice"
         }
       }
@@ -350,8 +282,8 @@ application/json
           "id": 0.5100409435201818,
           "price": 60,
           "amount": 88,
-          "side": "buy",
-          "status": "open",
+          "side": "Buy",
+          "status": "Open",
           "user": "alice"
         }
       },
@@ -361,8 +293,8 @@ application/json
           "id": 0.5100409435201818,
           "price": 60,
           "amount": 68,
-          "status": "open",
-          "side": "buy",
+          "status": "Open",
+          "side": "Buy",
           "user": "alice"
         }
       },
@@ -372,8 +304,8 @@ application/json
           "id": 0.5100409435201818,
           "price": 60,
           "amount": 57,
-          "status": "open",
-          "side": "buy",
+          "status": "Open",
+          "side": "Buy",
           "user": "alice"
         }
       },
@@ -383,8 +315,8 @@ application/json
           "id": 0.5100409435201818,
           "price": 60,
           "amount": 0,
-          "status": "sold",
-          "side": "buy",
+          "status": "Sold",
+          "side": "Buy",
           "user": "alice"
         }
       }
@@ -408,8 +340,8 @@ application/json
           "id": 0.5855064094862961,
           "price": 16,
           "amount": 11,
-          "side": "sell",
-          "status": "open",
+          "side": "Sell",
+          "status": "Open",
           "user": "alice"
         }
       },
@@ -419,8 +351,8 @@ application/json
           "id": 0.5855064094862961,
           "price": 16,
           "amount": 0,
-          "status": "sold",
-          "side": "sell",
+          "status": "Sold",
+          "side": "Sell",
           "user": "alice"
         }
       }
@@ -444,8 +376,8 @@ application/json
           "id": 0.4453516187568676,
           "price": 46,
           "amount": 92,
-          "side": "sell",
-          "status": "open",
+          "side": "Sell",
+          "status": "Open",
           "user": "bob"
         }
       },
@@ -455,8 +387,8 @@ application/json
           "id": 0.4453516187568676,
           "price": 46,
           "amount": 35,
-          "status": "open",
-          "side": "sell",
+          "status": "Open",
+          "side": "Sell",
           "user": "bob"
         }
       },
@@ -466,8 +398,8 @@ application/json
           "id": 0.4453516187568676,
           "price": 46,
           "amount": 5,
-          "status": "open",
-          "side": "sell",
+          "status": "Open",
+          "side": "Sell",
           "user": "bob"
         }
       }
@@ -491,8 +423,8 @@ application/json
           "id": 0.8652590050969823,
           "price": 41,
           "amount": 5,
-          "side": "buy",
-          "status": "open",
+          "side": "Buy",
+          "status": "Open",
           "user": "alice"
         }
       },
@@ -502,8 +434,8 @@ application/json
           "id": 0.8652590050969823,
           "price": 41,
           "amount": 0,
-          "status": "sold",
-          "side": "buy",
+          "status": "Sold",
+          "side": "Buy",
           "user": "alice"
         }
       }
@@ -515,8 +447,8 @@ application/json
           "id": 0.6594613051595737,
           "price": 51,
           "amount": 22,
-          "side": "sell",
-          "status": "open",
+          "side": "Sell",
+          "status": "Open",
           "user": "alice"
         }
       }
@@ -528,8 +460,8 @@ application/json
           "id": 0.4738564640040104,
           "price": 34,
           "amount": 13,
-          "side": "buy",
-          "status": "open",
+          "side": "Buy",
+          "status": "Open",
           "user": "bob"
         }
       },
@@ -539,8 +471,8 @@ application/json
           "id": 0.4738564640040104,
           "price": 34,
           "amount": 0,
-          "status": "sold",
-          "side": "buy",
+          "status": "Sold",
+          "side": "Buy",
           "user": "bob"
         }
       }
@@ -552,8 +484,8 @@ application/json
           "id": 0.2643711262050747,
           "price": 43,
           "amount": 3,
-          "side": "buy",
-          "status": "open",
+          "side": "Buy",
+          "status": "Open",
           "user": "bob"
         }
       },
@@ -563,8 +495,8 @@ application/json
           "id": 0.2643711262050747,
           "price": 43,
           "amount": 0,
-          "status": "sold",
-          "side": "buy",
+          "status": "Sold",
+          "side": "Buy",
           "user": "bob"
         }
       }
@@ -576,8 +508,8 @@ application/json
           "id": 0.9319858592301475,
           "price": 62,
           "amount": 30,
-          "side": "buy",
-          "status": "open",
+          "side": "Buy",
+          "status": "Open",
           "user": "alice"
         }
       },
@@ -587,8 +519,8 @@ application/json
           "id": 0.9319858592301475,
           "price": 62,
           "amount": 0,
-          "status": "sold",
-          "side": "buy",
+          "status": "Sold",
+          "side": "Buy",
           "user": "alice"
         }
       }
@@ -612,8 +544,8 @@ application/json
           "id": 0.7999519010073989,
           "price": 27,
           "amount": 63,
-          "side": "sell",
-          "status": "open",
+          "side": "Sell",
+          "status": "Open",
           "user": "bob"
         }
       },
@@ -623,8 +555,8 @@ application/json
           "id": 0.7999519010073989,
           "price": 27,
           "amount": 60,
-          "status": "open",
-          "side": "sell",
+          "status": "Open",
+          "side": "Sell",
           "user": "bob"
         }
       },
@@ -634,8 +566,8 @@ application/json
           "id": 0.7999519010073989,
           "price": 27,
           "amount": 55,
-          "status": "open",
-          "side": "sell",
+          "status": "Open",
+          "side": "Sell",
           "user": "bob"
         }
       },
@@ -645,8 +577,8 @@ application/json
           "id": 0.7999519010073989,
           "price": 27,
           "amount": 42,
-          "status": "open",
-          "side": "sell",
+          "status": "Open",
+          "side": "Sell",
           "user": "bob"
         }
       },
@@ -656,8 +588,8 @@ application/json
           "id": 0.7999519010073989,
           "price": 27,
           "amount": 1,
-          "status": "open",
-          "side": "sell",
+          "status": "Open",
+          "side": "Sell",
           "user": "bob"
         }
       }
@@ -705,8 +637,8 @@ application/json
           "id": 0.7290001299502329,
           "price": 88,
           "amount": 41,
-          "side": "buy",
-          "status": "open",
+          "side": "Buy",
+          "status": "Open",
           "user": "bob"
         }
       },
@@ -716,8 +648,8 @@ application/json
           "id": 0.7290001299502329,
           "price": 88,
           "amount": 0,
-          "status": "sold",
-          "side": "buy",
+          "status": "Sold",
+          "side": "Buy",
           "user": "bob"
         }
       }
@@ -741,8 +673,8 @@ application/json
           "id": 0.45140223107431293,
           "price": 18,
           "amount": 67,
-          "side": "sell",
-          "status": "open",
+          "side": "Sell",
+          "status": "Open",
           "user": "bob"
         }
       },
@@ -752,8 +684,8 @@ application/json
           "id": 0.45140223107431293,
           "price": 18,
           "amount": 56,
-          "status": "open",
-          "side": "sell",
+          "status": "Open",
+          "side": "Sell",
           "user": "bob"
         }
       },
@@ -763,8 +695,8 @@ application/json
           "id": 0.45140223107431293,
           "price": 18,
           "amount": 29,
-          "status": "open",
-          "side": "sell",
+          "status": "Open",
+          "side": "Sell",
           "user": "bob"
         }
       },
@@ -774,8 +706,8 @@ application/json
           "id": 0.45140223107431293,
           "price": 18,
           "amount": 0,
-          "status": "sold",
-          "side": "sell",
+          "status": "Sold",
+          "side": "Sell",
           "user": "bob"
         }
       }
@@ -787,8 +719,8 @@ application/json
           "id": 0.42560927982033164,
           "price": 30,
           "amount": 11,
-          "side": "buy",
-          "status": "open",
+          "side": "Buy",
+          "status": "Open",
           "user": "alice"
         }
       },
@@ -798,8 +730,8 @@ application/json
           "id": 0.42560927982033164,
           "price": 30,
           "amount": 0,
-          "status": "sold",
-          "side": "buy",
+          "status": "Sold",
+          "side": "Buy",
           "user": "alice"
         }
       }
@@ -823,8 +755,8 @@ application/json
           "id": 0.694033415703134,
           "price": 86,
           "amount": 27,
-          "side": "buy",
-          "status": "open",
+          "side": "Buy",
+          "status": "Open",
           "user": "bob"
         }
       },
@@ -834,8 +766,8 @@ application/json
           "id": 0.694033415703134,
           "price": 86,
           "amount": 0,
-          "status": "sold",
-          "side": "buy",
+          "status": "Sold",
+          "side": "Buy",
           "user": "bob"
         }
       }
@@ -859,8 +791,8 @@ application/json
           "id": 0.9553094734021551,
           "price": 9,
           "amount": 7,
-          "side": "sell",
-          "status": "open",
+          "side": "Sell",
+          "status": "Open",
           "user": "bob"
         }
       },
@@ -870,8 +802,8 @@ application/json
           "id": 0.9553094734021551,
           "price": 9,
           "amount": 0,
-          "status": "sold",
-          "side": "sell",
+          "status": "Sold",
+          "side": "Sell",
           "user": "bob"
         }
       }
@@ -895,8 +827,8 @@ application/json
           "id": 0.37721112405621554,
           "price": 45,
           "amount": 41,
-          "side": "sell",
-          "status": "open",
+          "side": "Sell",
+          "status": "Open",
           "user": "bob"
         }
       }
@@ -908,8 +840,8 @@ application/json
           "id": 0.3695129378414833,
           "price": 55,
           "amount": 38,
-          "side": "sell",
-          "status": "open",
+          "side": "Sell",
+          "status": "Open",
           "user": "alice"
         }
       }
@@ -921,8 +853,8 @@ application/json
           "id": 0.20842740052233208,
           "price": 18,
           "amount": 54,
-          "side": "sell",
-          "status": "open",
+          "side": "Sell",
+          "status": "Open",
           "user": "alice"
         }
       },
@@ -932,8 +864,8 @@ application/json
           "id": 0.20842740052233208,
           "price": 18,
           "amount": 35,
-          "status": "open",
-          "side": "sell",
+          "status": "Open",
+          "side": "Sell",
           "user": "alice"
         }
       },
@@ -943,8 +875,8 @@ application/json
           "id": 0.20842740052233208,
           "price": 18,
           "amount": 0,
-          "status": "sold",
-          "side": "sell",
+          "status": "Sold",
+          "side": "Sell",
           "user": "alice"
         }
       }
@@ -956,8 +888,8 @@ application/json
           "id": 0.9650901932875534,
           "price": 44,
           "amount": 65,
-          "side": "sell",
-          "status": "open",
+          "side": "Sell",
+          "status": "Open",
           "user": "alice"
         }
       }
@@ -969,8 +901,8 @@ application/json
           "id": 0.6609517467775864,
           "price": 53,
           "amount": 26,
-          "side": "sell",
-          "status": "open",
+          "side": "Sell",
+          "status": "Open",
           "user": "alice"
         }
       }
@@ -982,8 +914,8 @@ application/json
           "id": 0.2752696380720191,
           "price": 11,
           "amount": 34,
-          "side": "sell",
-          "status": "open",
+          "side": "Sell",
+          "status": "Open",
           "user": "bob"
         }
       },
@@ -993,8 +925,8 @@ application/json
           "id": 0.2752696380720191,
           "price": 11,
           "amount": 0,
-          "status": "sold",
-          "side": "sell",
+          "status": "Sold",
+          "side": "Sell",
           "user": "bob"
         }
       }
@@ -1018,8 +950,8 @@ application/json
           "id": 0.5913882414730156,
           "price": 5,
           "amount": 71,
-          "side": "sell",
-          "status": "open",
+          "side": "Sell",
+          "status": "Open",
           "user": "bob"
         }
       },
@@ -1029,8 +961,8 @@ application/json
           "id": 0.5913882414730156,
           "price": 5,
           "amount": 27,
-          "status": "open",
-          "side": "sell",
+          "status": "Open",
+          "side": "Sell",
           "user": "bob"
         }
       },
@@ -1040,8 +972,8 @@ application/json
           "id": 0.5913882414730156,
           "price": 5,
           "amount": 21,
-          "status": "open",
-          "side": "sell",
+          "status": "Open",
+          "side": "Sell",
           "user": "bob"
         }
       },
@@ -1051,8 +983,8 @@ application/json
           "id": 0.5913882414730156,
           "price": 5,
           "amount": 7,
-          "status": "open",
-          "side": "sell",
+          "status": "Open",
+          "side": "Sell",
           "user": "bob"
         }
       },
@@ -1062,8 +994,8 @@ application/json
           "id": 0.5913882414730156,
           "price": 5,
           "amount": 0,
-          "status": "sold",
-          "side": "sell",
+          "status": "Sold",
+          "side": "Sell",
           "user": "bob"
         }
       }
@@ -1087,8 +1019,8 @@ application/json
           "id": 0.6518629055021916,
           "price": 99,
           "amount": 6,
-          "side": "buy",
-          "status": "open",
+          "side": "Buy",
+          "status": "Open",
           "user": "bob"
         }
       },
@@ -1098,8 +1030,8 @@ application/json
           "id": 0.6518629055021916,
           "price": 99,
           "amount": 0,
-          "status": "sold",
-          "side": "buy",
+          "status": "Sold",
+          "side": "Buy",
           "user": "bob"
         }
       }
@@ -1123,8 +1055,8 @@ application/json
           "id": 0.29258132380673785,
           "price": 21,
           "amount": 71,
-          "side": "sell",
-          "status": "open",
+          "side": "Sell",
+          "status": "Open",
           "user": "alice"
         }
       },
@@ -1134,8 +1066,8 @@ application/json
           "id": 0.29258132380673785,
           "price": 21,
           "amount": 22,
-          "status": "open",
-          "side": "sell",
+          "status": "Open",
+          "side": "Sell",
           "user": "alice"
         }
       }
@@ -1147,8 +1079,8 @@ application/json
           "id": 0.8195101016382781,
           "price": 18,
           "amount": 14,
-          "side": "buy",
-          "status": "open",
+          "side": "Buy",
+          "status": "Open",
           "user": "bob"
         }
       },
@@ -1158,8 +1090,8 @@ application/json
           "id": 0.8195101016382781,
           "price": 18,
           "amount": 0,
-          "status": "sold",
-          "side": "buy",
+          "status": "Sold",
+          "side": "Buy",
           "user": "bob"
         }
       }
@@ -1183,8 +1115,8 @@ application/json
           "id": 0.3881101900600923,
           "price": 63,
           "amount": 58,
-          "side": "sell",
-          "status": "open",
+          "side": "Sell",
+          "status": "Open",
           "user": "alice"
         }
       }
@@ -1196,8 +1128,8 @@ application/json
           "id": 0.04202915219779047,
           "price": 15,
           "amount": 26,
-          "side": "sell",
-          "status": "open",
+          "side": "Sell",
+          "status": "Open",
           "user": "bob"
         }
       },
@@ -1207,8 +1139,8 @@ application/json
           "id": 0.04202915219779047,
           "price": 15,
           "amount": 24,
-          "status": "open",
-          "side": "sell",
+          "status": "Open",
+          "side": "Sell",
           "user": "bob"
         }
       },
@@ -1218,8 +1150,8 @@ application/json
           "id": 0.04202915219779047,
           "price": 15,
           "amount": 0,
-          "status": "sold",
-          "side": "sell",
+          "status": "Sold",
+          "side": "Sell",
           "user": "bob"
         }
       }
@@ -1231,8 +1163,8 @@ application/json
           "id": 0.34770394428419316,
           "price": 85,
           "amount": 68,
-          "side": "sell",
-          "status": "open",
+          "side": "Sell",
+          "status": "Open",
           "user": "bob"
         }
       }
@@ -1244,8 +1176,8 @@ application/json
           "id": 0.3583391274868875,
           "price": 0,
           "amount": 35,
-          "side": "buy",
-          "status": "open",
+          "side": "Buy",
+          "status": "Open",
           "user": "bob"
         }
       }
@@ -1257,8 +1189,8 @@ application/json
           "id": 0.6571485331814256,
           "price": 60,
           "amount": 39,
-          "side": "sell",
-          "status": "open",
+          "side": "Sell",
+          "status": "Open",
           "user": "alice"
         }
       }
@@ -1270,8 +1202,8 @@ application/json
           "id": 0.5855059047094602,
           "price": 51,
           "amount": 9,
-          "side": "buy",
-          "status": "open",
+          "side": "Buy",
+          "status": "Open",
           "user": "alice"
         }
       },
@@ -1281,8 +1213,8 @@ application/json
           "id": 0.5855059047094602,
           "price": 51,
           "amount": 2,
-          "status": "open",
-          "side": "buy",
+          "status": "Open",
+          "side": "Buy",
           "user": "alice"
         }
       },
@@ -1292,8 +1224,8 @@ application/json
           "id": 0.5855059047094602,
           "price": 51,
           "amount": 0,
-          "status": "sold",
-          "side": "buy",
+          "status": "Sold",
+          "side": "Buy",
           "user": "alice"
         }
       }
@@ -1329,8 +1261,8 @@ application/json
           "id": 0.3257611713612091,
           "price": 82,
           "amount": 72,
-          "side": "buy",
-          "status": "open",
+          "side": "Buy",
+          "status": "Open",
           "user": "bob"
         }
       },
@@ -1340,8 +1272,8 @@ application/json
           "id": 0.3257611713612091,
           "price": 82,
           "amount": 48,
-          "status": "open",
-          "side": "buy",
+          "status": "Open",
+          "side": "Buy",
           "user": "bob"
         }
       },
@@ -1351,8 +1283,8 @@ application/json
           "id": 0.3257611713612091,
           "price": 82,
           "amount": 19,
-          "status": "open",
-          "side": "buy",
+          "status": "Open",
+          "side": "Buy",
           "user": "bob"
         }
       },
@@ -1362,8 +1294,8 @@ application/json
           "id": 0.3257611713612091,
           "price": 82,
           "amount": 0,
-          "status": "sold",
-          "side": "buy",
+          "status": "Sold",
+          "side": "Buy",
           "user": "bob"
         }
       }
@@ -1421,8 +1353,8 @@ application/json
           "id": 0.06411381118382682,
           "price": 15,
           "amount": 73,
-          "side": "buy",
-          "status": "open",
+          "side": "Buy",
+          "status": "Open",
           "user": "bob"
         }
       }
@@ -1434,8 +1366,8 @@ application/json
           "id": 0.08347707994606074,
           "price": 52,
           "amount": 84,
-          "side": "buy",
-          "status": "open",
+          "side": "Buy",
+          "status": "Open",
           "user": "bob"
         }
       },
@@ -1445,8 +1377,8 @@ application/json
           "id": 0.08347707994606074,
           "price": 52,
           "amount": 49,
-          "status": "open",
-          "side": "buy",
+          "status": "Open",
+          "side": "Buy",
           "user": "bob"
         }
       },
@@ -1456,8 +1388,8 @@ application/json
           "id": 0.08347707994606074,
           "price": 52,
           "amount": 0,
-          "status": "sold",
-          "side": "buy",
+          "status": "Sold",
+          "side": "Buy",
           "user": "bob"
         }
       }
@@ -1484,8 +1416,8 @@ application/json
           "id": 0.31381383055244927,
           "price": 37,
           "amount": 20,
-          "side": "sell",
-          "status": "open",
+          "side": "Sell",
+          "status": "Open",
           "user": "alice"
         }
       }
@@ -1497,8 +1429,8 @@ application/json
           "id": 0.015206331866985496,
           "price": 17,
           "amount": 85,
-          "side": "buy",
-          "status": "open",
+          "side": "Buy",
+          "status": "Open",
           "user": "alice"
         }
       }
@@ -1510,8 +1442,8 @@ application/json
           "id": 0.5100409435201818,
           "price": 60,
           "amount": 88,
-          "side": "buy",
-          "status": "open",
+          "side": "Buy",
+          "status": "Open",
           "user": "alice"
         }
       }
@@ -1523,8 +1455,8 @@ application/json
           "id": 0.5855064094862961,
           "price": 16,
           "amount": 11,
-          "side": "sell",
-          "status": "open",
+          "side": "Sell",
+          "status": "Open",
           "user": "alice"
         }
       }
@@ -1536,8 +1468,8 @@ application/json
           "id": 0.8652590050969823,
           "price": 41,
           "amount": 5,
-          "side": "buy",
-          "status": "open",
+          "side": "Buy",
+          "status": "Open",
           "user": "alice"
         }
       }
@@ -1549,8 +1481,8 @@ application/json
           "id": 0.9319858592301475,
           "price": 62,
           "amount": 30,
-          "side": "buy",
-          "status": "open",
+          "side": "Buy",
+          "status": "Open",
           "user": "alice"
         }
       }
@@ -1562,8 +1494,8 @@ application/json
           "id": 0.6594613051595737,
           "price": 51,
           "amount": 22,
-          "side": "sell",
-          "status": "open",
+          "side": "Sell",
+          "status": "Open",
           "user": "alice"
         }
       }
@@ -1575,8 +1507,8 @@ application/json
           "id": 0.42560927982033164,
           "price": 30,
           "amount": 11,
-          "side": "buy",
-          "status": "open",
+          "side": "Buy",
+          "status": "Open",
           "user": "alice"
         }
       }
@@ -1588,8 +1520,8 @@ application/json
           "id": 0.3695129378414833,
           "price": 55,
           "amount": 38,
-          "side": "sell",
-          "status": "open",
+          "side": "Sell",
+          "status": "Open",
           "user": "alice"
         }
       }
@@ -1601,8 +1533,8 @@ application/json
           "id": 0.20842740052233208,
           "price": 18,
           "amount": 54,
-          "side": "sell",
-          "status": "open",
+          "side": "Sell",
+          "status": "Open",
           "user": "alice"
         }
       }
@@ -1614,8 +1546,8 @@ application/json
           "id": 0.9650901932875534,
           "price": 44,
           "amount": 65,
-          "side": "sell",
-          "status": "open",
+          "side": "Sell",
+          "status": "Open",
           "user": "alice"
         }
       }
@@ -1627,8 +1559,8 @@ application/json
           "id": 0.6609517467775864,
           "price": 53,
           "amount": 26,
-          "side": "sell",
-          "status": "open",
+          "side": "Sell",
+          "status": "Open",
           "user": "alice"
         }
       }
@@ -1640,8 +1572,8 @@ application/json
           "id": 0.29258132380673785,
           "price": 21,
           "amount": 71,
-          "side": "sell",
-          "status": "open",
+          "side": "Sell",
+          "status": "Open",
           "user": "alice"
         }
       }
@@ -1653,8 +1585,8 @@ application/json
           "id": 0.3881101900600923,
           "price": 63,
           "amount": 58,
-          "side": "sell",
-          "status": "open",
+          "side": "Sell",
+          "status": "Open",
           "user": "alice"
         }
       }
@@ -1666,8 +1598,8 @@ application/json
           "id": 0.6571485331814256,
           "price": 60,
           "amount": 39,
-          "side": "sell",
-          "status": "open",
+          "side": "Sell",
+          "status": "Open",
           "user": "alice"
         }
       }
@@ -1679,8 +1611,8 @@ application/json
           "id": 0.5855059047094602,
           "price": 51,
           "amount": 9,
-          "side": "buy",
-          "status": "open",
+          "side": "Buy",
+          "status": "Open",
           "user": "alice"
         }
       }
@@ -1695,8 +1627,8 @@ application/json
           "id": 0.4453516187568676,
           "price": 46,
           "amount": 92,
-          "side": "sell",
-          "status": "open",
+          "side": "Sell",
+          "status": "Open",
           "user": "bob"
         }
       }
@@ -1708,8 +1640,8 @@ application/json
           "id": 0.4738564640040104,
           "price": 34,
           "amount": 13,
-          "side": "buy",
-          "status": "open",
+          "side": "Buy",
+          "status": "Open",
           "user": "bob"
         }
       }
@@ -1721,8 +1653,8 @@ application/json
           "id": 0.7290001299502329,
           "price": 88,
           "amount": 41,
-          "side": "buy",
-          "status": "open",
+          "side": "Buy",
+          "status": "Open",
           "user": "bob"
         }
       }
@@ -1734,8 +1666,8 @@ application/json
           "id": 0.2643711262050747,
           "price": 43,
           "amount": 3,
-          "side": "buy",
-          "status": "open",
+          "side": "Buy",
+          "status": "Open",
           "user": "bob"
         }
       }
@@ -1747,8 +1679,8 @@ application/json
           "id": 0.7999519010073989,
           "price": 27,
           "amount": 63,
-          "side": "sell",
-          "status": "open",
+          "side": "Sell",
+          "status": "Open",
           "user": "bob"
         }
       }
@@ -1760,8 +1692,8 @@ application/json
           "id": 0.45140223107431293,
           "price": 18,
           "amount": 67,
-          "side": "sell",
-          "status": "open",
+          "side": "Sell",
+          "status": "Open",
           "user": "bob"
         }
       }
@@ -1773,8 +1705,8 @@ application/json
           "id": 0.694033415703134,
           "price": 86,
           "amount": 27,
-          "side": "buy",
-          "status": "open",
+          "side": "Buy",
+          "status": "Open",
           "user": "bob"
         }
       }
@@ -1786,8 +1718,8 @@ application/json
           "id": 0.9553094734021551,
           "price": 9,
           "amount": 7,
-          "side": "sell",
-          "status": "open",
+          "side": "Sell",
+          "status": "Open",
           "user": "bob"
         }
       }
@@ -1799,8 +1731,8 @@ application/json
           "id": 0.37721112405621554,
           "price": 45,
           "amount": 41,
-          "side": "sell",
-          "status": "open",
+          "side": "Sell",
+          "status": "Open",
           "user": "bob"
         }
       }
@@ -1812,8 +1744,8 @@ application/json
           "id": 0.2752696380720191,
           "price": 11,
           "amount": 34,
-          "side": "sell",
-          "status": "open",
+          "side": "Sell",
+          "status": "Open",
           "user": "bob"
         }
       }
@@ -1825,8 +1757,8 @@ application/json
           "id": 0.6518629055021916,
           "price": 99,
           "amount": 6,
-          "side": "buy",
-          "status": "open",
+          "side": "Buy",
+          "status": "Open",
           "user": "bob"
         }
       }
@@ -1838,8 +1770,8 @@ application/json
           "id": 0.5913882414730156,
           "price": 5,
           "amount": 71,
-          "side": "sell",
-          "status": "open",
+          "side": "Sell",
+          "status": "Open",
           "user": "bob"
         }
       }
@@ -1851,8 +1783,8 @@ application/json
           "id": 0.8195101016382781,
           "price": 18,
           "amount": 14,
-          "side": "buy",
-          "status": "open",
+          "side": "Buy",
+          "status": "Open",
           "user": "bob"
         }
       }
@@ -1864,8 +1796,8 @@ application/json
           "id": 0.04202915219779047,
           "price": 15,
           "amount": 26,
-          "side": "sell",
-          "status": "open",
+          "side": "Sell",
+          "status": "Open",
           "user": "bob"
         }
       }
@@ -1877,8 +1809,8 @@ application/json
           "id": 0.3583391274868875,
           "price": 0,
           "amount": 35,
-          "side": "buy",
-          "status": "open",
+          "side": "Buy",
+          "status": "Open",
           "user": "bob"
         }
       }
@@ -1890,8 +1822,8 @@ application/json
           "id": 0.34770394428419316,
           "price": 85,
           "amount": 68,
-          "side": "sell",
-          "status": "open",
+          "side": "Sell",
+          "status": "Open",
           "user": "bob"
         }
       }
@@ -1903,8 +1835,8 @@ application/json
           "id": 0.3257611713612091,
           "price": 82,
           "amount": 72,
-          "side": "buy",
-          "status": "open",
+          "side": "Buy",
+          "status": "Open",
           "user": "bob"
         }
       }
@@ -1916,8 +1848,8 @@ application/json
           "id": 0.08347707994606074,
           "price": 52,
           "amount": 84,
-          "side": "buy",
-          "status": "open",
+          "side": "Buy",
+          "status": "Open",
           "user": "bob"
         }
       }
@@ -1929,8 +1861,8 @@ application/json
           "id": 0.06411381118382682,
           "price": 15,
           "amount": 73,
-          "side": "buy",
-          "status": "open",
+          "side": "Buy",
+          "status": "Open",
           "user": "bob"
         }
       }

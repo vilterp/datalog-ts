@@ -16,7 +16,7 @@ export function choose(
 
   const [amount1, randomSeed2] = randStep2(randomSeed1);
   const [price, randomSeed3] = randStep2(randomSeed2);
-  const side = randomFromList(randomSeed3, ["buy", "sell"])[0] as OrderSide;
+  const side = randomFromList(randomSeed3, ["Buy", "Sell"])[0] as OrderSide;
 
   return [
     {
