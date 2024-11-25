@@ -329,7 +329,8 @@ application/json
           "buyOrder": 0.5100409435201818,
           "sellOrder": 0.31381383055244927,
           "amount": 20,
-          "price": 48.5
+          "price": 48.5,
+          "timestamp": 2
         }
       }
     ],
@@ -365,7 +366,8 @@ application/json
           "buyOrder": 0.5100409435201818,
           "sellOrder": 0.5855064094862961,
           "amount": 11,
-          "price": 38
+          "price": 38,
+          "timestamp": 3
         }
       }
     ],
@@ -412,7 +414,8 @@ application/json
           "buyOrder": 0.5100409435201818,
           "sellOrder": 0.4453516187568676,
           "amount": 57,
-          "price": 53
+          "price": 53,
+          "timestamp": 4
         }
       }
     ],
@@ -533,7 +536,8 @@ application/json
           "buyOrder": 0.9319858592301475,
           "sellOrder": 0.4453516187568676,
           "amount": 30,
-          "price": 54
+          "price": 54,
+          "timestamp": 9
         }
       }
     ],
@@ -602,7 +606,8 @@ application/json
           "buyOrder": 0.2643711262050747,
           "sellOrder": 0.7999519010073989,
           "amount": 3,
-          "price": 35
+          "price": 35,
+          "timestamp": 10
         }
       }
     ],
@@ -614,7 +619,8 @@ application/json
           "buyOrder": 0.8652590050969823,
           "sellOrder": 0.7999519010073989,
           "amount": 5,
-          "price": 34
+          "price": 34,
+          "timestamp": 10
         }
       }
     ],
@@ -626,7 +632,8 @@ application/json
           "buyOrder": 0.4738564640040104,
           "sellOrder": 0.7999519010073989,
           "amount": 13,
-          "price": 30.5
+          "price": 30.5,
+          "timestamp": 10
         }
       }
     ],
@@ -662,7 +669,8 @@ application/json
           "buyOrder": 0.7290001299502329,
           "sellOrder": 0.7999519010073989,
           "amount": 41,
-          "price": 57.5
+          "price": 57.5,
+          "timestamp": 11
         }
       }
     ],
@@ -744,7 +752,8 @@ application/json
           "buyOrder": 0.42560927982033164,
           "sellOrder": 0.45140223107431293,
           "amount": 11,
-          "price": 24
+          "price": 24,
+          "timestamp": 13
         }
       }
     ],
@@ -780,7 +789,8 @@ application/json
           "buyOrder": 0.694033415703134,
           "sellOrder": 0.45140223107431293,
           "amount": 27,
-          "price": 52
+          "price": 52,
+          "timestamp": 14
         }
       }
     ],
@@ -816,7 +826,8 @@ application/json
           "buyOrder": 0.015206331866985496,
           "sellOrder": 0.9553094734021551,
           "amount": 7,
-          "price": 13
+          "price": 13,
+          "timestamp": 15
         }
       }
     ],
@@ -939,7 +950,8 @@ application/json
           "buyOrder": 0.015206331866985496,
           "sellOrder": 0.2752696380720191,
           "amount": 34,
-          "price": 14
+          "price": 14,
+          "timestamp": 21
         }
       }
     ],
@@ -1008,7 +1020,8 @@ application/json
           "buyOrder": 0.015206331866985496,
           "sellOrder": 0.5913882414730156,
           "amount": 44,
-          "price": 11
+          "price": 11,
+          "timestamp": 22
         }
       }
     ],
@@ -1044,7 +1057,8 @@ application/json
           "buyOrder": 0.6518629055021916,
           "sellOrder": 0.5913882414730156,
           "amount": 6,
-          "price": 52
+          "price": 52,
+          "timestamp": 23
         }
       }
     ],
@@ -1104,7 +1118,8 @@ application/json
           "buyOrder": 0.8195101016382781,
           "sellOrder": 0.5913882414730156,
           "amount": 14,
-          "price": 11.5
+          "price": 11.5,
+          "timestamp": 25
         }
       }
     ],
@@ -1238,7 +1253,8 @@ application/json
           "buyOrder": 0.5855059047094602,
           "sellOrder": 0.5913882414730156,
           "amount": 7,
-          "price": 28
+          "price": 28,
+          "timestamp": 31
         }
       }
     ],
@@ -1250,7 +1266,8 @@ application/json
           "buyOrder": 0.5855059047094602,
           "sellOrder": 0.04202915219779047,
           "amount": 2,
-          "price": 33
+          "price": 33,
+          "timestamp": 31
         }
       }
     ],
@@ -1308,7 +1325,8 @@ application/json
           "buyOrder": 0.3257611713612091,
           "sellOrder": 0.04202915219779047,
           "amount": 24,
-          "price": 48.5
+          "price": 48.5,
+          "timestamp": 32
         }
       }
     ],
@@ -1320,7 +1338,8 @@ application/json
           "buyOrder": 0.3257611713612091,
           "sellOrder": 0.45140223107431293,
           "amount": 29,
-          "price": 50
+          "price": 50,
+          "timestamp": 32
         }
       }
     ],
@@ -1332,7 +1351,8 @@ application/json
           "buyOrder": 0.3257611713612091,
           "sellOrder": 0.20842740052233208,
           "amount": 19,
-          "price": 50
+          "price": 50,
+          "timestamp": 32
         }
       },
       {
@@ -1342,7 +1362,8 @@ application/json
           "buyOrder": 0.08347707994606074,
           "sellOrder": 0.20842740052233208,
           "amount": 35,
-          "price": 35
+          "price": 35,
+          "timestamp": 34
         }
       }
     ],
@@ -1402,7 +1423,8 @@ application/json
           "buyOrder": 0.08347707994606074,
           "sellOrder": 0.29258132380673785,
           "amount": 49,
-          "price": 36.5
+          "price": 36.5,
+          "timestamp": 34
         }
       }
     ]
