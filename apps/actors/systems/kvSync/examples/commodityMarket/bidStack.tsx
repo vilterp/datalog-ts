@@ -40,8 +40,9 @@ export function BidStack(props: { orders: Order[]; size: Dimensions }) {
 
 function doLayout(orders: Order[]): Rect[] {
   const out: Rect[] = [];
+  const { buys, sells } = getTotals(orders);
 
-  let x = 0;
+  let x = -sells;
 
   for (const order of orders) {
     out.push({
@@ -55,4 +56,19 @@ function doLayout(orders: Order[]): Rect[] {
   }
 
   return out;
+}
+
+function getTotals(orders: Order[]): { sells: number; buys: number } {
+  let sells = 0;
+  let buys = 0;
+
+  for (const order of orders) {
+    if (order.side === "Buy") {
+      buys += order.amount;
+    } else {
+      sells += order.amount;
+    }
+  }
+
+  return { sells, buys };
 }
