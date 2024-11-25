@@ -32,6 +32,7 @@ export type Trade = {
   amount: number;
   buyOrder: number;
   sellOrder: number;
+  timestamp: number;
 };
 
 export function readTrade(rawTrade: Json): Trade {
@@ -42,6 +43,7 @@ export function readTrade(rawTrade: Json): Trade {
     amount: trade.amount as number,
     buyOrder: trade.buyOrder as number,
     sellOrder: trade.sellOrder as number,
+    timestamp: trade.timestamp as number,
   };
 }
 

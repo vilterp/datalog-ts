@@ -17,6 +17,7 @@ import { Inspector } from "../../uiCommon/inspector";
 import { RadioGroup } from "../../../../../../uiCommon/generic/radioGroup";
 import { BidStack } from "./bidStack";
 import { CollapsibleWithHeadingLocal } from "../../../../../../uiCommon/generic/collapsibleInner";
+import { PriceOverTime } from "./priceOverTime";
 
 export function MarketUI(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
@@ -84,8 +85,21 @@ function MarketInner(props: { client: Client; user: string }) {
         }
       />
 
-      <h3>Create Order</h3>
-      <OrderForm client={props.client} />
+      <CollapsibleWithHeadingLocal
+        heading="Create Order"
+        content={<OrderForm client={props.client} />}
+      />
+
+      <CollapsibleWithHeadingLocal
+        heading="Price Over Time"
+        content={
+          tradeQueryStatus === "Loading" ? (
+            <em>Loading...</em>
+          ) : (
+            <PriceOverTime trades={trades} size={{ width: 300, height: 300 }} />
+          )
+        }
+      />
 
       <CollapsibleWithHeadingLocal
         heading="Trades"
@@ -94,7 +108,7 @@ function MarketInner(props: { client: Client; user: string }) {
             <em>Loading...</em>
           ) : (
             <Table<Trade>
-              data={trades}
+              data={trades.sort((a, b) => b.timestamp - a.timestamp)}
               getKey={(trade) => trade.id.toString()}
               columns={[
                 { name: "id", render: (trade) => trade.id },
@@ -102,6 +116,7 @@ function MarketInner(props: { client: Client; user: string }) {
                 { name: "amount", render: (trade) => trade.amount },
                 { name: "buy order", render: (trade) => trade.buyOrder },
                 { name: "sell order", render: (trade) => trade.sellOrder },
+                { name: "timestamp", render: (trade) => trade.timestamp },
               ]}
             />
           )

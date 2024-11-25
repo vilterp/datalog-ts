@@ -76,6 +76,7 @@ export function matchOrders(ctx: MutationCtx, evt: WriteOp) {
           sellOrder: sell.id,
           amount,
           price,
+          timestamp: ctx.curTime,
         });
 
         if (newBuyAmount === 0) {

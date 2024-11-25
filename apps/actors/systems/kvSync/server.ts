@@ -99,6 +99,7 @@ function runMutationOnServer(
   const ctx = new MutationContextImpl(
     req.txnID,
     user,
+    state.time,
     state.data,
     isTxnCommitted,
     req.interpState.randSeed

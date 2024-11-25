@@ -154,6 +154,7 @@ function runMutationOnClient(
   const ctx = new MutationContextImpl(
     txnID,
     username,
+    state.time,
     state.data,
     isVisible,
     randSeed1
@@ -309,7 +310,7 @@ export function updateClient(
       const collected = garbageCollectTransactions(incremented);
       return {
         ...resp,
-        state: incremented,
+        state: collected,
       };
     }
     default:
