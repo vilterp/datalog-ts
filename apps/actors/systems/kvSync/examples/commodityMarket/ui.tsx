@@ -42,9 +42,12 @@ function MarketInner(props: { client: Client; user: string }) {
       <LoggedInHeader user={props.user} client={props.client}>
         <h2>Market</h2>
       </LoggedInHeader>
-      <h3>Orders</h3>
+
+      <h3>Stack</h3>
 
       <BidStack orders={shownOrders} size={{ width: 300, height: 300 }} />
+
+      <h3>Orders</h3>
 
       <div>
         Show sold:{" "}
