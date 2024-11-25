@@ -95,7 +95,7 @@ export function MultiClient<St extends Json, Msg extends Json>(props: {
       />
 
       <ExploreArea
-        disabled={!exploreEnabled}
+        exploreEnabled={exploreEnabled}
         onExplore={(steps) => props.dispatch({ type: "Explore", steps })}
         onDoRandomMove={() => props.dispatch({ type: "DoRandomMove" })}
       />

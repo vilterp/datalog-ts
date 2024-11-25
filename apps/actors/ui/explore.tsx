@@ -3,20 +3,27 @@ import React, { useState } from "react";
 const DEFAULT_STEP_LIMIT = 100;
 
 export function ExploreArea(props: {
-  disabled: boolean;
+  exploreEnabled: boolean;
   onExplore: (steps: number) => void;
   onDoRandomMove: () => void;
 }) {
   return (
-    <div style={{ display: "flex", gap: 10 }}>
-      <ExploreForm disabled={props.disabled} onExplore={props.onExplore} />
-      <ExploreTicker onDoRandomMove={props.onDoRandomMove} />
+    <div style={{ display: "flex", gap: 5 }}>
+      <ExploreForm
+        enabled={!props.exploreEnabled}
+        onExplore={props.onExplore}
+      />
+      or
+      <ExploreTicker
+        enabled={!props.exploreEnabled}
+        onDoRandomMove={props.onDoRandomMove}
+      />
     </div>
   );
 }
 
 function ExploreForm(props: {
-  disabled: boolean;
+  enabled: boolean;
   onExplore: (steps: number) => void;
 }) {
   const [steps, setSteps] = React.useState(DEFAULT_STEP_LIMIT);
@@ -28,7 +35,7 @@ function ExploreForm(props: {
         props.onExplore(steps);
       }}
     >
-      <button type="submit" disabled={props.disabled}>
+      <button type="submit" disabled={!props.enabled}>
         Explore
       </button>{" "}
       <input
@@ -43,7 +50,10 @@ function ExploreForm(props: {
   );
 }
 
-function ExploreTicker(props: { onDoRandomMove: () => void }) {
+function ExploreTicker(props: {
+  enabled: boolean;
+  onDoRandomMove: () => void;
+}) {
   const [intervalID, setIntervalID] = useState<number | null>(null);
   const [intervalMS, setIntervalMS] = useState(500);
 
@@ -60,17 +70,19 @@ function ExploreTicker(props: { onDoRandomMove: () => void }) {
   };
 
   return (
-    <form>
+    <form onSubmit={(evt) => evt.preventDefault()}>
+      <button disabled={!props.enabled} onClick={() => handleClick()}>
+        {intervalID !== null ? "Stop Exploring" : "Start Exploring"}
+      </button>
+      {" every "}
       <input
         type="number"
         value={intervalMS}
-        width={4}
+        min={0}
+        max={3000}
         onChange={(evt) => setIntervalMS(parseInt(evt.target.value))}
       />
       ms{" "}
-      <button onClick={() => handleClick()}>
-        {intervalID !== null ? "Stop Exploring" : "Start Exploring"}
-      </button>
     </form>
   );
 }
