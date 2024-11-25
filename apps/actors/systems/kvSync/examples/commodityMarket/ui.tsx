@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { CSSProperties, useState } from "react";
 import { UIProps } from "../../../../types";
-import { ClientState, QueryStatus } from "../../client";
+import { ClientState, QueryStatus, TransactionState } from "../../client";
 import { Client, makeClient, useLiveQuery } from "../../hooks";
 import { UserInput } from "../../types";
 import { LoginWrapper } from "../../uiCommon/loginWrapper";
@@ -69,9 +69,7 @@ function MarketInner(props: { client: Client; user: string }) {
               <Table<OrderWithState>
                 data={shownOrders}
                 getKey={(order) => order.id.toString()}
-                getRowStyle={(order) =>
-                  order.state.type === "Pending" && { color: "gray" }
-                }
+                getRowStyle={(order) => getRowStyle(order.state)}
                 columns={[
                   { name: "id", render: (order) => order.id },
                   { name: "price", render: (order) => `$${order.price}` },
@@ -113,6 +111,17 @@ function MarketInner(props: { client: Client; user: string }) {
       <Inspector client={props.client} />
     </>
   );
+}
+
+function getRowStyle(status: TransactionState): CSSProperties {
+  switch (status.type) {
+    case "Aborted":
+      return { color: "red" };
+    case "Pending":
+      return { color: "gray" };
+    case "Committed":
+      return null;
+  }
 }
 
 function OrderForm(props: { client: Client }) {
