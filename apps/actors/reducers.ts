@@ -179,6 +179,39 @@ function systemInstanceReducer<St extends Json, Msg extends Json>(
         [],
       ];
     }
+    case "DoRandomMove": {
+      if (!systemInstance.system.chooseNextMove) {
+        return [systemInstance, []];
+      }
+
+      const randomSeed = new Date().getTime();
+      const [move, _] = systemInstance.system.chooseNextMove(
+        systemInstance.system,
+        latestState,
+        randomSeed
+      );
+      const [newState, promises] = systemStateReducer(
+        networkLatency,
+        systemInstance.system,
+        latestState,
+        {
+          type: "UpdateTrace",
+          action: {
+            type: "SendUserInput",
+            clientID: move.clientID,
+            input: move.message,
+          },
+        }
+      );
+      return [
+        {
+          ...systemInstance,
+          currentStateIdx: systemInstance.currentStateIdx + 1,
+          stateHistory: [...systemInstance.stateHistory, newState],
+        },
+        promises,
+      ];
+    }
   }
 }
 

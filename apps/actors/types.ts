@@ -67,7 +67,8 @@ export type TimeTravelAction<St, Msg> =
   | { type: "TimeTravelTo"; idx: number }
   | { type: "Advance"; action: SystemInstanceAction<St, Msg> }
   | { type: "Branch" }
-  | { type: "Explore"; steps: number };
+  | { type: "Explore"; steps: number }
+  | { type: "DoRandomMove" };
 
 export type SystemInstanceAction<St, Msg> =
   | {

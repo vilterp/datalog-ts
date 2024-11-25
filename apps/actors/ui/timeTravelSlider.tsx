@@ -72,7 +72,7 @@ export function TimeTravelSlider<St, Msg>(props: {
         onExplore={(steps) => props.dispatch({ type: "Explore", steps })}
       />
       <ExploreTicker
-        onExplore={(steps) => props.dispatch({ type: "Explore", steps })}
+        onDoRandomMove={() => props.dispatch({ type: "DoRandomMove" })}
       />
     </div>
   );
@@ -142,18 +142,19 @@ function ExploreForm(props: {
   );
 }
 
-function ExploreTicker(props: { onExplore: (steps: number) => void }) {
+function ExploreTicker(props: { onDoRandomMove: () => void }) {
   const [intervalID, setIntervalID] = useState<number | null>(null);
   const [intervalMS, setIntervalMS] = useState(500);
 
   const handleClick = () => {
     if (intervalID === null) {
       const intervalID = window.setInterval(() => {
-        props.onExplore(1);
-      });
+        props.onDoRandomMove();
+      }, intervalMS);
       setIntervalID(intervalID);
     } else {
       clearInterval(intervalID);
+      setIntervalID(null);
     }
   };
 
@@ -162,9 +163,10 @@ function ExploreTicker(props: { onExplore: (steps: number) => void }) {
       <input
         type="number"
         value={intervalMS}
+        width={20}
         onChange={(evt) => setIntervalMS(parseInt(evt.target.value))}
       />
-
+      ms{" "}
       <button onClick={() => handleClick()}>
         {intervalID !== null ? "Stop Running" : "Start Exploring"}
       </button>
