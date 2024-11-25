@@ -88,7 +88,7 @@ function MarketInner(props: { client: Client; user: string }) {
 function OrderForm(props: { client: Client }) {
   const [price, setPrice] = useState(10);
   const [amount, setAmount] = useState(100);
-  const [side, setSide] = useState<OrderSide>("buy");
+  const [side, setSide] = useState<OrderSide>("Buy");
 
   return (
     <form
@@ -115,7 +115,7 @@ function OrderForm(props: { client: Client }) {
       <RadioGroup<OrderSide>
         value={side}
         onChange={(value) => setSide(value)}
-        options={["buy", "sell"]}
+        options={["Buy", "Sell"]}
       />
       <button type="submit">Create Order</button>
     </form>
@@ -127,7 +127,7 @@ function useOrders(client: Client): [OrderWithState[], QueryStatus] {
     prefix: "/orders/",
   });
 
-  const cmpKey = (a: OrderWithState) => (a.side === "buy" ? a.price : -a.price);
+  const cmpKey = (a: OrderWithState) => (a.side === "Buy" ? a.price : -a.price);
 
   const orders = Object.entries(rawOrders)
     .map(([id, rawOrder]): OrderWithState => {

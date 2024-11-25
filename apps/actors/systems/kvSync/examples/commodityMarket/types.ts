@@ -1,9 +1,9 @@
 import { Json } from "../../../../../../util/json";
 import { TransactionState } from "../../client";
 
-export type OfferStatus = "open" | "sold";
+export type OfferStatus = "Open" | "Sold";
 
-export type OrderSide = "sell" | "buy";
+export type OrderSide = "Sell" | "Buy";
 
 export type Order = {
   id: number;

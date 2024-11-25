@@ -24,16 +24,16 @@ export function matchOrders(ctx: MutationCtx, evt: WriteOp) {
   const orders = ctx.scan("/orders/").map(readOrder);
 
   const buys = orders
-    .filter((order) => order.side === "buy" && order.status === "open")
+    .filter((order) => order.side === "Buy" && order.status === "Open")
     .sort((a, b) => b.price - a.price);
   const sells = orders
-    .filter((order) => order.side === "sell" && order.status === "open")
+    .filter((order) => order.side === "Sell" && order.status === "Open")
     .sort((a, b) => a.price - b.price);
 
   for (const buy of buys) {
     // TODO: keep buying while there's more to buy
     for (const sell of sells) {
-      if (sell.status === "sold") {
+      if (sell.status === "Sold") {
         continue;
       }
 
@@ -43,7 +43,7 @@ export function matchOrders(ctx: MutationCtx, evt: WriteOp) {
 
         // Execute the trade
         const newBuyAmount = buy.amount - amount;
-        const newBuyStatus = newBuyAmount === 0 ? "sold" : "open";
+        const newBuyStatus = newBuyAmount === 0 ? "Sold" : "Open";
         const newBuy: Order = {
           ...buy,
           amount: newBuyAmount,
@@ -52,7 +52,7 @@ export function matchOrders(ctx: MutationCtx, evt: WriteOp) {
         ctx.write(`/orders/${buy.id}`, newBuy);
 
         const newSellAmount = sell.amount - amount;
-        const newSellStatus = newSellAmount === 0 ? "sold" : "open";
+        const newSellStatus = newSellAmount === 0 ? "Sold" : "Open";
         const newSell: Order = {
           ...sell,
           amount: newSellAmount,
