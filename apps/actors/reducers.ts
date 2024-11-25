@@ -190,6 +190,11 @@ function systemInstanceReducer<St extends Json, Msg extends Json>(
         latestState,
         randomSeed
       );
+
+      if (!move) {
+        return [systemInstance, []];
+      }
+
       const [newState, promises] = systemStateReducer(
         networkLatency,
         systemInstance.system,
