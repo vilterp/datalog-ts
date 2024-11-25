@@ -16,7 +16,7 @@ import {
 import { Inspector } from "../../uiCommon/inspector";
 import { RadioGroup } from "../../../../../../uiCommon/generic/radioGroup";
 import { BidStack } from "./bidStack";
-import { CollapsibleWithHeading } from "../../../../../../uiCommon/generic/collapsible";
+import { CollapsibleWithHeadingLocal } from "../../../../../../uiCommon/generic/collapsibleInner";
 
 export function MarketUI(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
@@ -34,8 +34,6 @@ function MarketInner(props: { client: Client; user: string }) {
   const [trades, tradeQueryStatus] = useTrades(props.client);
   const [showSold, setShowSold] = useState(false);
 
-  const clientID = props.client.state.id;
-
   const shownOrders = showSold
     ? orders
     : orders.filter((order) => order.status !== "Sold");
@@ -46,17 +44,15 @@ function MarketInner(props: { client: Client; user: string }) {
         <h2>Market</h2>
       </LoggedInHeader>
 
-      <CollapsibleWithHeading
+      <CollapsibleWithHeadingLocal
         heading="Stack"
-        storageKey={`stack-${clientID}`}
         content={
           <BidStack orders={shownOrders} size={{ width: 300, height: 300 }} />
         }
       />
 
-      <CollapsibleWithHeading
+      <CollapsibleWithHeadingLocal
         heading="Orders"
-        storageKey={`orders-${clientID}`}
         content={
           <>
             <div>
@@ -93,9 +89,8 @@ function MarketInner(props: { client: Client; user: string }) {
       <h3>Create Order</h3>
       <OrderForm client={props.client} />
 
-      <CollapsibleWithHeading
+      <CollapsibleWithHeadingLocal
         heading="Trades"
-        storageKey={`trades-${clientID}`}
         content={
           tradeQueryStatus === "Loading" ? (
             <em>Loading...</em>
