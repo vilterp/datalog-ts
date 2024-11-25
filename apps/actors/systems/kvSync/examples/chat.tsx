@@ -1,4 +1,4 @@
-import React, { Ref, useLayoutEffect, useRef, useState } from "react";
+import React, { useLayoutEffect, useRef, useState } from "react";
 import { UIProps } from "../../../types";
 import { ClientState, QueryStatus } from "../client";
 import { Client, makeClient, useLiveQuery } from "../hooks";
@@ -8,13 +8,13 @@ import { KVApp } from "./types";
 import { Inspector } from "../uiCommon/inspector";
 import { LoggedIn, LoginWrapper } from "../uiCommon/loginWrapper";
 import { Table } from "../../../../../uiCommon/generic/table";
-
-type Message = {
-  id: number;
-  seqNo: number;
-  sender: string;
-  message: string;
-};
+import {
+  DBCtx,
+  getInitialData,
+  QueryCtx,
+  Schema,
+  useTablePointQuery,
+} from "../indexes";
 
 function ChatUI(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
@@ -50,7 +50,7 @@ function ChatUIInner(props: { client: Client; user: string }) {
                 user={props.user}
                 curThread={curThread}
                 setCurThread={setCurThread}
-                threads={EXAMPLE_THREADS}
+                threads={EXAMPLE_CHANNELS}
               />
             </td>
             <td>
@@ -81,15 +81,25 @@ function MessageTable(props: {
   client: Client;
   user: string;
 }) {
-  const [messages, messagesStatus] = useLiveQuery(
-    props.client,
-    `messages-${props.threadID}`,
-    { prefix: `/messages/${props.threadID}` }
+  const ctx: QueryCtx = { client: props.client, schema };
+  const [messages, messagesStatus] = useTablePointQuery(ctx, "messages", [
+    ["threadID", props.threadID],
+  ]);
+  const [latestMessageSeen, latestMessageSeenStatus] = useTablePointQuery(
+    ctx,
+    "latestMessageRead",
+    [
+      ["threadID", props.threadID],
+      ["userID", props.user],
+    ]
   );
-  const [latestMessageSeen, latestMessageSeenStatus] = useLiveQuery(
-    props.client,
-    `latest-seen-by-${props.threadID}`,
-    { prefix: `/latestMessageRead/byThread/${props.threadID}` }
+  const [latestMessageSeen2, latestMessageSeenStatus2] = useTablePointQuery(
+    ctx,
+    "latestMessageRead",
+    [
+      ["userID", props.user],
+      ["threadID", props.threadID],
+    ]
   );
 
   if (messagesStatus === "Loading") {
@@ -179,13 +189,14 @@ function useLatestSeqNo(
   client: Client,
   threadID: string
 ): [number, QueryStatus] {
-  const [results, status] = useLiveQuery(client, `latestSeqNo-${threadID}`, {
-    prefix: `/latestMessage/${threadID}`,
-  });
+  const ctx: QueryCtx = { client, schema };
+  const [results, status] = useTablePointQuery(ctx, "channels", [
+    ["id", threadID],
+  ]);
   if (status === "Loading") {
     return [0, status];
   }
-  const result = results[`/latestMessage/${threadID}`];
+  const result = results[`/channels/${threadID}`];
   if (!result) {
     return [0, status];
   }
@@ -199,21 +210,28 @@ function ThreadList(props: {
   curThread: string;
   setCurThread: (th: string) => void;
 }) {
+  const ctx: QueryCtx = { client: props.client, schema };
+
   // TODO: this should be only for chats that this user is in
   const [latestMessage, latestMessageStatus] = useLiveQuery(
     props.client,
     "latest-messages",
     {
-      prefix: "/latestMessage",
+      prefix: "/channels",
     }
   );
+
   const [latestMessageRead, latestMessageReadStatus] = useLiveQuery(
     props.client,
     "latest-message-read",
     {
-      prefix: `/latestMessageRead/byUser/${props.user}`,
+      prefix: `/latestMessageRead/by_userID_threadID/${JSON.stringify(
+        props.user
+      )}`,
     }
   );
+
+  console.log("latestMessageRead", props.client.state.id, latestMessageRead);
 
   return (
     <div style={{ width: 100 }}>
@@ -221,10 +239,11 @@ function ThreadList(props: {
       <LoggedIn client={props.client} user={props.user} />
       {props.threads.map((threadID) => {
         // TODO: need full keys
-        const latestMessageInThread =
-          latestMessage[`/latestMessage/${threadID}`];
+        const latestMessageInThread = latestMessage[`/channels/${threadID}`];
 
-        const key = `/latestMessageRead/byUser/${props.user}/${threadID}`;
+        const key = `/latestMessageRead/by_userID_threadID/${JSON.stringify(
+          props.user
+        )}/${JSON.stringify(threadID)}`;
         const latestMessageReadInThread = latestMessageRead[key];
         const numUnread =
           ((latestMessageInThread?.value as number) || 0) -
@@ -257,37 +276,113 @@ function ThreadList(props: {
   );
 }
 
-// Schema:
-//
-// /messages/<ThreadID>/<MessageID> => { id, seqNo, sender, message }
-// /latestMessage/<ThreadID> => <MessageID>
-// /latestMessageRead/byUser/<UserID> => <MessageID>
-// /latestMessageRead/byThread/<ThreadID> => <MessageID>
+type Message = {
+  id: number;
+  seqNo: number;
+  sender: string;
+  message: string;
+};
+
+type Channel = {
+  id: string;
+  name: string;
+  latestMessageID: string;
+};
+
+type LatestMessageRead = {
+  userID: string;
+  threadID: string;
+  messageID: string;
+};
+
+const schema: Schema = {
+  messages: {
+    primaryKey: ["threadID", "id"],
+    fields: {
+      id: { type: "string" },
+      threadID: { type: "string" },
+      seqNo: { type: "number" },
+      sender: { type: "string" },
+      message: { type: "string" },
+    },
+    indexes: [["threadID"]],
+  },
+  channels: {
+    primaryKey: ["id"],
+    fields: {
+      id: { type: "string" },
+      name: { type: "string" },
+      latestMessageID: { type: "string" },
+    },
+    indexes: [],
+  },
+  latestMessageRead: {
+    primaryKey: ["userID", "threadID"],
+    fields: {
+      userID: { type: "string" },
+      threadID: { type: "string" },
+      messageID: { type: "string" },
+    },
+    indexes: [
+      ["userID", "threadID"],
+      ["threadID", "userID"],
+    ],
+  },
+};
 
 const mutations: TSMutationDefns = {
   sendMessage: (ctx, [threadID, message]) => {
-    const latestSeqNo = ctx.read(`/latestMessage/${threadID}`, 0) as number;
+    const db = new DBCtx(schema, ctx);
+
+    const channel = db.read("channels", [["id", threadID]]) as Channel;
+    const latestSeqNo = channel.latestMessageID;
     const newSeqNo = latestSeqNo + 1;
     const newID = ctx.rand();
-    ctx.write(`/latestMessage/${threadID}`, newSeqNo);
-    ctx.write(`/latestMessageRead/byUser/${ctx.curUser}/${threadID}`, newSeqNo);
-    ctx.write(
-      `/latestMessageRead/byThread/${threadID}/${ctx.curUser}`,
-      newSeqNo
-    );
-    ctx.write(`/messages/${threadID}/${newID}`, {
+
+    db.update("channels", {
+      id: threadID,
+      latestMessageID: newID,
+    });
+
+    db.update("latestMessageRead", {
+      userID: ctx.curUser,
+      threadID,
+      messageID: newID,
+    });
+
+    db.insert("messages", {
       id: newID,
+      threadID,
       seqNo: newSeqNo,
       sender: ctx.curUser,
       message,
     });
   },
   markRead: (ctx, [threadID, seqNo]) => {
-    ctx.write(`/latestMessageRead/byUser/${ctx.curUser}/${threadID}`, seqNo);
-    ctx.write(`/latestMessageRead/byThread/${threadID}/${ctx.curUser}`, seqNo);
+    const db = new DBCtx(schema, ctx);
+
+    db.update("latestMessageRead", {
+      userID: ctx.curUser,
+      threadID,
+      messageID: seqNo,
+    });
   },
 };
 
-const EXAMPLE_THREADS = ["foo", "bar"];
+const EXAMPLE_CHANNELS = ["foo", "bar"];
 
-export const chat: KVApp = { name: "Chat", mutations, ui: ChatUI };
+export const chat: KVApp = {
+  name: "Chat",
+  mutations,
+  ui: ChatUI,
+  // TODO: wrap up in indexes.ts
+  initialKVPairs: getInitialData(schema, {
+    messages: [],
+    channels: EXAMPLE_CHANNELS.map((id) => ({
+      id,
+      name: id,
+      latestMessageID: 0,
+    })),
+    latestMessageRead: [],
+  }),
+};
