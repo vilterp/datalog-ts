@@ -7,7 +7,6 @@ import { LoginWrapper } from "../../uiCommon/loginWrapper";
 import { LoggedInHeader } from "../../uiCommon/loggedInHeader";
 import { Table } from "../../../../../../uiCommon/generic/table";
 import {
-  Order,
   OrderSide,
   OrderWithState,
   readOrder,
@@ -16,6 +15,7 @@ import {
 } from "./types";
 import { Inspector } from "../../uiCommon/inspector";
 import { RadioGroup } from "../../../../../../uiCommon/generic/radioGroup";
+import { BidStack } from "./bidStack";
 
 export function MarketUI(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
@@ -43,6 +43,8 @@ function MarketInner(props: { client: Client; user: string }) {
         <h2>Market</h2>
       </LoggedInHeader>
       <h3>Orders</h3>
+
+      <BidStack orders={shownOrders} />
 
       <div>
         Show sold:{" "}
