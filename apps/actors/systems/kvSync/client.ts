@@ -310,7 +310,7 @@ export function updateClient(
       const collected = garbageCollectTransactions(incremented);
       return {
         ...resp,
-        state: incremented,
+        state: collected,
       };
     }
     default:
