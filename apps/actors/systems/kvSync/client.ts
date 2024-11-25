@@ -154,6 +154,7 @@ function runMutationOnClient(
   const ctx = new MutationContextImpl(
     txnID,
     username,
+    state.time,
     state.data,
     isVisible,
     randSeed1

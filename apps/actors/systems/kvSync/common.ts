@@ -12,6 +12,7 @@ import {
 
 export class MutationContextImpl implements MutationCtx {
   curUser: string;
+  curTime: number;
   randState: number;
   kvData: KVData;
   trace: Trace;
@@ -21,12 +22,14 @@ export class MutationContextImpl implements MutationCtx {
   constructor(
     txnID: string,
     curUser: string,
+    curTime: number,
     kvData: KVData,
     isTxnCommitted: (txnID: string) => boolean,
     randSeed: number
   ) {
     this.transactionID = txnID;
     this.curUser = curUser;
+    this.curTime = curTime;
     this.randState = randSeed;
     this.kvData = kvData;
     this.isTxnCommitted = isTxnCommitted;

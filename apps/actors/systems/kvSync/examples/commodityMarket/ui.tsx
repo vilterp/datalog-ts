@@ -94,7 +94,7 @@ function MarketInner(props: { client: Client; user: string }) {
             <em>Loading...</em>
           ) : (
             <Table<Trade>
-              data={trades}
+              data={trades.sort((a, b) => b.timestamp - a.timestamp)}
               getKey={(trade) => trade.id.toString()}
               columns={[
                 { name: "id", render: (trade) => trade.id },
@@ -102,6 +102,7 @@ function MarketInner(props: { client: Client; user: string }) {
                 { name: "amount", render: (trade) => trade.amount },
                 { name: "buy order", render: (trade) => trade.buyOrder },
                 { name: "sell order", render: (trade) => trade.sellOrder },
+                { name: "timestamp", render: (trade) => trade.timestamp },
               ]}
             />
           )
