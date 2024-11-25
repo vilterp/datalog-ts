@@ -1,5 +1,5 @@
 import React from "react";
-import { Order, OrderSide } from "./types";
+import { OrderSide, OrderWithState } from "./types";
 import { VegaLite, VisualizationSpec } from "react-vega";
 import { Dimensions } from "../../../../../../util/diagrams/render";
 
@@ -10,9 +10,13 @@ type Rect = {
   y2: number;
   side: OrderSide;
   tooltip: string;
+  committed: boolean;
 };
 
-export function BidStack(props: { orders: Order[]; size: Dimensions }) {
+export function BidStack(props: {
+  orders: OrderWithState[];
+  size: Dimensions;
+}) {
   const layout = doLayout(props.orders);
 
   const spec: VisualizationSpec = {
@@ -34,13 +38,21 @@ export function BidStack(props: { orders: Order[]; size: Dimensions }) {
         scale: { range: ["#1f77b4", "#ff7f0e"] },
       },
       tooltip: { field: "tooltip" },
+      opacity: {
+        field: "committed",
+        type: "nominal",
+        scale: {
+          domain: [false, true],
+          range: [0.5, 1],
+        },
+      },
     },
   };
 
   return <VegaLite spec={spec} />;
 }
 
-function doLayout(orders: Order[]): Rect[] {
+function doLayout(orders: OrderWithState[]): Rect[] {
   const out: Rect[] = [];
   const { buys, sells } = getTotals(orders);
 
@@ -54,6 +66,7 @@ function doLayout(orders: Order[]): Rect[] {
       y2: order.price,
       side: order.side,
       tooltip: `ID: ${order.id}, Amount: ${order.amount}, Price: ${order.price}, User: ${order.user}`,
+      committed: order.state.type === "Committed",
     });
     x += order.amount;
   }
@@ -61,7 +74,7 @@ function doLayout(orders: Order[]): Rect[] {
   return out;
 }
 
-function getTotals(orders: Order[]): { sells: number; buys: number } {
+function getTotals(orders: OrderWithState[]): { sells: number; buys: number } {
   let sells = 0;
   let buys = 0;
 
