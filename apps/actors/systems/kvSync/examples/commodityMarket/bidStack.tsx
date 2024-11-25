@@ -23,8 +23,8 @@ export function BidStack(props: { orders: Order[]; size: Dimensions }) {
     },
     mark: "rect",
     encoding: {
-      x: { field: "x", type: "quantitative" },
-      y: { field: "y", type: "quantitative" },
+      x: { field: "x", type: "quantitative", axis: { title: "Amount" } },
+      y: { field: "y", type: "quantitative", axis: { title: "Price" } },
       x2: { field: "x2", type: "quantitative" },
       y2: { field: "y2", type: "quantitative" },
       color: {
