@@ -1,22 +1,23 @@
 import React from "react";
 import { Order, OrderSide } from "./types";
 import { VegaLite, VisualizationSpec } from "react-vega";
+import { Dimensions } from "../../../../../../util/diagrams/render";
 
 type Rect = {
   x: number;
-  y: 0;
+  y: number;
   x2: number;
   y2: number;
   side: OrderSide;
 };
 
-export function BidStack(props: { orders: Order[] }) {
+export function BidStack(props: { orders: Order[]; size: Dimensions }) {
   const layout = doLayout(props.orders);
 
   const spec: VisualizationSpec = {
     $schema: "https://vega.github.io/schema/vega-lite/v5.json",
-    width: 600,
-    height: 400,
+    width: props.size.width,
+    height: props.size.height,
     data: {
       values: layout,
     },
