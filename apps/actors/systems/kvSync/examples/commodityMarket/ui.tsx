@@ -56,9 +56,12 @@ function MarketInner(props: { client: Client; user: string }) {
       {orderQueryStatus === "Loading" ? (
         <em>Loading...</em>
       ) : (
-        <Table<Order>
+        <Table<OrderWithState>
           data={shownOrders}
           getKey={(order) => order.id.toString()}
+          getRowStyle={(order) =>
+            order.state.type === "Pending" && { color: "gray" }
+          }
           columns={[
             { name: "id", render: (order) => order.id },
             { name: "price", render: (order) => `$${order.price}` },
