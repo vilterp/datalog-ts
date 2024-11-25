@@ -16,6 +16,7 @@ import {
 import { Inspector } from "../../uiCommon/inspector";
 import { RadioGroup } from "../../../../../../uiCommon/generic/radioGroup";
 import { BidStack } from "./bidStack";
+import { CollapsibleWithHeading } from "../../../../../../uiCommon/generic/collapsible";
 
 export function MarketUI(props: UIProps<ClientState, UserInput>) {
   const client = makeClient(props);
@@ -33,6 +34,8 @@ function MarketInner(props: { client: Client; user: string }) {
   const [trades, tradeQueryStatus] = useTrades(props.client);
   const [showSold, setShowSold] = useState(false);
 
+  const clientID = props.client.state.id;
+
   const shownOrders = showSold
     ? orders
     : orders.filter((order) => order.status !== "Sold");
@@ -43,58 +46,75 @@ function MarketInner(props: { client: Client; user: string }) {
         <h2>Market</h2>
       </LoggedInHeader>
 
-      <h3>Stack</h3>
+      <CollapsibleWithHeading
+        heading="Stack"
+        storageKey={`stack-${clientID}`}
+        content={
+          <BidStack orders={shownOrders} size={{ width: 300, height: 300 }} />
+        }
+      />
 
-      <BidStack orders={shownOrders} size={{ width: 300, height: 300 }} />
+      <CollapsibleWithHeading
+        heading="Orders"
+        storageKey={`orders-${clientID}`}
+        content={
+          <>
+            <div>
+              Show sold:{" "}
+              <input
+                type="checkbox"
+                checked={showSold}
+                onChange={(evt) => setShowSold(evt.target.checked)}
+              />
+            </div>
+            {orderQueryStatus === "Loading" ? (
+              <em>Loading...</em>
+            ) : (
+              <Table<OrderWithState>
+                data={shownOrders}
+                getKey={(order) => order.id.toString()}
+                getRowStyle={(order) =>
+                  order.state.type === "Pending" && { color: "gray" }
+                }
+                columns={[
+                  { name: "id", render: (order) => order.id },
+                  { name: "price", render: (order) => `$${order.price}` },
+                  { name: "amount", render: (order) => order.amount },
+                  { name: "side", render: (order) => order.side },
+                  { name: "user", render: (order) => order.user },
+                  { name: "status", render: (order) => order.status },
+                ]}
+              />
+            )}
+          </>
+        }
+      />
 
-      <h3>Orders</h3>
-
-      <div>
-        Show sold:{" "}
-        <input
-          type="checkbox"
-          checked={showSold}
-          onChange={(evt) => setShowSold(evt.target.checked)}
-        />
-      </div>
-
-      {orderQueryStatus === "Loading" ? (
-        <em>Loading...</em>
-      ) : (
-        <Table<OrderWithState>
-          data={shownOrders}
-          getKey={(order) => order.id.toString()}
-          getRowStyle={(order) =>
-            order.state.type === "Pending" && { color: "gray" }
-          }
-          columns={[
-            { name: "id", render: (order) => order.id },
-            { name: "price", render: (order) => `$${order.price}` },
-            { name: "amount", render: (order) => order.amount },
-            { name: "side", render: (order) => order.side },
-            { name: "user", render: (order) => order.user },
-            { name: "status", render: (order) => order.status },
-          ]}
-        />
-      )}
       <h3>Create Order</h3>
       <OrderForm client={props.client} />
-      <h3>Trades</h3>
-      {tradeQueryStatus === "Loading" ? (
-        <em>Loading...</em>
-      ) : (
-        <Table<Trade>
-          data={trades}
-          getKey={(trade) => trade.id.toString()}
-          columns={[
-            { name: "id", render: (trade) => trade.id },
-            { name: "price", render: (trade) => `$${trade.price}` },
-            { name: "amount", render: (trade) => trade.amount },
-            { name: "buy order", render: (trade) => trade.buyOrder },
-            { name: "sell order", render: (trade) => trade.sellOrder },
-          ]}
-        />
-      )}
+
+      <CollapsibleWithHeading
+        heading="Trades"
+        storageKey={`trades-${clientID}`}
+        content={
+          tradeQueryStatus === "Loading" ? (
+            <em>Loading...</em>
+          ) : (
+            <Table<Trade>
+              data={trades}
+              getKey={(trade) => trade.id.toString()}
+              columns={[
+                { name: "id", render: (trade) => trade.id },
+                { name: "price", render: (trade) => `$${trade.price}` },
+                { name: "amount", render: (trade) => trade.amount },
+                { name: "buy order", render: (trade) => trade.buyOrder },
+                { name: "sell order", render: (trade) => trade.sellOrder },
+              ]}
+            />
+          )
+        }
+      />
+
       <Inspector client={props.client} />
     </>
   );
