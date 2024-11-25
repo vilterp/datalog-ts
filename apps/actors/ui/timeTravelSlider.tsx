@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import useResizeObserver from "use-resize-observer";
 import { AbstractInterpreter } from "../../../core/abstractInterpreter";
 import { rec, varr } from "../../../core/types";
@@ -11,7 +11,6 @@ export function TimeTravelSlider<St, Msg>(props: {
   interp: AbstractInterpreter;
   curIdx: number;
   historyLength: number;
-  exploreEnabled: boolean;
   dispatch: (action: TimeTravelAction<St, Msg>) => void;
 }) {
   const { ref, width } = useResizeObserver();
@@ -66,14 +65,6 @@ export function TimeTravelSlider<St, Msg>(props: {
         setHighlightedTerm={() => {}}
         runStatements={() => {}}
       />
-      {/* controls */}
-      <ExploreForm
-        disabled={props.exploreEnabled}
-        onExplore={(steps) => props.dispatch({ type: "Explore", steps })}
-      />
-      <ExploreTicker
-        onDoRandomMove={() => props.dispatch({ type: "DoRandomMove" })}
-      />
     </div>
   );
 }
@@ -107,68 +98,6 @@ function Stepper<St, Msg>(props: {
         }
       >
         {">"}
-      </button>
-    </div>
-  );
-}
-
-const DEFAULT_STEP_LIMIT = 100;
-
-function ExploreForm(props: {
-  disabled: boolean;
-  onExplore: (steps: number) => void;
-}) {
-  const [steps, setSteps] = React.useState(DEFAULT_STEP_LIMIT);
-
-  return (
-    <form
-      onSubmit={(evt) => {
-        evt.preventDefault();
-        props.onExplore(steps);
-      }}
-    >
-      <button type="submit" disabled={props.disabled}>
-        Explore
-      </button>{" "}
-      <input
-        type="number"
-        min={0}
-        max={3_000}
-        value={steps}
-        onChange={(evt) => setSteps(parseInt(evt.target.value))}
-      />{" "}
-      steps
-    </form>
-  );
-}
-
-function ExploreTicker(props: { onDoRandomMove: () => void }) {
-  const [intervalID, setIntervalID] = useState<number | null>(null);
-  const [intervalMS, setIntervalMS] = useState(500);
-
-  const handleClick = () => {
-    if (intervalID === null) {
-      const intervalID = window.setInterval(() => {
-        props.onDoRandomMove();
-      }, intervalMS);
-      setIntervalID(intervalID);
-    } else {
-      clearInterval(intervalID);
-      setIntervalID(null);
-    }
-  };
-
-  return (
-    <div>
-      <input
-        type="number"
-        value={intervalMS}
-        width={20}
-        onChange={(evt) => setIntervalMS(parseInt(evt.target.value))}
-      />
-      ms{" "}
-      <button onClick={() => handleClick()}>
-        {intervalID !== null ? "Stop Running" : "Start Exploring"}
       </button>
     </div>
   );
