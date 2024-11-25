@@ -8,6 +8,7 @@ import {
 } from "../types";
 import { Window } from "./window";
 import { TimeTravelSlider } from "./timeTravelSlider";
+import { ExploreArea } from "./explore";
 
 export function MultiClient<St extends Json, Msg extends Json>(props: {
   systemInstance: SystemInstance<St, Msg>;
@@ -50,6 +51,9 @@ export function MultiClient<St extends Json, Msg extends Json>(props: {
     });
   };
 
+  const exploreEnabled =
+    props.systemInstance.system.chooseNextMove === undefined;
+
   return (
     <>
       <div
@@ -85,12 +89,15 @@ export function MultiClient<St extends Json, Msg extends Json>(props: {
 
       <TimeTravelSlider<St, Msg>
         interp={lastState.trace.interp}
-        exploreEnabled={
-          props.systemInstance.system.chooseNextMove === undefined
-        }
         curIdx={props.systemInstance.currentStateIdx}
         historyLength={props.systemInstance.stateHistory.length}
         dispatch={(evt) => props.dispatch(evt)}
+      />
+
+      <ExploreArea
+        exploreEnabled={exploreEnabled}
+        onExplore={(steps) => props.dispatch({ type: "Explore", steps })}
+        onDoRandomMove={() => props.dispatch({ type: "DoRandomMove" })}
       />
     </>
   );
