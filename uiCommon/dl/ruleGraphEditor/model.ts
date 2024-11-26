@@ -157,7 +157,7 @@ export function splitUpVar(
   const newNodes: { [id: string]: GraphNode } = pairsToObj(
     newVars.map((newVar, idx) => ({
       key: newVar,
-      val: {
+      value: {
         desc: { type: "JoinVar", name: newVar },
         pos: { x: oldNode.pos.x, y: oldNode.pos.y - 15 + idx * 30 },
       },

@@ -127,14 +127,14 @@ export function newConjunct(
 ): Conjunct {
   const relation = relations.find((r) => r.name === relationName);
   const columns = relationColumns(relation);
-  const pairs: { key: string; val: Term }[] = [];
+  const pairs: { key: string; value: Term }[] = [];
   const existingVars = gatherVars(rule);
   columns.forEach((col) => {
     const newVar = nextVar(existingVars);
     existingVars.push(newVar);
     pairs.push({
       key: col,
-      val: varr(newVar),
+      value: varr(newVar),
     });
   });
   const res = rec(relationName, pairsToObj(pairs));
