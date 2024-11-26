@@ -1,61 +1,57 @@
 import { fsLoader } from "../core/fsLoader";
 import { SimpleInterpreter } from "../core/simple/interpreter";
-import { addCursor, clearInterpCache, getInterpForDoc } from "./interpCache";
+import { InterpCache, addCursor } from "./interpCache";
 import { TestOutput } from "../util/ddTest";
-import { runDDTestAtPath } from "../util/ddTest/runner";
+import { runDDTestAtPathTwoVariants } from "../util/ddTest/runner";
 import { datalogOut } from "../util/ddTest/types";
 import * as fs from "fs";
 import { Suite } from "../util/testBench/testing";
-import { LanguageSpec } from "./common/types";
+import { LanguageSpec, dl, dl2 } from "./common/types";
 import { IncrementalInterpreter } from "../core/incremental/interpreter";
-import { AbstractInterpreter } from "../core/abstractInterpreter";
 
-export function lwbTestsSimple(writeResults: boolean) {
-  return lwbTests(
-    writeResults,
-    new SimpleInterpreter("languageWorkbench/common", fsLoader)
-  );
-}
+const BASE_PATH = "languageWorkbench/common";
 
-export function lwbTestsIncr(writeResults: boolean) {
-  return lwbTests(
-    writeResults,
-    new IncrementalInterpreter("languageWorkbench/common", fsLoader)
-  );
-}
+const SIMPLE_CACHE = new InterpCache(
+  () => new SimpleInterpreter(BASE_PATH, fsLoader)
+);
+const INCR_CACHE = new InterpCache(
+  () => new IncrementalInterpreter(BASE_PATH, fsLoader)
+);
 
-function lwbTests(
-  writeResults: boolean,
-  initInterp: AbstractInterpreter,
-  exclude: Set<string> = new Set<string>()
-): Suite {
+export function lwbTests(writeResults: boolean): Suite {
   return [
     "fp",
     "sql",
     "dl",
+    "dl2",
     "grammar",
     "modelica",
     "treeSQL",
     "basicBlocks",
     "contracts",
-  ]
-    .filter((lang) => !exclude.has(lang))
-    .map((lang) => ({
-      name: lang,
-      test() {
-        runDDTestAtPath(
-          `languageWorkbench/languages/${lang}/${lang}.dd.txt`,
-          (test) => testLangQuery(test, initInterp),
-          writeResults
-        );
-        clearInterpCache();
-      },
-    }));
+    "opt",
+  ].map((lang) => ({
+    name: lang,
+    test() {
+      runDDTestAtPathTwoVariants(
+        `languageWorkbench/languages/${lang}/${lang}.dd.txt`,
+        {
+          name: "simple",
+          getResults: (test) => testLangQuery(test, SIMPLE_CACHE),
+        },
+        {
+          name: "incremental",
+          getResults: (test) => testLangQuery(test, INCR_CACHE),
+        },
+        writeResults
+      );
+    },
+  }));
 }
 
 export function testLangQuery(
   test: string[],
-  initInterp: AbstractInterpreter
+  cache: InterpCache
 ): TestOutput[] {
   const output = test.map((input) => {
     const lines = input.split("\n");
@@ -63,20 +59,17 @@ export function testLangQuery(
     const exampleWithCursor = lines.slice(1, lines.length - 1).join("\n");
     const { input: example, cursorPos } = extractCursor(exampleWithCursor);
     const query = lines[lines.length - 1];
+
+    const basePath = `languageWorkbench/languages/${langName}/${langName}`;
     const langSpec: LanguageSpec = {
       name: langName,
-      datalog: fs.readFileSync(
-        `languageWorkbench/languages/${langName}/${langName}.dl`,
-        "utf8"
-      ),
-      grammar: fs.readFileSync(
-        `languageWorkbench/languages/${langName}/${langName}.grammar`,
-        "utf8"
-      ),
+      logic: fs.existsSync(`${basePath}.dl2`)
+        ? dl2(fs.readFileSync(`${basePath}.dl2`, "utf8"))
+        : dl(fs.readFileSync(`${basePath}.dl`, "utf8")),
+      grammar: fs.readFileSync(`${basePath}.grammar`, "utf8"),
       example: "",
     };
-    const { interp: withoutCursor } = getInterpForDoc(
-      initInterp,
+    const { interp: withoutCursor } = cache.getInterpForDoc(
       langName,
       { [langName]: langSpec },
       `test.${langName}`,
@@ -84,14 +77,14 @@ export function testLangQuery(
     );
     const finalInterp = addCursor(withoutCursor, cursorPos);
     try {
-      const res = finalInterp.queryStr(query);
-      return datalogOut(res.map((res) => res.term));
+      const results = finalInterp.queryStr(query);
+      cache.clear();
+      return datalogOut(results.map((res) => res.term));
     } catch (e) {
       console.log(e);
       throw new Error(`failed on input "${input}"`);
     }
   });
-  clearInterpCache();
   return output;
 }
 

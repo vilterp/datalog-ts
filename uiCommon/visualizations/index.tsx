@@ -10,6 +10,8 @@ import { Rec, Statement, Term } from "../../core/types";
 import { paramSlider } from "./paramSlider";
 import { graphviz } from "./graphviz";
 import { ticker } from "./ticker";
+import { multiSlider } from "./multiSlider";
+import { optimizer } from "./optimizer";
 
 export const VIZ_REGISTRY: { [id: string]: VizTypeSpec } = {
   sequence,
@@ -20,6 +22,8 @@ export const VIZ_REGISTRY: { [id: string]: VizTypeSpec } = {
   paramSlider,
   graphviz,
   ticker,
+  multiSlider,
+  optimizer,
 };
 
 export function IndividualViz(props: {

@@ -1,0 +1,31 @@
+state.Lock{id: I, state: St, time: T} :-
+  state.lock.created{id: I, state: St, time: T} |
+  state.lock.acquired{id: I, state: St, time: T} |
+  state.lock.stay{id: I, state: St, time: T} |
+  state.lock.released{id: I, state: St, time: T}.
+state.lock.stay{id: I, state: St, time: T} :-
+  state.lock.stay.open{id: I, state: St, time: T} |
+  state.lock.stay.held{id: I, state: St, time: T}.
+state.lock.created{id: created{thread: TH, time: T}, state: open{}, time: T} :-
+  state.var.store.call.newLock{thread: TH, time: T, var: Var}.
+state.lock.acquired{id: I, state: St, time: T} :-
+  state.lock.acquired.open{id: I, state: St, time: T} |
+  state.lock.acquired.unblocked{id: I, state: St, time: T}.
+state.lock.acquired.open{id: I, state: heldBy{thread: TH}, time: T} :-
+  state.programCounter.lock.acquire.init.open{
+    thread: TH, time: T, counter: C, state: running{}, lock: I,
+  }.
+state.lock.acquired.unblocked{id: I, state: St, time: T} :-
+  state.programCounter.lock.acquire.unblock{thread: TH, time: T, counter: C, state: St, lock: I}.
+state.lock.stay.open{id: I, state: open{}, time: T} :-
+  state.ProgramCounter{time: T} &
+  state.Lock{time: PrevT, id: I, state: open{}} &
+  T = PrevT + 1 &
+  !state.programCounter.call.acquireLock{time: T, lock: I}.
+state.lock.stay.held{id: I, state: heldBy{thread: TH}, time: T} :-
+  state.ProgramCounter{time: T, thread: TH} &
+  state.Lock{time: PrevT, id: I, state: heldBy{thread: TH}} &
+  T = PrevT + 1 &
+  !state.programCounter.call.releaseLock{time: T, lock: I}.
+state.lock.released{id: I, state: open{}, time: T} :-
+  state.programCounter.call.releaseLock{time: T, lock: I}.

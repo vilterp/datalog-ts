@@ -1,9 +1,25 @@
 import { UIProps } from "../../../types";
 import { ClientState } from "../client";
-import { MutationDefns, UserInput } from "../types";
+import {
+  MutationInvocation,
+  TriggerDefn,
+  TSMutationDefns,
+  UserInput,
+} from "../types";
 
+export type ChooseFn = (
+  clients: {
+    [id: string]: ClientState;
+  },
+  randomSeed: number
+) => [{ clientID: string; invocation: MutationInvocation } | null, number];
+
+// TODO: move to other types file?
 export type KVApp = {
   name: string;
-  mutations: MutationDefns;
+  mutations: TSMutationDefns;
+  initialKVPairs?: {};
   ui: (props: UIProps<ClientState, UserInput>) => React.ReactElement;
+  choose?: ChooseFn;
+  triggers?: TriggerDefn[];
 };

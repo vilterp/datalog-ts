@@ -6,7 +6,7 @@ import {
   RuleTree,
   extractRuleTree,
 } from "../../parserlib/ruleTree";
-import { Span, Grammar } from "../../parserlib/types";
+import { Span, Grammar, ParseError } from "../../parserlib/types";
 import * as parserlib from "../../parserlib/parser";
 export type DLAggregation = {
   type: "Aggregation";
@@ -278,220 +278,275 @@ export type DLWs = {
   spaces: DLSpaces[];
   comment: DLComment[];
 };
-export function parseAggregation(input: string): DLAggregation {
+export function parseAggregation(input: string): [DLAggregation, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "aggregation", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractAggregation(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractAggregation(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseAlpha(input: string): DLAlpha {
+export function parseAlpha(input: string): [DLAlpha, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "alpha", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractAlpha(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractAlpha(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseAlphaNum(input: string): DLAlphaNum {
+export function parseAlphaNum(input: string): [DLAlphaNum, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "alphaNum", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractAlphaNum(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractAlphaNum(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseArithmetic(input: string): DLArithmetic {
+export function parseArithmetic(input: string): [DLArithmetic, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "arithmetic", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractArithmetic(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractArithmetic(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseArithmeticOp(input: string): DLArithmeticOp {
+export function parseArithmeticOp(
+  input: string
+): [DLArithmeticOp, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "arithmeticOp", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractArithmeticOp(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractArithmeticOp(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseArray(input: string): DLArray {
+export function parseArray(input: string): [DLArray, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "array", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractArray(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractArray(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseAssignmentOnLeft(input: string): DLAssignmentOnLeft {
+export function parseAssignmentOnLeft(
+  input: string
+): [DLAssignmentOnLeft, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "assignmentOnLeft", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractAssignmentOnLeft(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractAssignmentOnLeft(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseAssignmentOnRight(input: string): DLAssignmentOnRight {
+export function parseAssignmentOnRight(
+  input: string
+): [DLAssignmentOnRight, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "assignmentOnRight", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractAssignmentOnRight(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractAssignmentOnRight(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseBool(input: string): DLBool {
+export function parseBool(input: string): [DLBool, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "bool", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractBool(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractBool(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseCommaSpace(input: string): DLCommaSpace {
+export function parseCommaSpace(input: string): [DLCommaSpace, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "commaSpace", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractCommaSpace(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractCommaSpace(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseComment(input: string): DLComment {
+export function parseComment(input: string): [DLComment, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "comment", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractComment(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractComment(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseCommentChar(input: string): DLCommentChar {
+export function parseCommentChar(input: string): [DLCommentChar, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "commentChar", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractCommentChar(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractCommentChar(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseComparison(input: string): DLComparison {
+export function parseComparison(input: string): [DLComparison, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "comparison", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractComparison(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractComparison(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseComparisonOp(input: string): DLComparisonOp {
+export function parseComparisonOp(
+  input: string
+): [DLComparisonOp, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "comparisonOp", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractComparisonOp(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractComparisonOp(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseConjunct(input: string): DLConjunct {
+export function parseConjunct(input: string): [DLConjunct, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "conjunct", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractConjunct(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractConjunct(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseDeleteFact(input: string): DLDeleteFact {
+export function parseDeleteFact(input: string): [DLDeleteFact, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "deleteFact", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractDeleteFact(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractDeleteFact(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseDict(input: string): DLDict {
+export function parseDict(input: string): [DLDict, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "dict", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractDict(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractDict(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseDictKeyValue(input: string): DLDictKeyValue {
+export function parseDictKeyValue(
+  input: string
+): [DLDictKeyValue, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "dictKeyValue", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractDictKeyValue(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractDictKeyValue(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseDisjunct(input: string): DLDisjunct {
+export function parseDisjunct(input: string): [DLDisjunct, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "disjunct", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractDisjunct(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractDisjunct(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseFact(input: string): DLFact {
+export function parseFact(input: string): [DLFact, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "fact", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractFact(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractFact(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseIdent(input: string): DLIdent {
+export function parseIdent(input: string): [DLIdent, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "ident", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractIdent(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractIdent(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseInt(input: string): DLInt {
+export function parseInt(input: string): [DLInt, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "int", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractInt(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractInt(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseLoadKW(input: string): DLLoadKW {
+export function parseLoadKW(input: string): [DLLoadKW, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "loadKW", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractLoadKW(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractLoadKW(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseLoadStmt(input: string): DLLoadStmt {
+export function parseLoadStmt(input: string): [DLLoadStmt, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "loadStmt", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractLoadStmt(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractLoadStmt(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseMain(input: string): DLMain {
+export function parseMain(input: string): [DLMain, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "main", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractMain(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractMain(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseNegation(input: string): DLNegation {
+export function parseNegation(input: string): [DLNegation, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "negation", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractNegation(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractNegation(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseNum(input: string): DLNum {
+export function parseNum(input: string): [DLNum, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "num", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractNum(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractNum(input, ruleTree);
+  return [extracted, errors];
 }
-export function parsePath(input: string): DLPath {
+export function parsePath(input: string): [DLPath, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "path", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractPath(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractPath(input, ruleTree);
+  return [extracted, errors];
 }
-export function parsePathSegment(input: string): DLPathSegment {
+export function parsePathSegment(input: string): [DLPathSegment, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "pathSegment", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractPathSegment(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractPathSegment(input, ruleTree);
+  return [extracted, errors];
 }
-export function parsePlaceholder(input: string): DLPlaceholder {
+export function parsePlaceholder(input: string): [DLPlaceholder, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "placeholder", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractPlaceholder(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractPlaceholder(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseQuery(input: string): DLQuery {
+export function parseQuery(input: string): [DLQuery, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "query", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractQuery(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractQuery(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseRecord(input: string): DLRecord {
+export function parseRecord(input: string): [DLRecord, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "record", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractRecord(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractRecord(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseRecordAttrs(input: string): DLRecordAttrs {
+export function parseRecordAttrs(input: string): [DLRecordAttrs, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "recordAttrs", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractRecordAttrs(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractRecordAttrs(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseRecordKeyValue(input: string): DLRecordKeyValue {
+export function parseRecordKeyValue(
+  input: string
+): [DLRecordKeyValue, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "recordKeyValue", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractRecordKeyValue(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractRecordKeyValue(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseRule(input: string): DLRule {
+export function parseRule(input: string): [DLRule, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "rule", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractRule(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractRule(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseSpaces(input: string): DLSpaces {
+export function parseSpaces(input: string): [DLSpaces, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "spaces", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractSpaces(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractSpaces(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseStatement(input: string): DLStatement {
+export function parseStatement(input: string): [DLStatement, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "statement", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractStatement(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractStatement(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseString(input: string): DLString {
+export function parseString(input: string): [DLString, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "string", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractString(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractString(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseStringChar(input: string): DLStringChar {
+export function parseStringChar(input: string): [DLStringChar, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "stringChar", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractStringChar(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractStringChar(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseTableDecl(input: string): DLTableDecl {
+export function parseTableDecl(input: string): [DLTableDecl, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "tableDecl", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractTableDecl(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractTableDecl(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseTableKW(input: string): DLTableKW {
+export function parseTableKW(input: string): [DLTableKW, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "tableKW", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractTableKW(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractTableKW(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseTerm(input: string): DLTerm {
+export function parseTerm(input: string): [DLTerm, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "term", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractTerm(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractTerm(input, ruleTree);
+  return [extracted, errors];
 }
-export function parseVar(input: string): DLVar {
+export function parseVar(input: string): [DLVar, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "var", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractVar(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractVar(input, ruleTree);
+  return [extracted, errors];
 }
 function extractAggregation(input: string, node: RuleTree): DLAggregation {
   return {

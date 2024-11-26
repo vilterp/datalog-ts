@@ -1,0 +1,11 @@
+# TODO: detect cycles longer than 2
+
+state.waitingFor{time: T, waiting: TH1, waitingOn: TH2} :-
+  state.ProgramCounter{time: T, thread: TH1, state: blocked{reason: lock{lock: L}}} &
+  state.Lock{time: T, state: heldBy{thread: TH2}} &
+  TH1 != TH2.
+
+issue.Deadlock{thread1: TH1, thread2: TH2, time: T} :-
+  state.waitingFor{time: T, waiting: TH1, waitingOn: TH2} &
+  state.waitingFor{time: T, waiting: TH2, waitingOn: TH1} &
+  TH1 < TH2.

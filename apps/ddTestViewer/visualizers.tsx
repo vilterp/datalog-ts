@@ -54,7 +54,7 @@ function DLView(props: { text: string }) {
         collapseState={collapseState}
         setCollapseState={setCollapseState}
         highlight={noHighlightProps}
-        results={interp.queryStr(`${relation}{}`)}
+        results={interp.queryStr(`${relation}{}?`)}
       />
     </>
   );

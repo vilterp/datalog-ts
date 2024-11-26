@@ -1,14 +1,13 @@
-import React, { useReducer, useState } from "react";
-import ReactDOM from "react-dom";
+import React, { useReducer } from "react";
+import ReactDOM from "react-dom/client";
 import { IncrementalInterpreter } from "../../core/incremental/interpreter";
-import { nullLoader } from "../../core/loaders";
 import { Statement } from "../../core/types";
 import { Explorer } from "../../uiCommon/explorer";
-// @ts-ignore
-import simDL from "./dl/sim.dl";
+import { loader } from "./dl";
+import { SimpleInterpreter } from "../../core/simple/interpreter";
 
-const emptyInterp = new IncrementalInterpreter(".", nullLoader);
-const loadedInterp = emptyInterp.evalStr(simDL)[1];
+const emptyInterp = new SimpleInterpreter(".", loader);
+const loadedInterp = emptyInterp.doLoad("main.dl");
 
 function Main() {
   const [interp, dispatch] = useReducer(
@@ -31,4 +30,4 @@ function Main() {
   );
 }
 
-ReactDOM.render(<Main />, document.getElementById("main"));
+ReactDOM.createRoot(document.getElementById("main")).render(<Main />);

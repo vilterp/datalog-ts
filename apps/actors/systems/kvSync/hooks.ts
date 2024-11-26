@@ -1,22 +1,29 @@
 import { useEffect } from "react";
 import { UIProps } from "../../types";
-import { ClientState, QueryStatus } from "./client";
+import { ClientState, QueryStatus, isTxnVisible } from "./client";
 import { runQuery } from "./query";
-import { MutationInvocation, Query, UserInput, VersionedValue } from "./types";
+import { Query, UserInput, VersionedValue } from "./types";
+import { Json } from "../../../../util/json";
 
 export type QueryResults = { [key: string]: VersionedValue };
 
 export type Client = {
   state: ClientState;
-  runMutation: (mut: MutationInvocation) => void;
-  registerLiveQuery: (id: string, query: Query) => void;
-  cancelTransaction: (id: string) => void;
-  retryTransaction: (id: string) => void;
+  login(username: string, password: string): void;
+  signup(username: string, password: string): void;
+  logout(): void;
+  runMutation(name: string, args: Json[]): void;
+  registerLiveQuery(id: string, query: Query): void;
+  cancelTransaction(id: string): void;
+  retryTransaction(id: string): void;
 };
 
 export function makeClient(props: UIProps<ClientState, UserInput>): Client {
-  const runMutation = (mutation: MutationInvocation) => {
-    props.sendUserInput({ type: "RunMutation", invocation: mutation });
+  const runMutation = (name: string, args: Json[]) => {
+    props.sendUserInput({
+      type: "RunMutation",
+      invocation: { type: "Invocation", name, args },
+    });
   };
   const registerLiveQuery = (id: string, query: Query) => {
     // don't register duplicate query
@@ -31,11 +38,22 @@ export function makeClient(props: UIProps<ClientState, UserInput>): Client {
   };
   const retryTransaction = (id: string) => {
     const invocation = props.state.transactions[id].invocation;
-    props.sendUserInput({ type: "CancelTransaction", id });
     props.sendUserInput({ type: "RunMutation", invocation });
+  };
+  const signup = (username: string, password: string) => {
+    props.sendUserInput({ type: "Signup", username, password });
+  };
+  const login = (username: string, password: string) => {
+    props.sendUserInput({ type: "Login", username, password });
+  };
+  const logout = () => {
+    props.sendUserInput({ type: "Logout" });
   };
   return {
     state: props.state,
+    signup,
+    login,
+    logout,
     runMutation,
     registerLiveQuery,
     cancelTransaction,
@@ -53,7 +71,8 @@ export function useLiveQuery(
     client.registerLiveQuery(id, query);
   }, [id]);
 
-  const results = runQuery(client.state.data, query);
+  const isVisible = (txnID) => isTxnVisible(client.state, txnID);
+  const results = runQuery(isVisible, client.state.data, query);
   const queryMetadata = client.state.liveQueries[id];
   const status: QueryStatus = queryMetadata ? queryMetadata.status : "Loading";
   return [results, status];

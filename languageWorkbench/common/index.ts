@@ -13,10 +13,10 @@ import relationGraphVizDL from "../../uiCommon/visualizations/relationGraphViz.d
 import mainDL from "./main.dl";
 
 export const LOADER = makeMemoryLoader({
-  "./ide.dl": ideDL,
-  "./highlight.dl": highlightDL,
-  "./astViz.dl": astVizDL,
-  "./scopeGraphViz.dl": scopeGraphVizDL,
-  "./relationGraphViz.dl": relationGraphVizDL,
-  "./main.dl": mainDL,
+  "ide.dl": ideDL,
+  "highlight.dl": highlightDL,
+  "astViz.dl": astVizDL,
+  "scopeGraphViz.dl": scopeGraphVizDL,
+  "relationGraphViz.dl": relationGraphVizDL,
+  "main.dl": mainDL,
 });

@@ -12,36 +12,42 @@ export function assert(cond: boolean, msg: string) {
 export function assertStringEqual(
   expected: string,
   actual: string,
-  msg?: string
+  opts?: DiffOpts
 ) {
   if (expected !== actual) {
-    throw new DiffError(expected, actual, msg);
+    throw new DiffError(expected, actual, opts || {});
   }
 }
 
 export function assertDeepEqual<T extends Json>(
   expected: T,
   actual: T,
-  msg?: string
+  opts?: DiffOpts
 ) {
   if (!jsonEq(expected, actual)) {
     throw new DiffError(
       util.inspect(expected, { depth: null }),
       util.inspect(actual, { depth: null }),
-      msg
+      opts || {}
     );
   }
 }
 
+type DiffOpts = {
+  expectedName?: string;
+  actualName?: string;
+  msg?: string;
+};
+
 class DiffError {
   expected: string;
   actual: string;
-  message: string;
+  opts: DiffOpts;
 
-  constructor(expected: string, actual: string, msg?: string) {
+  constructor(expected: string, actual: string, opts: DiffOpts) {
     this.expected = expected;
     this.actual = actual;
-    this.message = msg;
+    this.opts = opts;
   }
 }
 
@@ -66,8 +72,8 @@ export function runSuite(ts: Suite) {
           `${t.name}`,
           e.expected + "\n",
           e.actual + "\n",
-          "expected",
-          "actual"
+          e.opts.expectedName || "expected",
+          e.opts.actualName || "actual"
         );
         console.error(patch);
       } else {

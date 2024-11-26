@@ -1,22 +1,13 @@
 import React, { Ref, useLayoutEffect, useRef, useState } from "react";
 import { UIProps } from "../../../types";
-import { ClientState } from "../client";
+import { ClientState, QueryStatus } from "../client";
 import { Client, makeClient, useLiveQuery } from "../hooks";
-import {
-  apply,
-  doExpr,
-  int,
-  lambda,
-  letExpr,
-  obj,
-  read,
-  str,
-  varr,
-  write,
-} from "../mutations/types";
-import { MutationDefns, UserInput } from "../types";
-import { TxnState } from "./common/txnState";
+import { TSMutationDefns, UserInput } from "../types";
+import { TxnState } from "../uiCommon/txnState";
 import { KVApp } from "./types";
+import { Inspector } from "../uiCommon/inspector";
+import { LoggedIn, LoginWrapper } from "../uiCommon/loginWrapper";
+import { Table } from "../../../../../uiCommon/generic/table";
 
 type Message = {
   id: number;
@@ -26,10 +17,21 @@ type Message = {
 };
 
 function ChatUI(props: UIProps<ClientState, UserInput>) {
+  const client = makeClient(props);
+
+  return (
+    <LoginWrapper
+      client={client}
+      loggedIn={(user) => <ChatUIInner client={client} user={user} />}
+    />
+  );
+}
+
+function ChatUIInner(props: { client: Client; user: string }) {
+  const client = props.client;
+
   const [curThread, setCurThread] = useState("foo");
   const scrollRef = useRef<HTMLDivElement>();
-
-  const client = makeClient(props);
 
   useLayoutEffect(() => {
     if (scrollRef.current) {
@@ -39,13 +41,13 @@ function ChatUI(props: UIProps<ClientState, UserInput>) {
 
   return (
     <div>
-      <h3>Chat</h3>
-      <table>
+      <table style={{ borderCollapse: "collapse" }}>
         <tbody>
           <tr>
-            <td valign="top">
+            <td valign="top" style={{ backgroundColor: "rgb(221, 255, 244)" }}>
               <ThreadList
                 client={client}
+                user={props.user}
                 curThread={curThread}
                 setCurThread={setCurThread}
                 threads={EXAMPLE_THREADS}
@@ -54,20 +56,31 @@ function ChatUI(props: UIProps<ClientState, UserInput>) {
             <td>
               <div
                 ref={scrollRef}
-                style={{ width: 400, height: 200, overflowY: "scroll" }}
+                style={{ width: 400, height: 250, overflowY: "scroll" }}
               >
-                <MessageTable threadID={curThread} client={client} />
+                <MessageTable
+                  threadID={curThread}
+                  client={client}
+                  user={props.user}
+                />
               </div>
               <SendBox threadID={curThread} client={client} />
             </td>
           </tr>
         </tbody>
       </table>
+      <Inspector client={client} />
     </div>
   );
 }
 
-function MessageTable(props: { threadID: string; client: Client }) {
+type MessageWithTxnID = Message & { transactionID: string };
+
+function MessageTable(props: {
+  threadID: string;
+  client: Client;
+  user: string;
+}) {
   const [messages, messagesStatus] = useLiveQuery(
     props.client,
     `messages-${props.threadID}`,
@@ -96,87 +109,63 @@ function MessageTable(props: { threadID: string; client: Client }) {
 
   return (
     <>
-      <style>{`
-      table.messages {
-        border-collapse: collapse;
-      }
-      table.messages th, table.messages td {
-        border-left: 1px solid lightgrey;
-        border-right: 1px solid lightgrey;
-        text-align: left;
-      }
-      table.messages thead tr {
-        border-bottom: 1px solid black;
-      }
-      `}</style>
-      <table className="messages">
-        <thead>
-          <tr>
-            <th>Sender</th>
-            <th style={{ width: 150 }}>Message</th>
-            <th>State</th>
-            <th style={{ width: 100 }}>Seen By</th>
-          </tr>
-        </thead>
-        <tbody>
-          {/* TODO: index by seq no so we don't have to do this here? */}
-          {Object.values(messages)
-            .sort(
-              (a, b) => (a.value as Message).seqNo - (b.value as Message).seqNo
-            )
-            .map((message) => {
-              const msg = message.value as Message;
-              return (
-                <tr key={message.transactionID}>
-                  <td>{msg.sender}</td>
-                  <td>{msg.message}</td>
-                  <td>
-                    <TxnState
-                      client={props.client}
-                      txnID={message.transactionID}
-                    />
-                  </td>
-                  <td>
-                    {(usersSeenBySeqNo[msg.seqNo] || [])
-                      .filter((user) => user !== props.client.state.id)
-                      .join(", ")}
-                  </td>
-                </tr>
-              );
-            })}
-        </tbody>
-      </table>
+      <Table<MessageWithTxnID>
+        data={Object.values(messages)
+          .sort(
+            (a, b) => (a.value as Message).seqNo - (b.value as Message).seqNo
+          )
+          .map((vv) => ({
+            ...(vv.value as Message),
+            transactionID: vv.transactionID,
+          }))}
+        getKey={(msg) => msg.transactionID}
+        columns={[
+          { name: "From", render: (msg) => msg.sender },
+          { name: "Message", width: 150, render: (msg) => msg.message },
+          {
+            name: "State",
+            render: (msg) => (
+              <TxnState client={props.client} txnID={msg.transactionID} />
+            ),
+          },
+          {
+            name: "Seen By",
+            width: 100,
+            render: (msg) =>
+              (usersSeenBySeqNo[msg.seqNo] || [])
+                .filter((user) => user !== props.user)
+                .join(", "),
+          },
+        ]}
+      />
     </>
   );
 }
 
 function SendBox(props: { threadID: string; client: Client }) {
   const [message, setMessage] = useState("");
-  const latestSeqNo =
-    props.client.state.data[`/latestMessage/${props.threadID}`];
+  const [latestSeqNo, status] = useLatestSeqNo(props.client, props.threadID);
 
   return (
     <form
       onSubmit={(evt) => {
         evt.preventDefault();
         setMessage("");
-        props.client.runMutation({
-          type: "Invocation",
-          name: "sendMessage",
-          args: [props.threadID, message],
-        });
+        props.client.runMutation("sendMessage", [props.threadID, message]);
       }}
     >
       <input
         onChange={(evt) => setMessage(evt.target.value)}
         value={message}
+        size={40}
         onFocus={() => {
-          if (latestSeqNo) {
-            props.client.runMutation({
-              type: "Invocation",
-              name: "markRead",
-              args: [props.threadID, latestSeqNo.value],
-            });
+          if (status === "Online") {
+            props.client.runMutation("markRead", [props.threadID, latestSeqNo]);
+          } else {
+            console.warn(
+              "SendBox: not marking read because query status is",
+              status
+            );
           }
         }}
       />
@@ -185,8 +174,27 @@ function SendBox(props: { threadID: string; client: Client }) {
   );
 }
 
+// TODO: make these easier to write
+function useLatestSeqNo(
+  client: Client,
+  threadID: string
+): [number, QueryStatus] {
+  const [results, status] = useLiveQuery(client, `latestSeqNo-${threadID}`, {
+    prefix: `/latestMessage/${threadID}`,
+  });
+  if (status === "Loading") {
+    return [0, status];
+  }
+  const result = results[`/latestMessage/${threadID}`];
+  if (!result) {
+    return [0, status];
+  }
+  return [result.value as number, status];
+}
+
 function ThreadList(props: {
   client: Client;
+  user: string; // TODO: get from client
   threads: string[];
   curThread: string;
   setCurThread: (th: string) => void;
@@ -203,22 +211,26 @@ function ThreadList(props: {
     props.client,
     "latest-message-read",
     {
-      prefix: `/latestMessageRead/byUser/${props.client.state.id}`,
+      prefix: `/latestMessageRead/byUser/${props.user}`,
     }
   );
 
   return (
-    <ul>
+    <div style={{ width: 100 }}>
+      <h4>Chat</h4>
+      <LoggedIn client={props.client} user={props.user} />
       {props.threads.map((threadID) => {
         // TODO: need full keys
         const latestMessageInThread =
           latestMessage[`/latestMessage/${threadID}`];
 
-        const key = `/latestMessageRead/byUser/${props.client.state.id}/${threadID}`;
+        const key = `/latestMessageRead/byUser/${props.user}/${threadID}`;
         const latestMessageReadInThread = latestMessageRead[key];
-        const hasUnread =
-          latestMessageInThread?.value >
-          (latestMessageReadInThread?.value || -1);
+        const numUnread =
+          ((latestMessageInThread?.value as number) || 0) -
+          ((latestMessageReadInThread?.value as number) || 0);
+
+        const hasUnread = numUnread > 0;
         // console.log(
         //   "ThreadList item hasUnread",
         //   props.client.state.id,
@@ -227,7 +239,7 @@ function ThreadList(props: {
         //   latestMessageReadInThread
         // );
         return (
-          <li
+          <div
             key={threadID}
             onClick={() => props.setCurThread(threadID)}
             style={{
@@ -237,100 +249,43 @@ function ThreadList(props: {
             }}
           >
             {threadID}
-          </li>
+            {hasUnread ? ` (${numUnread})` : ""}
+          </div>
         );
       })}
-    </ul>
+    </div>
   );
 }
 
-const mutations: MutationDefns = {
-  sendMessage: lambda(
-    ["threadID", "message"],
-    letExpr(
-      [
-        {
-          varName: "latestSeqNo",
-          val: apply("parseInt", [
-            read(
-              apply("concat", [str("/latestMessage/"), varr("threadID")]),
-              0
-            ),
-          ]),
-        },
-        {
-          varName: "newSeqNo",
-          val: apply("+", [varr("latestSeqNo"), int(1)]),
-        },
-        {
-          varName: "newID",
-          val: apply("rand", []),
-        },
-      ],
-      doExpr([
-        write(
-          apply("concat", [str("/latestMessage/"), varr("threadID")]),
-          varr("newSeqNo")
-        ),
-        // TODO: call markRead?
-        write(
-          apply("concat", [
-            str("/latestMessageRead/byUser/"),
-            varr("curUser"),
-            str("/"),
-            varr("threadID"),
-          ]),
-          varr("newSeqNo")
-        ),
-        write(
-          apply("concat", [
-            str("/latestMessageRead/byThread/"),
-            varr("threadID"),
-            str("/"),
-            varr("curUser"),
-          ]),
-          varr("newSeqNo")
-        ),
-        write(
-          apply("concat", [
-            str("/messages/"),
-            varr("threadID"),
-            str("/"),
-            varr("newID"),
-          ]),
-          obj({
-            id: varr("newID"),
-            seqNo: varr("newSeqNo"),
-            sender: varr("curUser"),
-            message: varr("message"),
-          })
-        ),
-      ])
-    )
-  ),
-  markRead: lambda(
-    ["threadID", "seqNo"],
-    doExpr([
-      write(
-        apply("concat", [
-          str("/latestMessageRead/byUser/"),
-          varr("curUser"),
-          str("/"),
-          varr("threadID"),
-        ]),
-        varr("seqNo")
-      ),
-      write(
-        apply("concat", [
-          str("/latestMessageRead/byThread/"),
-          varr("threadID"),
-          str("/"),
-          varr("curUser"),
-        ]),
-        varr("seqNo")
-      ),
-    ])
-  ),
+// Schema:
+//
+// /messages/<ThreadID>/<MessageID> => { id, seqNo, sender, message }
+// /latestMessage/<ThreadID> => <MessageID>
+// /latestMessageRead/byUser/<UserID> => <MessageID>
+// /latestMessageRead/byThread/<ThreadID> => <MessageID>
+
+const mutations: TSMutationDefns = {
+  sendMessage: (ctx, [threadID, message]) => {
+    const latestSeqNo = ctx.read(`/latestMessage/${threadID}`, 0) as number;
+    const newSeqNo = latestSeqNo + 1;
+    const newID = ctx.rand();
+    ctx.write(`/latestMessage/${threadID}`, newSeqNo);
+    ctx.write(`/latestMessageRead/byUser/${ctx.curUser}/${threadID}`, newSeqNo);
+    ctx.write(
+      `/latestMessageRead/byThread/${threadID}/${ctx.curUser}`,
+      newSeqNo
+    );
+    ctx.write(`/messages/${threadID}/${newID}`, {
+      id: newID,
+      seqNo: newSeqNo,
+      sender: ctx.curUser,
+      message,
+    });
+  },
+  markRead: (ctx, [threadID, seqNo]) => {
+    ctx.write(`/latestMessageRead/byUser/${ctx.curUser}/${threadID}`, seqNo);
+    ctx.write(`/latestMessageRead/byThread/${threadID}/${ctx.curUser}`, seqNo);
+  },
 };
 
 const EXAMPLE_THREADS = ["foo", "bar"];

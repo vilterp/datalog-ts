@@ -442,9 +442,44 @@ export function avg(numbers: number[]): number {
   return sum(numbers) / numbers.length;
 }
 
+export function reversed<T>(arr: T[]): T[] {
+  return arr.slice().reverse();
+}
+
 // TODO: something more 'random'
 export function randStep(num: number) {
   return (num * 234 - 534) % 5235255;
+}
+
+// Returns [
+//   a number in [0, 1],
+//   the next seed
+// ]
+export function randStep2(seed: number): [number, number] {
+  const a = 16807; // multiplier
+  const m = 2147483647; // 2^31 - 1, a prime number
+
+  seed = (seed * a) % m;
+  const random = (seed - 1) / (m - 1);
+
+  return [random, seed];
+}
+
+export function randomFromList<T>(seed: number, list: T[]): [T, number] {
+  const [num01, nextSeed] = randStep2(seed);
+  const idx = Math.floor(num01 * list.length);
+  return [list[idx], nextSeed];
+}
+
+export function removeAtRandom<T>(
+  items: T[],
+  randomSeed: number
+): [T, T[], number] {
+  const [rand01, randomSeed2] = randStep2(randomSeed);
+  const randIdx = Math.floor(rand01 * items.length);
+  const item = items[randIdx];
+  const remainingItems = removeAtIdx(items, randIdx);
+  return [item, remainingItems, randomSeed2];
 }
 
 export function hashString(str: string): number {

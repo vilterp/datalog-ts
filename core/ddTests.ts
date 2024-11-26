@@ -19,6 +19,7 @@ import {
   getRecord,
   joinGraphToGraphviz,
 } from "./joinOrder";
+import { ParseErrors } from "../languageWorkbench/parserlib/types";
 
 export function parserTests(writeResults: boolean): Suite {
   return [
@@ -29,7 +30,10 @@ export function parserTests(writeResults: boolean): Suite {
           "core/testdata/parser.dd.txt",
           (test) => {
             return test.map((input) => {
-              const tree = parseMain(input);
+              const [tree, errors] = parseMain(input);
+              if (errors.length > 0) {
+                throw new ParseErrors(errors);
+              }
               const output = tree.statement.map(parserStatementToInternal);
               return jsonOut(output);
             });
@@ -170,7 +174,10 @@ function joinOrderTest(test: string[]): TestOutput[] {
     const lines = input.split("\n");
     const first = lines[0];
     const rest = lines.slice(1).join("\n");
-    const rawRule = parseRule(rest);
+    const [rawRule, errors] = parseRule(rest);
+    if (errors.length > 0) {
+      throw new ParseErrors(errors);
+    }
     const rule = parserRuleToInternal(rawRule);
     assert(rule.body.disjuncts.length === 1, "disjuncts length 1");
     const conjuncts = rule.body.disjuncts[0].conjuncts;

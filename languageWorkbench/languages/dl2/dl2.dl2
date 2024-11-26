@@ -1,0 +1,321 @@
+# ======== Table Defns ========
+# TODO: autogenerate
+
+table ast.rule {
+  id,
+  parentID,
+  record: inRef(ast.record:parentID)
+}
+table ast.record {
+  id,
+  parentID,
+  qualifier: inRef(ast.qualifier:parentID),
+  recordAttrs: inRef(ast.recordAttrs:parentID)
+}
+table ast.recordAttrs {
+  id,
+  parentID,
+  recordKeyValue: inRef(ast.recordKeyValue:parentID)
+}
+table ast.recordKeyValue {
+  id,
+  parentID,
+  ident: inRef(ast.ident:parentID),
+  term: inRef(ast.term:parentID)
+}
+table ast.tableDecl {
+  id,
+  parentID,
+  qualifier: inRef(ast.qualifier:parentID),
+  attr: inRef(ast.tableAttr:parentID)
+}
+table ast.tableAttr {
+  id,
+  parentID,
+  ident: inRef(ast.ident:parentID),
+  refSpec: inRef(ast.refSpec:parentID)
+}
+table ast.nested {
+  id,
+  parentID,
+  qualifier: inRef(ast.qualifier:parentID),
+  nestedAttr: inRef(ast.nestedAttr:parentID)
+}
+table ast.nestedAttr {
+  id,
+  parentID,
+  nested: inRef(ast.nested:parentID),
+  normalAttr: inRef(ast.normalAttr:parentID)
+}
+table ast.normalAttr {
+  id,
+  parentID,
+  ident: inRef(ast.ident:parentID)
+}
+table ast.refSpec {
+  id,
+  parentID,
+  inRef: inRef(ast.inRef:parentID),
+  outRef: inRef(ast.outRef:parentID)
+}
+table ast.inRef {
+  id,
+  parentID,
+  table: inRef(ast.qualifier:parentID),
+  column: inRef(ast.ident:parentID)
+}
+table ast.conjunct {
+  id,
+  parentID,
+  record: inRef(ast.record:parentID),
+  nested: inRef(ast.nested:parentID)
+}
+table ast.qualifier {
+  id,
+  parentID,
+  text,
+  span
+}
+table ast.ident {
+  id,
+  parentID,
+  text,
+  span
+}
+
+# ======== Defn ========
+
+def scope.Defn{scopeID: I, span: S, name: N, kind: K, type: "any"} {
+  scope.defnRule{scopeID: I, span: S, name: N, kind: K} |
+  scope.defnTable{scopeID: I, span: S, name: N, kind: K} |
+  scope.defnTableAttr{scopeID: I, span: S, name: N, kind: K} |
+  scope.defnRuleAttr{scopeID: I, span: S, name: N, kind: K}
+}
+
+def scope.defnRule{scopeID: global{}, span: S, name: N, kind: "relation"} {
+  ast.rule {
+    record {
+      qualifier {
+        text: N,
+        span: S
+      }
+    }
+  }
+}
+
+def scope.defnRuleAttr{scopeID: I, span: S, name: N, kind: "attr"} {
+  ast.rule {
+    record {
+      qualifier {
+        text: I
+      },
+      recordAttrs {
+        recordKeyValue {
+          ident {
+            text: N,
+            span: S
+          }
+        }
+      }
+    }
+  }
+}
+
+def scope.defnTable{scopeID: global{}, span: S, name: N, kind: "relation"} {
+  ast.tableDecl {
+    qualifier {
+      text: N,
+      span: S
+    }
+  }
+}
+
+def scope.defnTableAttr{scopeID: I, span: S, name: N, kind: "attr"} {
+  ast.tableDecl {
+    qualifier {
+      text: I
+    },
+    attr {
+      ident {
+        text: N,
+        span: S
+      }
+    }
+  }
+}
+
+# ======== Vars ========
+
+def scope.Var{scopeID: I, name: N, span: S, kind: K} {
+  scope.varNestedAttr{scopeID: I, name: N, span: S, kind: K} |
+  scope.varRelation{scopeID: I, name: N, span: S, kind: K} |
+  scope.varRecordAttr{scopeID: I, name: N, span: S, kind: K} |
+  scope.varInRefTable{scopeID: I, name: N, span: S, kind: K} |
+  scope.varInRefColumn{scopeID: I, name: N, span: S, kind: K}
+}
+
+def scope.varInRefTable{scopeID: global{}, name: N, span: S, kind: "relation"} {
+  ast.inRef{
+    table {
+      text: N,
+      span: S
+    }
+  }
+}
+
+def scope.varInRefColumn{scopeID: Table, name: N, span: S, kind: "attr"} {
+  ast.inRef{
+    table {
+      text: Table
+    },
+    column {
+      text: N,
+      span: S
+    }
+  }
+}
+
+def scope.varRelation{scopeID: global{}, name: N, span: S, kind: "relation"} {
+  ast.conjunct {
+    record {
+      qualifier {
+        text: N,
+        span: S
+      }
+    }
+  } |
+  ast.conjunct {
+    nested {
+      qualifier {
+        text: N,
+        span: S
+      }
+    }
+  }
+}
+
+def scope.varRecordAttr{scopeID: I, name: N, span: S, kind: "attr"} {
+  ast.conjunct {
+    record {
+      qualifier {
+        text: I
+      },
+      recordAttrs {
+        recordKeyValue {
+          ident {
+            text: N,
+            span: S
+          }
+        }
+      }
+    }
+  }
+}
+
+# ===== nested stuff =====
+
+def scope.varNestedAttr{scopeID: OuterTable, name: InnerAttr, span: S, kind: "attr"} {
+  scope.nestedTable{outerTable: OuterTable, accessor: InnerAttr, span: S} |
+  scope.nestedScalar{scopeID: OuterTable, name: InnerAttr, span: S}
+}
+
+def scope.nestedScalar{scopeID: Table, name: Attr, span: S} {
+  ast.nested {
+    id: NestedID,
+    nestedAttr {
+      normalAttr {
+        ident {
+          text: Attr,
+          span: S
+        }
+      }
+    }
+  } &
+  scope.nestedTableNode{id: NestedID, table: Table}
+}
+
+def scope.nestedTableNode{id: NestedID, table: Table} {
+  ast.conjunct {
+    nested {
+      id: NestedID,
+      qualifier {
+        text: Table
+      }
+    }
+  } |
+  scope.nestedTable{innerID: NestedID, innerTable: Table}
+}
+
+def scope.nestedTable{outerID: OuterID, innerID: InnerID, outerTable: OuterTable, innerTable: InnerTable, accessor: A, span: S} {
+  scope.nestedRootTable{outerID: OuterID, innerID: InnerID, outerTable: OuterTable, innerTable: InnerTable, accessor: A, span: S} |
+  scope.nestedNestedTable{outerID: OuterID, innerID: InnerID, outerTable: OuterTable, innerTable: InnerTable, accessor: A, span: S}
+}
+
+def scope.nestedStep{outerID: OuterID, outerAttr: OuterAttr, innerID: InnerID, innerAttr: InnerAttr, innerSpan: S} {
+  ast.nested {
+    id: OuterID,
+    qualifier {
+      text: OuterAttr
+    },
+    nestedAttr {
+      nested {
+        id: InnerID,
+        qualifier {
+          text: InnerAttr,
+          span: S
+        }
+      }
+    }
+  }
+}
+
+def scope.nestedRootTable{outerID: OuterID, innerID: InnerID, outerTable: OuterTable, innerTable: InnerTable, accessor: InnerAttr, span: S} {
+  scope.nestedStep{outerID: OuterID, outerAttr: OuterTable, innerID: InnerID, innerAttr: InnerAttr, innerSpan: S} &
+  scope.inRef{fromTable: OuterTable, toTable: InnerTable, accessor: InnerAttr}
+}
+
+def scope.nestedNestedTable{outerID: OuterID, innerID: InnerID, outerTable: OuterTable, innerTable: InnerTable, accessor: InnerAttr, span: S} {
+  scope.nestedStep{outerID: OuterID, outerAttr: OuterAttr, innerID: InnerID, innerAttr: InnerAttr, innerSpan: S} &
+  scope.nestedTable{innerID: OuterID, innerTable: OuterTable} &
+  scope.inRef{fromTable: OuterTable, toTable: InnerTable, accessor: InnerAttr}
+}
+
+# ==== schema refs ====
+
+def scope.inRef{fromTable: F, toTable: T, accessor: A, pointer: P} {
+  ast.tableDecl {
+    qualifier {
+      text: F
+    },
+    attr {
+      ident {
+        text: A
+      },
+      refSpec {
+        inRef {
+          table {
+            text: T
+          },
+          column {
+            text: P
+          }
+        }
+      }
+    }
+  }
+}
+
+table hl.mapping {}
+
+hl.mapping{rule: "ident", type: "ident"}.
+hl.mapping{rule: "var", type: "typeParameter"}.
+hl.mapping{rule: "int", type: "number"}.
+hl.mapping{rule: "bool", type: "number"}.
+hl.mapping{rule: "string", type: "string"}.
+hl.mapping{rule: "comment", type: "comment"}.
+hl.mapping{rule: "tableKW", type: "keyword"}.
+hl.mapping{rule: "importKW", type: "keyword"}.
+hl.mapping{rule: "inRefKW", type: "keyword"}.
+hl.mapping{rule: "outRefKW", type: "keyword"}.
+hl.mapping{rule: "defKW", type: "keyword"}.
+hl.mapping{rule: "path", type: "string"}.

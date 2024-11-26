@@ -6,34 +6,23 @@ import {
   RuleTree,
   extractRuleTree,
 } from "../../parserlib/ruleTree";
-import { Span, Grammar } from "../../parserlib/grammar";
+import { Span, Grammar, ParseError } from "../../parserlib/types";
 import * as parserlib from "../../parserlib/parser";
 export type SQLAlpha = {
   type: "Alpha";
   text: string;
   span: Span;
-  value: {};
 };
-export type SQLAlphaNum = {
-  type: "AlphaNum";
-  text: string;
-  span: Span;
-  value: SQLAlpha | SQLNum;
-};
+export type SQLAlphaNum = SQLAlpha | SQLNum;
 export type SQLColSpec = {
   type: "ColSpec";
   text: string;
   span: Span;
   columnName: SQLColumnName;
   _type: SQLType;
-  refClause: SQLRefClause;
+  refClause: SQLRefClause | null;
 };
-export type SQLColumnName = {
-  type: "ColumnName";
-  text: string;
-  span: Span;
-  value: SQLIdent | SQLPlaceholder;
-};
+export type SQLColumnName = SQLIdent | SQLPlaceholder;
 export type SQLCommaWS = {
   type: "CommaWS";
   text: string;
@@ -116,12 +105,7 @@ export type SQLSelection = {
   columnName: SQLColumnName[];
   commaWS: SQLCommaWS[];
 };
-export type SQLStatement = {
-  type: "Statement";
-  text: string;
-  span: Span;
-  value: SQLSelectStmt | SQLCreateTableStmt;
-};
+export type SQLStatement = SQLSelectStmt | SQLCreateTableStmt;
 export type SQLStatementSemicolon = {
   type: "StatementSemicolon";
   text: string;
@@ -138,88 +122,213 @@ export type SQLStringChar = {
   type: "StringChar";
   text: string;
   span: Span;
-  value: {};
 };
 export type SQLTableKW = {
   type: "TableKW";
   text: string;
   span: Span;
 };
-export type SQLTableName = {
-  type: "TableName";
-  text: string;
-  span: Span;
-  value: SQLIdent | SQLPlaceholder;
-};
+export type SQLTableName = SQLIdent | SQLPlaceholder;
 export type SQLType = {
   type: "Type";
   text: string;
   span: Span;
-  value: {};
 };
 export type SQLWs = {
   type: "Ws";
   text: string;
   span: Span;
 };
-export function parse(input: string): SQLMain {
+export function parseAlpha(input: string): [SQLAlpha, ParseError[]] {
+  const traceTree = parserlib.parse(GRAMMAR, "alpha", input);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractAlpha(input, ruleTree);
+  return [extracted, errors];
+}
+export function parseAlphaNum(input: string): [SQLAlphaNum, ParseError[]] {
+  const traceTree = parserlib.parse(GRAMMAR, "alphaNum", input);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractAlphaNum(input, ruleTree);
+  return [extracted, errors];
+}
+export function parseColSpec(input: string): [SQLColSpec, ParseError[]] {
+  const traceTree = parserlib.parse(GRAMMAR, "colSpec", input);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractColSpec(input, ruleTree);
+  return [extracted, errors];
+}
+export function parseColumnName(input: string): [SQLColumnName, ParseError[]] {
+  const traceTree = parserlib.parse(GRAMMAR, "columnName", input);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractColumnName(input, ruleTree);
+  return [extracted, errors];
+}
+export function parseCommaWS(input: string): [SQLCommaWS, ParseError[]] {
+  const traceTree = parserlib.parse(GRAMMAR, "commaWS", input);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractCommaWS(input, ruleTree);
+  return [extracted, errors];
+}
+export function parseCreateKW(input: string): [SQLCreateKW, ParseError[]] {
+  const traceTree = parserlib.parse(GRAMMAR, "createKW", input);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractCreateKW(input, ruleTree);
+  return [extracted, errors];
+}
+export function parseCreateTableStmt(
+  input: string
+): [SQLCreateTableStmt, ParseError[]] {
+  const traceTree = parserlib.parse(GRAMMAR, "createTableStmt", input);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractCreateTableStmt(input, ruleTree);
+  return [extracted, errors];
+}
+export function parseFromKW(input: string): [SQLFromKW, ParseError[]] {
+  const traceTree = parserlib.parse(GRAMMAR, "fromKW", input);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractFromKW(input, ruleTree);
+  return [extracted, errors];
+}
+export function parseIdent(input: string): [SQLIdent, ParseError[]] {
+  const traceTree = parserlib.parse(GRAMMAR, "ident", input);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractIdent(input, ruleTree);
+  return [extracted, errors];
+}
+export function parseMain(input: string): [SQLMain, ParseError[]] {
   const traceTree = parserlib.parse(GRAMMAR, "main", input);
-  const ruleTree = extractRuleTree(traceTree);
-  return extractMain(input, ruleTree);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractMain(input, ruleTree);
+  return [extracted, errors];
+}
+export function parseNum(input: string): [SQLNum, ParseError[]] {
+  const traceTree = parserlib.parse(GRAMMAR, "num", input);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractNum(input, ruleTree);
+  return [extracted, errors];
+}
+export function parsePlaceholder(
+  input: string
+): [SQLPlaceholder, ParseError[]] {
+  const traceTree = parserlib.parse(GRAMMAR, "placeholder", input);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractPlaceholder(input, ruleTree);
+  return [extracted, errors];
+}
+export function parseRefClause(input: string): [SQLRefClause, ParseError[]] {
+  const traceTree = parserlib.parse(GRAMMAR, "refClause", input);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractRefClause(input, ruleTree);
+  return [extracted, errors];
+}
+export function parseRefKW(input: string): [SQLRefKW, ParseError[]] {
+  const traceTree = parserlib.parse(GRAMMAR, "refKW", input);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractRefKW(input, ruleTree);
+  return [extracted, errors];
+}
+export function parseSelectKW(input: string): [SQLSelectKW, ParseError[]] {
+  const traceTree = parserlib.parse(GRAMMAR, "selectKW", input);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractSelectKW(input, ruleTree);
+  return [extracted, errors];
+}
+export function parseSelectStmt(input: string): [SQLSelectStmt, ParseError[]] {
+  const traceTree = parserlib.parse(GRAMMAR, "selectStmt", input);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractSelectStmt(input, ruleTree);
+  return [extracted, errors];
+}
+export function parseSelection(input: string): [SQLSelection, ParseError[]] {
+  const traceTree = parserlib.parse(GRAMMAR, "selection", input);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractSelection(input, ruleTree);
+  return [extracted, errors];
+}
+export function parseStatement(input: string): [SQLStatement, ParseError[]] {
+  const traceTree = parserlib.parse(GRAMMAR, "statement", input);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractStatement(input, ruleTree);
+  return [extracted, errors];
+}
+export function parseStatementSemicolon(
+  input: string
+): [SQLStatementSemicolon, ParseError[]] {
+  const traceTree = parserlib.parse(GRAMMAR, "statementSemicolon", input);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractStatementSemicolon(input, ruleTree);
+  return [extracted, errors];
+}
+export function parseString(input: string): [SQLString, ParseError[]] {
+  const traceTree = parserlib.parse(GRAMMAR, "string", input);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractString(input, ruleTree);
+  return [extracted, errors];
+}
+export function parseStringChar(input: string): [SQLStringChar, ParseError[]] {
+  const traceTree = parserlib.parse(GRAMMAR, "stringChar", input);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractStringChar(input, ruleTree);
+  return [extracted, errors];
+}
+export function parseTableKW(input: string): [SQLTableKW, ParseError[]] {
+  const traceTree = parserlib.parse(GRAMMAR, "tableKW", input);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractTableKW(input, ruleTree);
+  return [extracted, errors];
+}
+export function parseTableName(input: string): [SQLTableName, ParseError[]] {
+  const traceTree = parserlib.parse(GRAMMAR, "tableName", input);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractTableName(input, ruleTree);
+  return [extracted, errors];
+}
+export function parseType(input: string): [SQLType, ParseError[]] {
+  const traceTree = parserlib.parse(GRAMMAR, "type", input);
+  const [ruleTree, errors] = extractRuleTree(traceTree);
+  const extracted = extractType(input, ruleTree);
+  return [extracted, errors];
 }
 function extractAlpha(input: string, node: RuleTree): SQLAlpha {
   return {
     type: "Alpha",
     text: textForSpan(input, node.span),
     span: node.span,
-    value: {},
   };
 }
 function extractAlphaNum(input: string, node: RuleTree): SQLAlphaNum {
-  return {
-    type: "AlphaNum",
-    text: textForSpan(input, node.span),
-    span: node.span,
-    value: (() => {
-      const child = node.children[0];
-      switch (child.name) {
-        case "alpha": {
-          return extractAlpha(input, child);
-        }
-        case "num": {
-          return extractNum(input, child);
-        }
-      }
-    })(),
-  };
+  const child = node.children[0];
+  switch (child.name) {
+    case "alpha": {
+      return extractAlpha(input, child);
+    }
+    case "num": {
+      return extractNum(input, child);
+    }
+  }
 }
 function extractColSpec(input: string, node: RuleTree): SQLColSpec {
   return {
     type: "ColSpec",
     text: textForSpan(input, node.span),
     span: node.span,
-    columnName: extractColumnName(input, childByName(node, "columnName")),
-    _type: extractType(input, childByName(node, "type")),
-    refClause: extractRefClause(input, childByName(node, "refClause")),
+    columnName: extractColumnName(input, childByName(node, "columnName", null)),
+    _type: extractType(input, childByName(node, "type", null)),
+    refClause: childByName(node, "refClause", null)
+      ? extractRefClause(input, childByName(node, "refClause", null))
+      : null,
   };
 }
 function extractColumnName(input: string, node: RuleTree): SQLColumnName {
-  return {
-    type: "ColumnName",
-    text: textForSpan(input, node.span),
-    span: node.span,
-    value: (() => {
-      const child = node.children[0];
-      switch (child.name) {
-        case "ident": {
-          return extractIdent(input, child);
-        }
-        case "placeholder": {
-          return extractPlaceholder(input, child);
-        }
-      }
-    })(),
-  };
+  const child = node.children[0];
+  switch (child.name) {
+    case "ident": {
+      return extractIdent(input, child);
+    }
+    case "placeholder": {
+      return extractPlaceholder(input, child);
+    }
+  }
 }
 function extractCommaWS(input: string, node: RuleTree): SQLCommaWS {
   return {
@@ -243,9 +352,9 @@ function extractCreateTableStmt(
     type: "CreateTableStmt",
     text: textForSpan(input, node.span),
     span: node.span,
-    createKW: extractCreateKW(input, childByName(node, "createKW")),
-    tableKW: extractTableKW(input, childByName(node, "tableKW")),
-    tableName: extractTableName(input, childByName(node, "tableName")),
+    createKW: extractCreateKW(input, childByName(node, "createKW", null)),
+    tableKW: extractTableKW(input, childByName(node, "tableKW", null)),
+    tableName: extractTableName(input, childByName(node, "tableName", null)),
     colSpec: childrenByName(node, "colSpec").map((child) =>
       extractColSpec(input, child)
     ),
@@ -266,7 +375,7 @@ function extractIdent(input: string, node: RuleTree): SQLIdent {
     type: "Ident",
     text: textForSpan(input, node.span),
     span: node.span,
-    alpha: extractAlpha(input, childByName(node, "alpha")),
+    alpha: extractAlpha(input, childByName(node, "alpha", null)),
     alphaNum: childrenByName(node, "alphaNum").map((child) =>
       extractAlphaNum(input, child)
     ),
@@ -277,10 +386,9 @@ function extractMain(input: string, node: RuleTree): SQLMain {
     type: "Main",
     text: textForSpan(input, node.span),
     span: node.span,
-    statementSemicolon: childrenByName(
-      node,
-      "statementSemicolon"
-    ).map((child) => extractStatementSemicolon(input, child)),
+    statementSemicolon: childrenByName(node, "statementSemicolon").map(
+      (child) => extractStatementSemicolon(input, child)
+    ),
   };
 }
 function extractNum(input: string, node: RuleTree): SQLNum {
@@ -302,9 +410,9 @@ function extractRefClause(input: string, node: RuleTree): SQLRefClause {
     type: "RefClause",
     text: textForSpan(input, node.span),
     span: node.span,
-    refKW: extractRefKW(input, childByName(node, "refKW")),
-    tableName: extractTableName(input, childByName(node, "tableName")),
-    columnName: extractColumnName(input, childByName(node, "columnName")),
+    refKW: extractRefKW(input, childByName(node, "refKW", null)),
+    tableName: extractTableName(input, childByName(node, "tableName", null)),
+    columnName: extractColumnName(input, childByName(node, "columnName", null)),
   };
 }
 function extractRefKW(input: string, node: RuleTree): SQLRefKW {
@@ -326,10 +434,10 @@ function extractSelectStmt(input: string, node: RuleTree): SQLSelectStmt {
     type: "SelectStmt",
     text: textForSpan(input, node.span),
     span: node.span,
-    selectKW: extractSelectKW(input, childByName(node, "selectKW")),
-    selection: extractSelection(input, childByName(node, "selection")),
-    fromKW: extractFromKW(input, childByName(node, "fromKW")),
-    tableName: extractTableName(input, childByName(node, "tableName")),
+    selectKW: extractSelectKW(input, childByName(node, "selectKW", null)),
+    selection: extractSelection(input, childByName(node, "selection", null)),
+    fromKW: extractFromKW(input, childByName(node, "fromKW", null)),
+    tableName: extractTableName(input, childByName(node, "tableName", null)),
   };
 }
 function extractSelection(input: string, node: RuleTree): SQLSelection {
@@ -346,22 +454,15 @@ function extractSelection(input: string, node: RuleTree): SQLSelection {
   };
 }
 function extractStatement(input: string, node: RuleTree): SQLStatement {
-  return {
-    type: "Statement",
-    text: textForSpan(input, node.span),
-    span: node.span,
-    value: (() => {
-      const child = node.children[0];
-      switch (child.name) {
-        case "selectStmt": {
-          return extractSelectStmt(input, child);
-        }
-        case "createTableStmt": {
-          return extractCreateTableStmt(input, child);
-        }
-      }
-    })(),
-  };
+  const child = node.children[0];
+  switch (child.name) {
+    case "selectStmt": {
+      return extractSelectStmt(input, child);
+    }
+    case "createTableStmt": {
+      return extractCreateTableStmt(input, child);
+    }
+  }
 }
 function extractStatementSemicolon(
   input: string,
@@ -371,7 +472,7 @@ function extractStatementSemicolon(
     type: "StatementSemicolon",
     text: textForSpan(input, node.span),
     span: node.span,
-    statement: extractStatement(input, childByName(node, "statement")),
+    statement: extractStatement(input, childByName(node, "statement", null)),
   };
 }
 function extractString(input: string, node: RuleTree): SQLString {
@@ -389,7 +490,6 @@ function extractStringChar(input: string, node: RuleTree): SQLStringChar {
     type: "StringChar",
     text: textForSpan(input, node.span),
     span: node.span,
-    value: {},
   };
 }
 function extractTableKW(input: string, node: RuleTree): SQLTableKW {
@@ -400,43 +500,35 @@ function extractTableKW(input: string, node: RuleTree): SQLTableKW {
   };
 }
 function extractTableName(input: string, node: RuleTree): SQLTableName {
-  return {
-    type: "TableName",
-    text: textForSpan(input, node.span),
-    span: node.span,
-    value: (() => {
-      const child = node.children[0];
-      switch (child.name) {
-        case "ident": {
-          return extractIdent(input, child);
-        }
-        case "placeholder": {
-          return extractPlaceholder(input, child);
-        }
-      }
-    })(),
-  };
+  const child = node.children[0];
+  switch (child.name) {
+    case "ident": {
+      return extractIdent(input, child);
+    }
+    case "placeholder": {
+      return extractPlaceholder(input, child);
+    }
+  }
 }
 function extractType(input: string, node: RuleTree): SQLType {
   return {
     type: "Type",
     text: textForSpan(input, node.span),
     span: node.span,
-    value: {},
   };
 }
-const GRAMMAR: Grammar = {
+export const GRAMMAR: Grammar = {
   main: {
     type: "RepSep",
     rep: {
       type: "Ref",
-      rule: "statementSemicolon",
       captureName: null,
+      rule: "statementSemicolon",
     },
     sep: {
       type: "Ref",
-      rule: "ws",
       captureName: null,
+      rule: "ws",
     },
   },
   statementSemicolon: {
@@ -444,8 +536,8 @@ const GRAMMAR: Grammar = {
     items: [
       {
         type: "Ref",
-        rule: "statement",
         captureName: null,
+        rule: "statement",
       },
       {
         type: "Text",
@@ -458,13 +550,13 @@ const GRAMMAR: Grammar = {
     choices: [
       {
         type: "Ref",
-        rule: "selectStmt",
         captureName: null,
+        rule: "selectStmt",
       },
       {
         type: "Ref",
-        rule: "createTableStmt",
         captureName: null,
+        rule: "createTableStmt",
       },
     ],
   },
@@ -473,38 +565,38 @@ const GRAMMAR: Grammar = {
     items: [
       {
         type: "Ref",
+        captureName: null,
         rule: "selectKW",
-        captureName: null,
       },
       {
         type: "Ref",
+        captureName: null,
         rule: "ws",
-        captureName: null,
       },
       {
         type: "Ref",
+        captureName: null,
         rule: "selection",
-        captureName: null,
       },
       {
         type: "Ref",
+        captureName: null,
         rule: "ws",
-        captureName: null,
       },
       {
         type: "Ref",
+        captureName: null,
         rule: "fromKW",
-        captureName: null,
       },
       {
         type: "Ref",
+        captureName: null,
         rule: "ws",
-        captureName: null,
       },
       {
         type: "Ref",
-        rule: "tableName",
         captureName: null,
+        rule: "tableName",
       },
     ],
   },
@@ -512,13 +604,13 @@ const GRAMMAR: Grammar = {
     type: "RepSep",
     rep: {
       type: "Ref",
-      rule: "columnName",
       captureName: null,
+      rule: "columnName",
     },
     sep: {
       type: "Ref",
-      rule: "commaWS",
       captureName: null,
+      rule: "commaWS",
     },
   },
   createTableStmt: {
@@ -526,33 +618,33 @@ const GRAMMAR: Grammar = {
     items: [
       {
         type: "Ref",
+        captureName: null,
         rule: "createKW",
-        captureName: null,
       },
       {
         type: "Ref",
+        captureName: null,
         rule: "ws",
-        captureName: null,
       },
       {
         type: "Ref",
+        captureName: null,
         rule: "tableKW",
-        captureName: null,
       },
       {
         type: "Ref",
+        captureName: null,
         rule: "ws",
-        captureName: null,
       },
       {
         type: "Ref",
+        captureName: null,
         rule: "tableName",
-        captureName: null,
       },
       {
         type: "Ref",
-        rule: "ws",
         captureName: null,
+        rule: "ws",
       },
       {
         type: "Text",
@@ -560,26 +652,26 @@ const GRAMMAR: Grammar = {
       },
       {
         type: "Ref",
-        rule: "ws",
         captureName: null,
+        rule: "ws",
       },
       {
         type: "RepSep",
         rep: {
           type: "Ref",
-          rule: "colSpec",
           captureName: null,
+          rule: "colSpec",
         },
         sep: {
           type: "Ref",
-          rule: "commaWS",
           captureName: null,
+          rule: "commaWS",
         },
       },
       {
         type: "Ref",
-        rule: "ws",
         captureName: null,
+        rule: "ws",
       },
       {
         type: "Text",
@@ -592,31 +684,31 @@ const GRAMMAR: Grammar = {
     items: [
       {
         type: "Ref",
+        captureName: null,
         rule: "columnName",
-        captureName: null,
       },
       {
         type: "Ref",
+        captureName: null,
         rule: "ws",
-        captureName: null,
       },
       {
         type: "Ref",
+        captureName: null,
         rule: "type",
-        captureName: null,
       },
       {
         type: "Ref",
-        rule: "ws",
         captureName: null,
+        rule: "ws",
       },
       {
         type: "Choice",
         choices: [
           {
             type: "Ref",
-            rule: "refClause",
             captureName: null,
+            rule: "refClause",
           },
           {
             type: "Text",
@@ -631,23 +723,23 @@ const GRAMMAR: Grammar = {
     items: [
       {
         type: "Ref",
+        captureName: null,
         rule: "refKW",
-        captureName: null,
       },
       {
         type: "Ref",
+        captureName: null,
         rule: "ws",
-        captureName: null,
       },
       {
         type: "Ref",
+        captureName: null,
         rule: "tableName",
-        captureName: null,
       },
       {
         type: "Ref",
-        rule: "ws",
         captureName: null,
+        rule: "ws",
       },
       {
         type: "Text",
@@ -655,8 +747,8 @@ const GRAMMAR: Grammar = {
       },
       {
         type: "Ref",
-        rule: "columnName",
         captureName: null,
+        rule: "columnName",
       },
       {
         type: "Text",
@@ -682,13 +774,13 @@ const GRAMMAR: Grammar = {
     choices: [
       {
         type: "Ref",
-        rule: "ident",
         captureName: null,
+        rule: "ident",
       },
       {
         type: "Ref",
-        rule: "placeholder",
         captureName: null,
+        rule: "placeholder",
       },
     ],
   },
@@ -697,13 +789,13 @@ const GRAMMAR: Grammar = {
     choices: [
       {
         type: "Ref",
-        rule: "ident",
         captureName: null,
+        rule: "ident",
       },
       {
         type: "Ref",
-        rule: "placeholder",
         captureName: null,
+        rule: "placeholder",
       },
     ],
   },
@@ -732,8 +824,8 @@ const GRAMMAR: Grammar = {
     items: [
       {
         type: "Ref",
-        rule: "alpha",
         captureName: null,
+        rule: "alpha",
       },
       {
         type: "RepSep",
@@ -742,8 +834,8 @@ const GRAMMAR: Grammar = {
           choices: [
             {
               type: "Ref",
-              rule: "alphaNum",
               captureName: null,
+              rule: "alphaNum",
             },
             {
               type: "Text",
@@ -769,8 +861,8 @@ const GRAMMAR: Grammar = {
         type: "RepSep",
         rep: {
           type: "Ref",
-          rule: "stringChar",
           captureName: null,
+          rule: "stringChar",
         },
         sep: {
           type: "Text",
@@ -855,13 +947,13 @@ const GRAMMAR: Grammar = {
     choices: [
       {
         type: "Ref",
-        rule: "alpha",
         captureName: null,
+        rule: "alpha",
       },
       {
         type: "Ref",
-        rule: "num",
         captureName: null,
+        rule: "num",
       },
     ],
   },
@@ -894,8 +986,8 @@ const GRAMMAR: Grammar = {
       },
       {
         type: "Ref",
-        rule: "ws",
         captureName: null,
+        rule: "ws",
       },
     ],
   },

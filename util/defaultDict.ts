@@ -1,8 +1,8 @@
 export class DefaultDict<K, V> {
   private items: Map<K, V>;
-  private getDefault: () => V;
+  private getDefault: (key: K) => V;
 
-  constructor(getDefault: () => V) {
+  constructor(getDefault: (key: K) => V) {
     this.items = new Map<K, V>();
     this.getDefault = getDefault;
   }
@@ -14,7 +14,7 @@ export class DefaultDict<K, V> {
   get(key: K): V {
     let value = this.items.get(key);
     if (value === undefined) {
-      value = this.getDefault();
+      value = this.getDefault(key);
       this.items.set(key, value);
     }
     return value;

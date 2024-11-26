@@ -22,17 +22,38 @@ requestResponse{
   message{id: RespID, fromTickID: RespondTick, toActorID: ClientActor, payload: Resp} &
   tick{id: HandleResponseTick, actorID: ClientActor, initiator: messageReceived{messageID: RespID}}.
 
-internal.visualization{
-  name: "sequence",
-  spec: sequence{
-    actors: actor{id: ID},
-    messages: hop{from: FromTick, to: ToTick},
-  }
-}.
+# internal.visualization{
+#   name: "Sequence",
+#   spec: sequence{
+#     actors: clientServerActor{id: ID},
+#     hops: clientServerHop{from: FromTick, to: ToTick},
+#     ticks: clientServerTick{time: TickID, place: ActorID},
+#   }
+# }.
 
 messageFromActor{id: ID, fromActorID: FromActor, toActorID: ToActor, payload: Payload} :-
   message{id: ID, fromTickID: FromTick, toActorID: ToActor, payload: Payload} &
   tick{id: FromTick, actorID: FromActor}.
+
+clientServerTick{time: TickID, place: ActorID} :-
+  tick{id: TickID, actorID: ActorID} &
+  clientServerActor{id: ActorID}.
+
+clientServerActor{id: ID} :-
+  actor{id: ID, type: Type} &
+  Type != "user".
+
+clientServerHop{
+  from: clientServerTick{time: FromTickID, place: FromActorID},
+  to: clientServerTick{time: ToTickID, place: ToActorID},
+  message: Payload,
+} :-
+  hop{
+    from: tick{time: FromTickID, place: FromActorID},
+    to: tick{time: ToTickID, place: ToActorID},
+    message: Payload
+  } & 
+  clientServerActor{id: FromActorID}.
 
 hop{
   from: tick{time: FromTickID, place: FromActorID},
@@ -43,16 +64,17 @@ hop{
   tick{id: FromTickID, actorID: FromActorID} &
   tick{id: ToTickID, actorID: ToActorID, initiator: messageReceived{messageID: MessageID}}.
 
-savePush{saveMessageID: SaveMsgID, todo: T, from: FromID, to: ToID} :-
-  tick{id: FromTick, actorID: FromID} &
-  message{fromTickID: FromTick, id: SaveMsgID, payload: putTodo{todo: T}} &
-  tick{initiator: messageReceived{messageID: SaveMsgID}, id: PersistTick, actorID: "server"} &
-  message{fromTickID: PersistTick, toActorID: ToID, payload: subscriptionUpdate{todo: T}}.
+# TODO: this causes an error in the incr interp; not sure what it is
+# savePush{saveMessageID: SaveMsgID, todo: T, from: FromID, to: ToID} :-
+#   tick{id: FromTick, actorID: FromID} &
+#   message{fromTickID: FromTick, id: SaveMsgID, payload: putTodo{todo: T}} &
+#   tick{initiator: messageReceived{messageID: SaveMsgID}, id: PersistTick, actorID: "server"} &
+#   message{fromTickID: PersistTick, toActorID: ToID, payload: subscriptionUpdate{todo: T}}.
 
 tickState{tickID: TickID, actorID: ActorID, state: State} :-
   tick{id: TickID, actorID: ActorID, resp: continue{state: State}}.
 
-concurrentRequests{
+concurrentRequest{
   tick1: tick{place: Client1, time: TC1},
   message1: M1,
   tick2: tick{place: Client2, time: TC2},
@@ -63,20 +85,20 @@ concurrentRequests{
   TC1 < TC2 &
   TC2 < TS1.
 
-kvSync.aborts{
+kvSync.abort{
   fromActorID: ClientActor,
   toActorID: ServerActor,
-  request: Req,
+  invocation: Invocation,
+  abortReason: Reason,
+  clientTrace: Trace,
   txnID: TxnID,
   sendTick: SendTick,
-  respondTick: RespondTick,
-  handleResponseTick: HandleResponseTick
 } :-
   requestResponse{
     fromActorID: ClientActor,
     toActorID: ServerActor,
-    request: Req,
-    response: MutationResponse{txnID: TxnID, response: Abort{}},
+    request: MutationRequest{invocation: Invocation, trace: Trace},
+    response: MutationResponse{txnID: TxnID, payload: Reject{reason: Reason}},
     sendTick: SendTick,
     respondTick: RespondTick,
     handleResponseTick: HandleResponseTick

@@ -8,7 +8,7 @@ import ReactFlow, {
   Connection,
   EdgeProps,
   NodeProps,
-} from "react-flow-renderer";
+} from "reactflow";
 import {
   int,
   Int,
@@ -40,6 +40,7 @@ import {
   EditorNodeData,
   NodeVisualizationSpec,
 } from "./types";
+import "reactflow/dist/base.css";
 
 export const dagEditor: VizTypeSpec = {
   name: "DAG Editor",

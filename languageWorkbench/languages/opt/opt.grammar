@@ -1,0 +1,73 @@
+main :- repSep(declaration, ws).
+
+declaration :- (
+  varRelationDecl |
+  inputRelationDecl |
+  paramDecl |
+  objective |
+  constraint
+).
+
+varRelationDecl :- [varKW, ws, ident, ws, schemaSpec].
+inputRelationDecl :- [inputKW, ws, ident, ws, schemaSpec].
+paramDecl :- [
+  paramKW, ws, ident, ws, "{", ws,
+  repSep(paramLimit, commaSpace), ws,
+  "}"
+].
+paramLimit :- [("min" | "max" | "init"), ":", ws, int].
+
+schemaSpec :- ["{", ws, repSep(ident, [",", ws]), ws, "}"].
+
+objective :- [
+  senseKW, ws, "{", ws,
+  conjuncts,
+  ws, sepKW, ws,
+  scalarExpr, ws,
+  "}"
+].
+
+constraint :- [
+  ruleKW, ws, record, ws, "{", ws,
+  conjuncts, ws,
+  sepKW, ws,
+  constraintComparison, ws,
+"}"].
+
+constraintComparison :- [left:scalarExpr, ws, comparisonOp, ws, right:scalarExpr].
+
+conjuncts :- repSep(clause, [ws, "&", ws]).
+clause :- (record | comparison).
+
+scalarExpr :- repSep(scalarTerm, [ws, "+", ws]).
+scalarTerm :- [([coefficient:term, ws, "*", ws] | ""), term:term].
+comparison :- [left:term, ws, comparisonOp, ws, right:term].
+comparisonOp :- ("<=" | ">=" | ">" | "<" | "=" | "!=").
+
+record :- [ident, "{", ws, recordAttrs, ws, "}"].
+recordAttrs :- repSep((recordKeyValue | placeholder), commaSpace).
+recordKeyValue :- [ident, ":", ws, term].
+
+term :- (record | int | var | string | placeholder).
+var :- [[A-Z], repSep(([A-Z]|alphaNum), "")].
+
+senseKW :- ("minimize" | "maximize").
+varKW :- "var".
+inputKW :- "input".
+ruleKW :- "rule".
+sepKW :- "=>".
+paramKW :- "param".
+
+# TODO: comments
+
+ident :- [alpha, repSep((alphaNum | "."), "")].
+int :- [("-" | ""), first:num, repSep(num, "")].
+string :- ["\"", repSep(stringChar, ""), "\""].
+stringChar :- (^'"' | ['\\', '"']).
+alpha :- ([a-z] | [A-Z] | "_").
+num :- [0-9].
+alphaNum :- (alpha | num).
+ws :- repSep((" "|"\n"), "").
+commaWS :- [",", ws].
+placeholder :- "???".
+commaSpace :- [",", ws].

@@ -1,0 +1,13 @@
+.table source
+.table sink
+.table battery
+.table connection
+.table internal.visualization
+
+time{time: T} :-
+  range{from: 0, to: 50, val: T}.
+
+.load scenario.dl
+.load sim.dl
+.load viz.dl
+.load opt.dl

@@ -275,7 +275,7 @@ function hasContents(status: RelationStatus) {
 
 function getStatus(interp: AbstractInterpreter, name: string): RelationStatus {
   try {
-    const count = interp.queryStr(`${name}{}`).length;
+    const count = interp.queryStr(`${name}{}?`).length;
     return { type: "Count", count };
   } catch (e) {
     if (!(e instanceof UserError)) {

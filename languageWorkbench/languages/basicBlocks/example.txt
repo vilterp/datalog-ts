@@ -1,12 +1,14 @@
-foo {
-  a = 42;
-  b = "foo";
-  x = boop(a);
-  c = group(???);
-  goto ???;
+main {
+  lock = alloc.newLock();
+  block.acquireLock(lock);
+  forkTo afterFork;
+  t = 25;
+  block.sleep(t);
+  block.releaseLock(lock);
+  goto end;
 }
-
-bar {
-  y = boop;
-  goto foo;
+afterFork {
+  block.acquireLock(lock);
+  x5 = 10;
 }
+end {}

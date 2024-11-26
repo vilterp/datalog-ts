@@ -12,9 +12,12 @@ import { treeTests } from "./util/treeTest";
 import { parserlibTests } from "./languageWorkbench/parserlib/ddTests";
 import { incrTests } from "./core/incremental/ddTests";
 import { sourcePositionsTests } from "./languageWorkbench/sourcePositionsTest";
-import { raceDetectorTests } from "./apps/raceDetector/ddTests";
+import { executionVisualizerTests } from "./apps/executionVisualizer/ddTests";
 import { kvSyncTests } from "./apps/actors/systems/kvSync/ddTests";
-import { lwbTestsIncr, lwbTestsSimple } from "./languageWorkbench/ddTests";
+import { nativeTests } from "./languageWorkbench/languages/dl/nativeTests";
+import { lwbTests } from "./languageWorkbench/ddTests";
+import { optTests } from "./core/opt/optTests";
+import { dl2Tests } from "./languageWorkbench/languages/dl2/compiler/ddTests";
 
 // TODO: use a real arg parser
 const flags = new Set(process.argv.slice(2));
@@ -35,9 +38,11 @@ const suites: { [name: string]: Suite } = {
   parserlibTests: parserlibTests(writeResults),
   sourcePositionsTests,
   kvSync: kvSyncTests(writeResults),
-  raceDetector: raceDetectorTests(writeResults),
-  lwbTestsSimple: lwbTestsSimple(writeResults),
-  lwbTestsIncr: lwbTestsIncr(writeResults),
+  executionVisualizer: executionVisualizerTests(writeResults),
+  dl2Tests: dl2Tests(writeResults),
+  lwbTests: lwbTests(writeResults),
+  lwbNativeDatalogTests: nativeTests,
+  optTests: optTests(writeResults),
 };
 
 try {

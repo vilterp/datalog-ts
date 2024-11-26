@@ -1,0 +1,81 @@
+table post {
+  author_id,
+  comment: inRef(comment:post_id)
+}
+table comment {
+  author_id,
+  post_id
+}
+def postComment{postID: P, commentID: C} {
+  post {
+    id: P,
+    comment {
+      id: C,
+    }
+  }
+}
+----
+text/plain
+postComment{commentID: C, postID: P} :- post{id: P} & comment{id: C, post_id: P}
+
+table post {
+  author_id,
+  comment: inRef(comment:post_id)
+}
+table comment {
+  author_id,
+  post_id
+}
+def selfComment{author_id: A, postID: P, commentID: C} {
+  post {
+    author_id: A,
+    id: P,
+    comment {
+      id: C,
+      author_id: A
+    }
+  }
+}
+----
+text/plain
+selfComment{author_id: A, commentID: C, postID: P} :- 
+  post{author_id: A, id: P} &
+  comment{author_id: A, id: C, post_id: P}
+
+def reachable{from: A, to: C} {
+  edge{from: A, to: C} |
+  edge{from: A, to: B} &
+  reachable{from: B, to: C}
+}
+----
+text/plain
+reachable{from: A, to: C} :- edge{from: A, to: C} | edge{from: A, to: B} & reachable{from: B, to: C}
+
+table ast.nested {
+  qualifier: inRef(ast.qualifier:parentID),
+  attr: inRef(ast.nestedAttr:parentID)
+}
+table ast.nestedAttr {
+  nested: inRef(ast.nested:parentID)
+}
+def scope.varNestedAttr{scopeID: Outer, name: Inner, span: S, kind: "attr"} {
+  ast.nested {
+    qualifier { text: Outer },
+    attr {
+      nested {
+        qualifier {
+          text: Inner,
+          span: S
+        }
+      }
+    }
+  }
+}
+----
+text/plain
+scope.varNestedAttr{kind: "attr", name: Inner, scopeID: Outer, span: S} :- 
+  ast.nested{id: Vast_nestedID} &
+  ast.qualifier{parentID: Vast_nestedID, text: Outer} &
+  ast.nestedAttr{id: Vast_nestedAttrID, parentID: Vast_nestedID} &
+  ast.nested{id: Vast_nestedID_, parentID: Vast_nestedAttrID} &
+  ast.qualifier{parentID: Vast_nestedID_, span: S, text: Inner}

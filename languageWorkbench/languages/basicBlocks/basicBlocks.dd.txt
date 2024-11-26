@@ -1,8 +1,9 @@
 basicBlocks
 foo {
-  a = 42;
+  a = 42; // store an int
   b = "foo";
   x = boop(a);
+  // call a function
   c = group(???);
   goto ???;
 }
@@ -10,30 +11,84 @@ bar {
   y = boop;
   goto foo;
 }
-ide.Suggestion{}
+ide.Suggestion{}?
 ----
 application/datalog
-ide.Suggestion{id: 36, name: "a", span: span{from: 56, to: 59}, type: "any"}.
-ide.Suggestion{id: 36, name: "b", span: span{from: 56, to: 59}, type: "any"}.
-ide.Suggestion{id: 36, name: "c", span: span{from: 56, to: 59}, type: "any"}.
-ide.Suggestion{id: 36, name: "x", span: span{from: 56, to: 59}, type: "any"}.
-ide.Suggestion{id: 46, name: "bar", span: span{from: 69, to: 72}, type: "any"}.
-ide.Suggestion{id: 46, name: "foo", span: span{from: 69, to: 72}, type: "any"}.
+ide.Suggestion{id: global{}, name: "a", span: span{from: 93, to: 96}, type: "any"}.
+ide.Suggestion{id: global{}, name: "b", span: span{from: 93, to: 96}, type: "any"}.
+ide.Suggestion{id: global{}, name: "bar", span: span{from: 106, to: 109}, type: "any"}.
+ide.Suggestion{id: global{}, name: "c", span: span{from: 93, to: 96}, type: "any"}.
+ide.Suggestion{id: global{}, name: "foo", span: span{from: 106, to: 109}, type: "any"}.
+ide.Suggestion{id: global{}, name: "x", span: span{from: 93, to: 96}, type: "any"}.
+ide.Suggestion{id: global{}, name: "y", span: span{from: 93, to: 96}, type: "any"}.
+
+basicBlocks
+countUp {
+  x = 0;
+  goto loop;
+}
+loop {
+  forkTo afterFork;
+  x = base.incr(x);
+  threshold = 5;
+  going = base.lt(x, threshold);
+  goto loop if going;
+}
+afterFork {
+  done = 42;
+}
+scope.Usage{}?
+----
+application/datalog
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 100, to: 105}, kind: "value", name: "going", usageScopeID: global{}, usageSpan: span{from: 146, to: 151}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 12, to: 13}, kind: "value", name: "x", usageScopeID: global{}, usageSpan: span{from: 116, to: 117}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 12, to: 13}, kind: "value", name: "x", usageScopeID: global{}, usageSpan: span{from: 77, to: 78}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 155, to: 164}, kind: "label", name: "afterFork", usageScopeID: global{}, usageSpan: span{from: 50, to: 59}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 34, to: 38}, kind: "label", name: "loop", usageScopeID: global{}, usageSpan: span{from: 138, to: 142}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 34, to: 38}, kind: "label", name: "loop", usageScopeID: global{}, usageSpan: span{from: 26, to: 30}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 63, to: 64}, kind: "value", name: "x", usageScopeID: global{}, usageSpan: span{from: 116, to: 117}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 63, to: 64}, kind: "value", name: "x", usageScopeID: global{}, usageSpan: span{from: 77, to: 78}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 83, to: 92}, kind: "value", name: "threshold", usageScopeID: global{}, usageSpan: span{from: 119, to: 128}}.
 
 basicBlocks
 foo {
   a = 42;
-  b = "foo";
-  x = boop(a);
-  c = group(???);
-  goto ???;
+  goto foo if a;
 }
-bar {
-  y = boop;
-  goto foo;
-}
-scope.Usage{}
+ast.ifClause{}?
 ----
 application/datalog
-scope.Usage{definitionScopeID: "global", defnSpan: span{from: 0, to: 3}, kind: "label", name: "foo", usageScopeID: 71, usageSpan: span{from: 101, to: 104}}.
-scope.Usage{definitionScopeID: 7, defnSpan: span{from: 8, to: 9}, kind: "value", name: "a", usageScopeID: 26, usageSpan: span{from: 40, to: 41}}.
+ast.ifClause{id: 40, parentID: 27, rule: "ifClause", span: span{from: 27, to: 31}, text: "if a"}.
+
+basicBlocks
+main {
+  forkTo afterFork;
+  after|||Fork = 5;
+}
+afterFork {}
+ide.CurrentUsageOrDefn{}?
+----
+application/datalog
+ide.CurrentUsageOrDefn{span: span{from: 29, to: 38}, type: "defn"}.
+
+basicBlocks
+main {
+  forkTo afterFork;
+  afterFork = 5;
+}
+after|||Fork {}
+ide.CurrentUsageOrDefn{}?
+----
+application/datalog
+ide.CurrentUsageOrDefn{span: span{from: 16, to: 25}, type: "usage"}.
+ide.CurrentUsageOrDefn{span: span{from: 46, to: 55}, type: "defn"}.
+
+basicBlocks
+main {
+  forkTo afterFork;
+  x = foo(after|||Fork);
+}
+afterFork {}
+ide.CurrentUsageOrDefn{}?
+----
+application/datalog

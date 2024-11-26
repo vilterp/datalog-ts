@@ -1,0 +1,3 @@
+state.Timer{thread: TH, startTime: T, wakeupTime: WT} :-
+  state.programCounter.timer.init{thread: TH, time: T, counter: C, state: blocked{}, dur: Dur} &
+  WT = T + Dur.

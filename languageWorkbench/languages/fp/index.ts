@@ -1,4 +1,4 @@
-import { LanguageSpec } from "../../common/types";
+import { LanguageSpec, dl } from "../../common/types";
 // @ts-ignore
 import datalog from "./fp.dl";
 // @ts-ignore
@@ -8,7 +8,7 @@ import example from "./example.txt";
 
 export const fp: LanguageSpec = {
   name: "fp",
-  datalog,
+  logic: dl(datalog),
   grammar,
   example,
 };

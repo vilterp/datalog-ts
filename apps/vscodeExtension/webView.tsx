@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import ReactDOM from "react-dom";
+import ReactDOM from "react-dom/client";
 import { AbstractInterpreter } from "../../core/abstractInterpreter";
 import { nullLoader } from "../../core/loaders";
 import { SimpleInterpreter } from "../../core/simple/interpreter";
@@ -43,7 +43,7 @@ export function Main() {
   );
 }
 
-ReactDOM.render(<Main />, document.getElementById("main"));
+ReactDOM.createRoot(document.getElementById("main")).render(<Main />);
 
 // let the other side know we're ready
 // @ts-ignore

@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import ReactDOM from "react-dom/client";
 import useTitle from "@hookeasy/use-title";
 import useHashParam from "use-hash-param";
 import { VISUALIZERS } from "./visualizers";
@@ -114,4 +114,4 @@ function TestViewer(props: { archive: Archive }) {
   );
 }
 
-ReactDOM.render(<Main />, document.getElementById("main"));
+ReactDOM.createRoot(document.getElementById("main")).render(<Main />);

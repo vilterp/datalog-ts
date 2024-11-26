@@ -1,0 +1,4 @@
+coefficientValue{problem: P, constraint: C, op: O, var: Var, val: Val} :-
+  optProblem{id: P} &
+  constraint{id: C, problem: P, op: O} &
+  constraintCoefficient{constraint: C, var: Var, val: Val}.

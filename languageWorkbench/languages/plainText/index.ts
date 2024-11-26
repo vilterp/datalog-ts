@@ -1,8 +1,8 @@
-import { LanguageSpec } from "../../common/types";
+import { LanguageSpec, dl } from "../../common/types";
 
 export const plainText: LanguageSpec = {
   name: "plainText",
-  datalog: "",
+  logic: dl(""),
   grammar: `main :- repSep(., "").`,
   example: "",
 };

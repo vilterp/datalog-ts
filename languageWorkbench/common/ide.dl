@@ -83,8 +83,8 @@ ide.CurrentProblem{desc: D, span: span{from: F, to: T}} :-
 # === Highlight ===
 # TODO: consolidate a bit?
 
-ide.CurrentVar{scopeID: UsageScope, name: N, span: span{from: F, to: T}} :-
-  scope.Var{scopeID: UsageScope, name: N, span: span{from: F, to: T}} &
+ide.CurrentVar{scopeID: UsageScope, name: N, span: span{from: F, to: T}, kind: K} :-
+  scope.Var{scopeID: UsageScope, name: N, span: span{from: F, to: T}, kind: K} &
   ide.Cursor{idx: CIdx} &
   F <= CIdx & CIdx <= T.
 
@@ -96,21 +96,21 @@ ide.currentDefn{scopeID: DefnScope, name: N, span: span{from: F, to: T}} :-
   ide.Cursor{idx: CIdx} &
   F <= CIdx & CIdx <= T.
 ide.defnOfCurrentVar{span: S} :-
-  ide.CurrentVar{scopeID: UsageScope, name: N} &
-  scope.Item{scopeID: UsageScope, name: N, defnSpan: S}.
+  ide.CurrentVar{scopeID: UsageScope, name: N, kind: K} &
+  scope.Item{scopeID: UsageScope, name: N, kind: K, defnSpan: S}.
 
 ide.CurrentVarOrUsageOfCurrentDefn{type: "usage", span: S} :-
   ide.instanceOfCurrentVar{span: S} |
   ide.usageOfCurrentDefn{span: S}.
 ide.instanceOfCurrentVar{span: S} :-
-  ide.CurrentVar{scopeID: CurrentVarScope, name: N, span: CVS} &
-  scope.Item{scopeID: CurrentVarScope, defnScopeID: DefnScope, name: N} &
-  scope.Item{scopeID: OtherVarScope, defnScopeID: DefnScope, name: N} &
-  scope.Var{scopeID: OtherVarScope, name: N, span: S}.
-ide.usageOfCurrentDefn{span: S} :-
-  ide.currentDefn{scopeID: DefnScope, name: N} &
-  scope.Item{scopeID: UsageScope, defnScopeID: DefnScope, name: N} &
-  scope.Var{scopeID: UsageScope, name: N, span: S}.
+  ide.CurrentVar{scopeID: CurrentVarScope, name: N, span: CVS, kind: K} &
+  scope.Item{scopeID: CurrentVarScope, defnScopeID: DefnScope, name: N, kind: K} &
+  scope.Item{scopeID: OtherVarScope, defnScopeID: DefnScope, name: N, kind: K} &
+  scope.Var{scopeID: OtherVarScope, name: N, kind: K, span: S}.
+ide.usageOfCurrentDefn{span: UsageSpan} :-
+  ide.currentDefn{scopeID: DefnScope, name: N, span: DefnSpan} &
+  scope.Item{scopeID: UsageScope, defnScopeID: DefnScope, name: N, kind: K, defnSpan: DefnSpan} &
+  scope.Var{scopeID: UsageScope, name: N, kind: K, span: UsageSpan}.
 
 ide.CurrentUsageOrDefn{type: T, span: S} :-
   ide.CurrentDefnOrDefnOfCurrentVar{type: T, span: S} |

@@ -1,53 +1,97 @@
 import { spawnInitialActors } from "../../step";
 import * as effects from "../../effects";
-import { ActorResp, LoadedTickInitiator, System } from "../../types";
+import {
+  ActorResp,
+  ChooseFn,
+  LoadedTickInitiator,
+  MessageToClient,
+  System,
+  Trace,
+  UpdateFn,
+} from "../../types";
 import { ClientState, initialClientState, updateClient } from "./client";
 import { initialServerState, ServerState, updateServer } from "./server";
-import { MsgToClient, MsgToServer } from "./types";
+import { MsgToClient, MsgToServer, TSMutationDefns } from "./types";
 import { EXAMPLES } from "./examples";
 import { KVApp } from "./examples/types";
+import { hashString } from "../../../../util/util";
 
-export type State = ServerState | ClientState | { type: "UserState" };
+export const KVSYNC_SYSTEMS = Object.values(EXAMPLES).map(makeActorSystem);
 
-export type Msg = MsgToServer | MsgToClient;
+export type KVSyncState = ServerState | ClientState | { type: "UserState" };
+
+export type KVSyncMsg = MsgToServer | MsgToClient;
+
+export function makeActorSystem(app: KVApp): System<KVSyncState, KVSyncMsg> {
+  const randServerSeed = 1234; // TODO: pass this in
+  const doUpdate: UpdateFn<KVSyncState, KVSyncMsg> = (
+    state: KVSyncState,
+    init: LoadedTickInitiator<KVSyncState, KVSyncMsg>
+  ) => {
+    return update(app, state, init);
+  };
+  return {
+    name: `KV: ${app.name}`,
+    id: `kv-${app.name}`,
+    ui: app.ui,
+    update: doUpdate,
+    getInitialState: (interp): Trace<KVSyncState> => {
+      return spawnInitialActors(doUpdate, interp, {
+        server: initialServerState(app.initialKVPairs || {}, randServerSeed),
+      });
+    },
+    // TODO: generate ID deterministically
+    initialClientState: (id: string) => initialClientState(id, hashString(id)),
+    initialUserState: { type: "UserState" },
+    chooseNextMove: app.choose ? kvSyncChooseMove(app) : undefined,
+  };
+}
+
+function kvSyncChooseMove(app: KVApp): ChooseFn<KVSyncState, KVSyncMsg> {
+  return (system, state, randomSeed) => {
+    if (!app.choose) {
+      return [null, randomSeed];
+    }
+    const clientStates: { [clientID: string]: ClientState } = {};
+    for (const clientID of state.clientIDs) {
+      const clientState = state.trace.latestStates[`client${clientID}`];
+      clientStates[clientID] = clientState as ClientState;
+    }
+    const [mutation, nextRandomSeed] = app.choose(clientStates, randomSeed);
+    if (mutation === null) {
+      return [null, nextRandomSeed];
+    }
+
+    const msg: MessageToClient<MsgToClient> = {
+      clientID: mutation.clientID,
+      message: {
+        type: "RunMutation",
+        invocation: mutation.invocation,
+      },
+    };
+    return [msg, nextRandomSeed];
+  };
+}
 
 export function update(
-  state: State,
-  init: LoadedTickInitiator<State, Msg>
-): ActorResp<State, Msg> {
+  app: KVApp,
+  state: KVSyncState,
+  init: LoadedTickInitiator<KVSyncState, KVSyncMsg>
+): ActorResp<KVSyncState, KVSyncMsg> {
   switch (state.type) {
     case "ClientState":
       return updateClient(
+        app.mutations,
         state,
         init as LoadedTickInitiator<ClientState, MsgToClient>
       );
     case "ServerState":
       return updateServer(
+        app,
         state,
         init as LoadedTickInitiator<ServerState, MsgToServer>
       );
     case "UserState":
       return effects.updateState(state);
   }
-}
-
-export const kvSyncBank: System<State, Msg> = makeActorSystem(EXAMPLES.bank);
-
-export const kvSyncChat: System<State, Msg> = makeActorSystem(EXAMPLES.chat);
-
-export function makeActorSystem(app: KVApp): System<State, Msg> {
-  return {
-    name: `KV: ${app.name}`,
-    id: `kv-${app.name}`,
-    ui: app.ui,
-    update,
-    getInitialState: (interp) =>
-      spawnInitialActors(update, interp, {
-        server: initialServerState(app.mutations),
-      }),
-    // TODO: generate ID deterministically
-    initialClientState: (id: string) =>
-      initialClientState(id, app.mutations, 10),
-    initialUserState: { type: "UserState" },
-  };
 }

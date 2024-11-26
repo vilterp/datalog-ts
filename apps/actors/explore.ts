@@ -1,0 +1,189 @@
+import { Json } from "../../util/json";
+import { randStep2, removeAtRandom } from "../../util/util";
+import { stepTrace } from "./step";
+import {
+  AddressedTickInitiator,
+  ChooseFn,
+  System,
+  SystemState,
+  TraceAction,
+} from "./types";
+
+type Frame<ActorState, Msg> = {
+  parent: Frame<ActorState, Msg> | null;
+  action: TraceAction<ActorState, Msg> | { type: "ExploreStart" };
+  system: System<ActorState, Msg>;
+  state: SystemState<ActorState>;
+  messages: AddressedTickInitiator<ActorState>[];
+  randomSeed: number;
+};
+
+// TODO: stopping condition
+export function explore<ActorState extends Json, Msg extends Json>(
+  system: System<ActorState, Msg>,
+  initialState: SystemState<ActorState>,
+  stepLimit: number,
+  randomSeed: number
+): Frame<ActorState, Msg> {
+  let step = 0;
+  const generator = exploreGenerator(
+    system,
+    initialState,
+    NEW_USER_INPUT_PROB,
+    randomSeed
+  );
+  for (const frame of generator) {
+    step++;
+
+    if (step > stepLimit) {
+      console.log("hit step limit");
+      return runToQuiescence(frame);
+    }
+  }
+}
+
+function runToQuiescence<ActorState extends Json, Msg extends Json>(
+  frame: Frame<ActorState, Msg>
+): Frame<ActorState, Msg> {
+  let curFrame = frame;
+  let steps = 0;
+  while (curFrame.messages.length > 0) {
+    // new user input prob = 0: no new inputs
+    curFrame = exploreStep(curFrame, 0);
+    steps++;
+  }
+  console.log("running to quiescence took", steps, "steps");
+  return curFrame;
+}
+
+// TODO:
+// - stopping condition
+function* exploreGenerator<ActorState extends Json, Msg extends Json>(
+  system: System<ActorState, Msg>,
+  initialState: SystemState<ActorState>,
+  newUserInputProbability: number,
+  randomSeed: number
+): Generator<Frame<ActorState, Msg>> {
+  if (!system.chooseNextMove) {
+    return;
+  }
+
+  const stack: Frame<ActorState, Msg>[] = [
+    {
+      parent: null,
+      action: { type: "ExploreStart" },
+      randomSeed,
+      messages: [],
+      system,
+      state: initialState,
+    },
+  ];
+
+  // DFS
+  // TODO: BFS?
+  while (stack.length > 0) {
+    const frame = stack.pop();
+
+    yield frame;
+
+    const nextFrame = exploreStep(frame, newUserInputProbability);
+
+    stack.push(nextFrame);
+  }
+}
+
+function exploreStep<ActorState extends Json, Msg extends Json>(
+  frame: Frame<ActorState, Msg>,
+  newUserInputProbability: number
+): Frame<ActorState, Msg> {
+  const {
+    nextAction: traceAction,
+    remainingInits: remainingInits,
+    randomSeed: nextRandSeed,
+  } = getNextTraceAction(
+    frame.system.chooseNextMove,
+    frame,
+    newUserInputProbability,
+    frame.randomSeed
+  );
+
+  if (traceAction === null) {
+    return frame;
+  }
+
+  const [nextTrace, newInits] = stepTrace(
+    frame.state.trace,
+    frame.system.update,
+    traceAction
+  );
+
+  return {
+    parent: frame,
+    action: traceAction,
+    system: frame.system,
+    state: {
+      ...frame.state,
+      trace: nextTrace,
+    },
+    messages: [...remainingInits, ...newInits],
+    randomSeed: nextRandSeed,
+  };
+}
+
+// TODO: param in UI
+const NEW_USER_INPUT_PROB = 0.3;
+
+function getNextTraceAction<ActorState, Msg>(
+  chooseNextMove: ChooseFn<ActorState, Msg>,
+  frame: Frame<ActorState, Msg>,
+  newUserInputProbability: number,
+  randomSeed: number
+): {
+  nextAction: TraceAction<ActorState, Msg> | null;
+  remainingInits: AddressedTickInitiator<ActorState>[];
+  randomSeed: number; // random seed
+} {
+  const [rand, randomSeed1] = randStep2(randomSeed);
+  if (rand < newUserInputProbability || frame.messages.length === 0) {
+    // SendUserInput
+
+    const [messageToClient, randomSeed2] = chooseNextMove(
+      frame.system,
+      frame.state,
+      randomSeed1
+    );
+
+    if (messageToClient === null) {
+      return {
+        nextAction: null,
+        randomSeed: randomSeed2,
+        remainingInits: frame.messages,
+      };
+    }
+
+    return {
+      nextAction: {
+        type: "SendUserInput",
+        clientID: messageToClient.clientID,
+        input: messageToClient.message,
+      },
+      remainingInits: frame.messages,
+      randomSeed: randomSeed2,
+    };
+  } else {
+    // Step
+    const [nextMessage, remainingMessages, randomSeed2] = removeAtRandom(
+      frame.messages,
+      randomSeed1
+    );
+
+    return {
+      nextAction: {
+        type: "Step",
+        init: nextMessage,
+      },
+      remainingInits: remainingMessages,
+      randomSeed: randomSeed2,
+    };
+  }
+}

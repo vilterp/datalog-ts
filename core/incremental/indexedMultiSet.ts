@@ -4,11 +4,11 @@ export function emptyIndexedMultiset<T>(
   stringify: (t: T) => Key
 ): IndexedMultiSet<T> {
   return new IndexedMultiSet(
-    new DefaultDict<Key, ItemAndMult<T>>(() => {
-      throw new Error("bloop");
+    new DefaultDict<Key, ItemAndMult<T>>((key) => {
+      throw new Error(`not found: ${key}`);
     }),
-    new DefaultDict<string, Index<T>>(() => {
-      throw new Error("bloop");
+    new DefaultDict<string, Index<T>>((key) => {
+      throw new Error(`not found: ${key}`);
     }),
     stringify
   );

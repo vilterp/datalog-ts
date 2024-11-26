@@ -5,6 +5,7 @@ import {
   Message,
   EmissionLog,
   EmissionBatch,
+  NodeAndCache,
 } from "./types";
 import {
   baseFactTrace,
@@ -19,6 +20,7 @@ import Denque from "denque";
 import { evalBuiltin } from "../evalBuiltin";
 import { Catalog } from "./catalog";
 import { processMessage } from "./operators";
+import { ppb, ppt } from "../pretty";
 
 export function insertOrRetractFact(
   graph: RuleGraph,
@@ -150,11 +152,19 @@ function stepPropagatorAll(
   return { newGraph, emissionLog };
 }
 
+// TODO: some kind of config thing?
+const SAMPLING_ENABLED = false;
+
 function stepPropagator(iter: Propagator): EmissionBatch {
   let newGraph = iter.graph;
   const curMsg = iter.queue.shift();
   const curNodeID = curMsg.destination;
   const node = iter.graph.nodes.get(curMsg.destination);
+
+  if (SAMPLING_ENABLED) {
+    maybePrintSample(curMsg, curNodeID, node);
+  }
+
   if (!node) {
     throw new Error(`not found: node ${curMsg.destination}`);
   }
@@ -168,6 +178,7 @@ function stepPropagator(iter: Propagator): EmissionBatch {
   // console.log("push", results);
   const out: MessagePayload[] = [];
   for (let outMessage of outMessages) {
+    // messages with 0 multiplicity have no effect; we can ignore them
     if (outMessage.multiplicity === 0) {
       continue;
     }
@@ -176,7 +187,6 @@ function stepPropagator(iter: Propagator): EmissionBatch {
     newGraph = updateCurNodeCache(newGraph, curNodeID, outMessage);
     // propagate messages
     for (let destination of newGraph.edges.getWithDefault(curNodeID, [])) {
-      // messages with 0 multiplicity have no effect; we can ignore them
       iter.queue.push({
         destination,
         origin: curNodeID,
@@ -219,4 +229,15 @@ function updateCache(
 ): RuleGraph {
   graph.nodes.get(nodeID).cache.update(res, multiplicityDelta);
   return graph;
+}
+
+function maybePrintSample(curMsg: Message, nodeID: NodeID, node: NodeAndCache) {
+  if (!node.isInternal && Math.random() < 0.001) {
+    const data = curMsg.payload.data;
+    console.log(
+      "stepPropagator:",
+      nodeID,
+      data.type === "Record" ? ppt(data.rec) : ppb(data.bindings.bindings)
+    );
+  }
 }

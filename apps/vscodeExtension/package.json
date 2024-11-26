@@ -2,7 +2,7 @@
   "name": "lingo",
   "displayName": "Lingo",
   "publisher": "lingo",
-  "version": "0.1.25",
+  "version": "0.2.10",
   "repository": {
     "type": "git",
     "url": "https://github.com/vilterp/datalog-ts"
@@ -10,10 +10,7 @@
   "engines": {
     "vscode": "^1.32.0"
   },
-  "activationEvents": [
-    "onLanguage:datalog",
-    "onLanguage:grammar"
-  ],
+  "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
     "languages": [
@@ -25,11 +22,32 @@
         "configuration": "./dl-language-configuration.json"
       },
       {
+        "id": "datalog2",
+        "extensions": [
+          ".dl2"
+        ],
+        "configuration": "./dl2-language-configuration.json"
+      },
+      {
         "id": "grammar",
         "extensions": [
           ".grammar"
         ],
         "configuration": "./grammar-language-configuration.json"
+      },
+      {
+        "id": "basicBlocks",
+        "extensions": [
+          ".bb"
+        ],
+        "configuration": "./basic-blocks-language-configuration.json"
+      },
+      {
+        "id": "opt",
+        "extensions": [
+          ".opt"
+        ],
+        "configuration": "./opt-language-configuration.json"
       }
     ],
     "commands": [

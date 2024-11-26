@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import ReactDOM from "react-dom/client";
 import { nullLoader } from "../../core/loaders";
 // @ts-ignore
 import familyRulesDL from "../../core/testdata/family_rules.dl";
@@ -34,4 +34,4 @@ function Main() {
   );
 }
 
-ReactDOM.render(<Main />, document.getElementById("main"));
+ReactDOM.createRoot(document.getElementById("main")).render(<Main />);

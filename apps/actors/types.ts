@@ -4,15 +4,17 @@ import React from "react";
 // === overall ui model ===
 
 export type State<St, Msg> = {
+  networkLatency: number;
   systemInstances: SystemInstance<St, Msg>[];
 };
 
-// TODO: only one action... is this reducer even necessary?
-export type Action<St, Msg> = {
-  type: "UpdateSystemInstance";
-  action: SystemInstanceAction<St, Msg>;
-  instanceID: string;
-};
+export type Action<St, Msg> =
+  | {
+      type: "UpdateSystemInstance";
+      action: TimeTravelAction<St, Msg>;
+      instanceID: string;
+    }
+  | { type: "ChangeNetworkLatency"; newLatency: number };
 
 // === system & system instance ===
 
@@ -20,6 +22,17 @@ export type UpdateFn<ActorState, Msg> = (
   state: ActorState,
   msg: LoadedTickInitiator<ActorState, Msg>
 ) => ActorResp<ActorState, Msg>;
+
+export type MessageToClient<Msg> = {
+  clientID: ActorID;
+  message: Msg;
+};
+
+export type ChooseFn<ActorState, Msg> = (
+  system: System<ActorState, Msg>,
+  state: SystemState<ActorState>,
+  randomSeed: number
+) => [MessageToClient<Msg> | null, number];
 
 export type System<ActorState, Msg> = {
   name: string;
@@ -30,6 +43,7 @@ export type System<ActorState, Msg> = {
   getInitialState: (interp: AbstractInterpreter) => Trace<ActorState>;
   initialClientState: (id: string) => ActorState;
   initialUserState: ActorState;
+  chooseNextMove?: ChooseFn<ActorState, Msg>;
 };
 
 export type UIProps<ClientState, UserInput> = {
@@ -39,10 +53,22 @@ export type UIProps<ClientState, UserInput> = {
 
 export type SystemInstance<ActorState, Msg> = {
   system: System<ActorState, Msg>;
+  currentStateIdx: number;
+  stateHistory: SystemState<ActorState>[];
+};
+
+export type SystemState<ActorState> = {
   trace: Trace<ActorState>;
   clientIDs: string[];
   nextClientID: number;
 };
+
+export type TimeTravelAction<St, Msg> =
+  | { type: "TimeTravelTo"; idx: number }
+  | { type: "Advance"; action: SystemInstanceAction<St, Msg> }
+  | { type: "Branch" }
+  | { type: "Explore"; steps: number }
+  | { type: "DoRandomMove" };
 
 export type SystemInstanceAction<St, Msg> =
   | {
@@ -87,6 +113,10 @@ export function initialTrace<ActorState>(
 
 // TODO: DRY up all these initiators
 
+export type TickInitiator<ActorState> =
+  | { type: "messageReceived"; messageID: MessageID }
+  | NonMsgTickInitiator<ActorState>;
+
 type NonMsgTickInitiator<ActorState> =
   | { type: "timerFired"; timerID: TimerID }
   | {
@@ -95,10 +125,6 @@ type NonMsgTickInitiator<ActorState> =
       initialState: ActorState;
     }
   | { type: "userInput" };
-
-export type TickInitiator<ActorState> =
-  | { type: "messageReceived"; messageID: MessageID }
-  | NonMsgTickInitiator<ActorState>;
 
 export type LoadedTickInitiator<ActorState, Msg> =
   | LoadedMessageReceivedInitiator<Msg>

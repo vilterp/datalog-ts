@@ -1,9 +1,9 @@
 import { NodesByRule } from "../parserlib/flattenByRule";
-import { Span } from "../parserlib/types";
+import { Grammar, Span } from "../parserlib/types";
 
 export type LanguageSpec = {
   name: string;
-  datalog: string;
+  logic: LogicSpec;
   grammar: string;
   example: string;
   triggerCharacters?: string[]; // TODO: put into DL itself or derive from grammar
@@ -11,7 +11,20 @@ export type LanguageSpec = {
   leaves?: Set<string>;
 };
 
+export type LogicSpec =
+  | { type: "DL1"; source: string }
+  | { type: "DL2"; source: string };
+
+export function dl(source: string): LogicSpec {
+  return { type: "DL1", source };
+}
+
+export function dl2(source: string): LogicSpec {
+  return { type: "DL2", source };
+}
+
 export type LangImpl = {
+  grammar: Grammar;
   scopeDefn: (
     db: NodesByRule,
     scopeID: string,

@@ -1,5 +1,5 @@
 import React from "react";
-import { NodeProps, Handle } from "react-flow-renderer";
+import { NodeProps, Handle } from "reactflow";
 import { IndividualViz } from "..";
 import { int } from "../../../core/types";
 import { mapObjToList } from "../../../util/util";

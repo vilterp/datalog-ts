@@ -10,30 +10,36 @@ import { extractRuleTree } from "./parserlib/ruleTree";
 import { flattenByRule } from "./parserlib/flattenByRule";
 import { getSemanticTokens, ideCurrentSuggestion } from "./common/ide";
 import { datalogLangImpl } from "./languages/dl/dl";
-import { addCursor, getInterpForDoc } from "./interpCache";
+import { InterpCache, addCursor } from "./interpCache";
 import { AbstractInterpreter } from "../core/abstractInterpreter";
 import * as fs from "fs";
 import { assertDeepEqual } from "../util/testBench/testing";
-import { LanguageSpec } from "./common/types";
+import { LanguageSpec, dl } from "./common/types";
 import { SimpleInterpreter } from "../core/simple/interpreter";
 import { fsLoader } from "../core/fsLoader";
 import { IncrementalInterpreter } from "../core/incremental/interpreter";
+import { ParseErrors } from "./parserlib/types";
 
-export const lwbBenchmarksSimple: BenchmarkSpec[] = lwbBenchmarks(
-  new SimpleInterpreter("languageWorkbench/common", fsLoader)
+const BASE_PATH = "languageWorkbench/common";
+
+const SIMPLE_CACHE = new InterpCache(
+  () => new SimpleInterpreter(BASE_PATH, fsLoader)
+);
+const INCR_CACHE = new InterpCache(
+  () => new IncrementalInterpreter(BASE_PATH, fsLoader)
 );
 
-export const lwbBenchmarksIncr: BenchmarkSpec[] = lwbBenchmarks(
-  new IncrementalInterpreter("languageWorkbench/common", fsLoader)
-);
+export const lwbBenchmarksSimple: BenchmarkSpec[] = lwbBenchmarks(SIMPLE_CACHE);
 
-function lwbBenchmarks(initInterp: AbstractInterpreter) {
+export const lwbBenchmarksIncr: BenchmarkSpec[] = lwbBenchmarks(INCR_CACHE);
+
+function lwbBenchmarks(cache: InterpCache) {
   return ["fp", "dl"].map((lang) => ({
     name: lang,
     async run() {
       return runDDBenchmark(
         `languageWorkbench/languages/${lang}/${lang}.dd.txt`,
-        (input) => testLangQuery(input, initInterp)
+        (input) => testLangQuery(input, cache)
       );
     },
   }));
@@ -219,18 +225,20 @@ const LEAVES = new Set(["ident", "intLit", "stringLit"]);
 
 const { input, cursorPos } = extractCursor(DLSample);
 const tree = parserlib.parse(GRAMMAR, "main", input);
-const ruleTree = extractRuleTree(tree);
+const [ruleTree, parseErrors] = extractRuleTree(tree);
+if (parseErrors.length > 0) {
+  throw new ParseErrors(parseErrors);
+}
 const flattenedByRule = flattenByRule(ruleTree, input, LEAVES);
 
 const langSpec: LanguageSpec = {
   name: "datalog",
-  datalog: fs.readFileSync(`languageWorkbench/languages/dl/dl.dl`, "utf8"),
+  logic: dl(fs.readFileSync(`languageWorkbench/languages/dl/dl.dl`, "utf8")),
   grammar: fs.readFileSync(`languageWorkbench/languages/dl/dl.grammar`, "utf8"),
   example: "",
 };
 
-let interp: AbstractInterpreter = getInterpForDoc(
-  new SimpleInterpreter("languageWorkbench/common", fsLoader),
+let interp: AbstractInterpreter = INCR_CACHE.getInterpForDoc(
   langSpec.name,
   { [langSpec.name]: langSpec },
   "test.datalog",
@@ -249,7 +257,7 @@ function testCompletionsNative() {
 }
 
 function testCompletionsSimpleInterp() {
-  const results = interp.queryStr("ide.CurrentSuggestion{}");
+  const results = interp.queryStr("ide.CurrentSuggestion{}?");
   if (results.length === 0) {
     throw new Error("items length should be > 0");
   }
@@ -263,7 +271,7 @@ function testGetSemanticTokensNative() {
 }
 
 function testGetSemanticTokensSimpleInterp() {
-  const results = interp.queryStr("hl.NonHighlightSegment{}");
+  const results = interp.queryStr("hl.NonHighlightSegment{}?");
 }
 
 function testFlattenByRule() {
@@ -278,29 +286,29 @@ function testParse() {
 function testProblemsNative() {
   const problems = [...datalogLangImpl.tcProblem(flattenedByRule)];
   // TODO: why is this one more than simpleInterp?
-  assertDeepEqual(2, problems.length, "problems length");
+  assertDeepEqual(2, problems.length, { msg: "problems length" });
 }
 
 function testProblemsSimpleInterp() {
-  const problems = interp.queryStr("tc.Problem{}");
-  assertDeepEqual(2, problems.length, "problems length");
+  const problems = interp.queryStr("tc.Problem{}?");
+  assertDeepEqual(2, problems.length, { msg: "problems length" });
 }
 
 function testDefnAtPosSimpleInterp() {
   const interp2 = interp.evalStr(`ide.Cursor{idx: 2174}.`)[1];
-  const results = interp2.queryStr("ide.DefnForCursor{defnSpan: DS}");
-  assertDeepEqual(1, results.length, "results length");
+  const results = interp2.queryStr("ide.DefnForCursor{defnSpan: DS}?");
+  assertDeepEqual(1, results.length, { msg: "results length" });
 }
 
 function testUsageAtPosSimpleInterp() {
   const interp2 = interp.evalStr(`ide.Cursor{idx: 2392}.`)[1];
-  const results = interp2.queryStr(`ide.UsageForCursor{usageSpan: US}`);
-  assertDeepEqual(1, results.length, "results length");
+  const results = interp2.queryStr(`ide.UsageForCursor{usageSpan: US}?`);
+  assertDeepEqual(1, results.length, { msg: "results length" });
 }
 
 function testSymbolListSimpleInterp() {
   const results = interp.queryStr(
-    `scope.Defn{scopeID: global{}, name: N, span: S, kind: K}`
+    `scope.Defn{scopeID: global{}, name: N, span: S, kind: K}?`
   );
-  assertDeepEqual(21, results.length, "results length");
+  assertDeepEqual(21, results.length, { msg: "results length" });
 }

@@ -1,5 +1,6 @@
 import React from "react";
 import { useBoolLocalStorage } from "./hooks";
+import { CollapsibleInner } from "./collapsibleInner";
 
 export function CollapsibleWithHeading(props: {
   heading: string;
@@ -31,14 +32,11 @@ export function Collapsible(props: {
   );
 
   return (
-    <>
-      <div
-        style={{ cursor: "pointer" }}
-        onClick={() => setCollapsed(!collapsed)}
-      >
-        {props.renderLabel(collapsed)}
-      </div>
-      {collapsed ? null : props.content}
-    </>
+    <CollapsibleInner
+      renderLabel={props.renderLabel}
+      collapsed={collapsed}
+      setCollapsed={setCollapsed}
+      content={props.content}
+    />
   );
 }

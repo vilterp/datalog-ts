@@ -20,20 +20,21 @@ parse.State{state: S, char: C} :-
 # state path
 
 # TODO: use individual steps instead of this
-parse.statePathWithinRule{from: From, to: To} :-
-  parse.sameState{from: From, to: To} |
-  parse.stateStepWithinRule{from: From, to: To} |
-  parse.stateStepWithinRule{from: From, to: Between} &
-  parse.statePathWithinRule{from: Between, to: To}.
+parse.statePathWithinRule{from: From, to: To, length: L} :-
+  parse.sameState{from: From, to: To, length: L} |
+  parse.stateStepWithinRule{from: From, to: To, length: L} |
+  parse.stateStepWithinRule{from: From, to: Between, length: L1} &
+  parse.statePathWithinRule{from: Between, to: To, length: L2} &
+  L = L1 + L2.
 
-parse.sameState{from: st{state: S, char: C}, to: st{state: S, char: C}} :-
+parse.sameState{from: st{state: S, char: C}, to: st{state: S, char: C}, length: 0} :-
   parse.State{state: S, char: C}.
 
 # state step
 
-parse.stateStepWithinRule{from: From, to: To} :-
-  parse.nonCallStep{from: From, to: To, type: T} |
-  parse.refStep{from: From, to: To, type: T}.
+parse.stateStepWithinRule{from: From, to: To, length: L} :-
+  parse.nonCallStep{from: From, to: To, type: T, length: L} |
+  parse.refStep{from: From, to: To, type: T, length: L}.
 
 parse.stateStep{from: From, to: To, type: T} :-
   parse.nonCallStep{from: From, to: To, type: T} |
@@ -44,6 +45,7 @@ parse.initialStateStep{
   from: st{state: -1, char: -1},
   to: st{state: S, char: C},
   type: "initial",
+  length: 0,
 } :-
   grammar.rule{name: "main", from: S} &
   input.next{from: -1, to: C}.
@@ -52,6 +54,7 @@ parse.matchCharLiteral{
   from: st{state: FromS, char: FromC},
   to: st{state: ToS, char: ToC},
   type: "matchCharLiteral",
+  length: 1,
 } :-
   parse.State{state: FromS, char: FromC} &
   grammar.charLiteralEdge{from: FromS, to: ToS, val: V} &
@@ -62,6 +65,7 @@ parse.matchCharRange{
   from: st{state: FromS, char: FromC},
   to: st{state: ToS, char: ToC},
   type: "matchCharRange",
+  length: 1,
 } :-
   parse.State{state: FromS, char: FromC} &
   grammar.charRangeEdge{from: FromS, to: ToS, rangeStart: RS, rangeEnd: RE} &
@@ -105,6 +109,7 @@ parse.refStep{
   to: st{state: ToS, char: ToC},
   rule: Rule,
   type: "ref",
+  length: L,
 } :-
   parse.callRule{
     from: st{state: FromS, char: FromC},
@@ -114,6 +119,7 @@ parse.refStep{
   parse.statePathWithinRule{
     from: st{state: RuleStartSt, char: FromC},
     to: st{state: RuleEndSt, char: ToC},
+    length: L,
   } &
   parse.returnFromRule{
     from: st{state: RuleEndSt, char: ToC},
@@ -125,26 +131,31 @@ parse.jump{
   from: st{state: FromS, char: C},
   to: st{state: ToS, char: C},
   type: "jump",
+  length: 0,
 } :-
   parse.State{state: FromS, char: C} &
   grammar.jumpEdge{from: FromS, to: ToS}.
 
 # building rule tree
 
-parse.ruleMatch{rule: Rule, span: span{from: CStart, to: CEnd}} :-
+parse.ruleMatch{rule: Rule, span: span{from: CStart, to: CEnd}, length: L} :-
+  maxBy[Rule, CStart, L: parse.rawRuleMatch{rule: Rule, span: span{from: CStart, to: CEnd}, length: L}].
+
+parse.rawRuleMatch{rule: Rule, span: span{from: CStart, to: CEnd}, length: L} :-
   grammar.rule{name: Rule, from: SRuleStart, to: SRuleEnd} &
   parse.State{state: SRuleStart, char: CStart} &
   parse.State{state: SRuleEnd, char: CEnd} &
   parse.statePathWithinRule{
     from: st{state: SRuleStart, char: CStart},
     to: st{state: SRuleEnd, char: CEnd},
+    length: L,
   }.
 
-parse.nonCallStep{from: From, to: To, type: T} :-
-  parse.initialStateStep{from: From, to: To, type: T} |
-  parse.matchCharLiteral{from: From, to: To, type: T} |
-  parse.matchCharRange{from: From, to: To, type: T} |
-  parse.jump{from: From, to: To, type: T}.
+parse.nonCallStep{from: From, to: To, type: T, length: L} :-
+  parse.initialStateStep{from: From, to: To, type: T, length: L} |
+  parse.matchCharLiteral{from: From, to: To, type: T, length: L} |
+  parse.matchCharRange{from: From, to: To, type: T, length: L} |
+  parse.jump{from: From, to: To, type: T, length: L}.
 
 parse.ruleMatchParent{
   child: match{rule: ChildRule, span: span{from: ChildStartCh, to: ChildEndCh}},
@@ -191,22 +202,23 @@ grammar.stateDirectlyReachable{from: StateFrom, to: StateTo} :-
 viz.astNode{
   id: match{rule: R, span: span{from: F, to: T}},
   parentID: P,
-  display: [R, [F, T]],
+  display: [R, [F, T], L],
 } :-
   viz.astNodeInternal{
     id: match{rule: R, span: span{from: F, to: T}},
     parentID: P,
+    length: L,
   }.
 
-viz.astNodeInternal{id: I, parentID: P} :-
-  viz.normalNode{id: I, parentID: P} |
-  viz.mainNode{id: I, parentID: P}.
+viz.astNodeInternal{id: I, parentID: P, length: L} :-
+  viz.normalNode{id: I, parentID: P, length: L} |
+  viz.mainNode{id: I, parentID: P, length: L}.
 
-viz.normalNode{id: match{rule: Rule, span: Span}, parentID: P} :-
-  parse.ruleMatch{rule: Rule, span: Span} &
+viz.normalNode{id: match{rule: Rule, span: Span}, parentID: P, length: L} :-
+  parse.ruleMatch{rule: Rule, span: Span, length: L} &
   parse.ruleMatchParent{child: match{rule: Rule, span: Span}, parent: P}.
-viz.mainNode{id: match{rule: "main", span: Span}, parentID: -1} :-
-  parse.ruleMatch{rule: "main", span: Span}.
+viz.mainNode{id: match{rule: "main", span: Span}, parentID: -1, length: L} :-
+  parse.ruleMatch{rule: "main", span: Span, length: L}.
 
 internal.visualization{
   name: "AST",

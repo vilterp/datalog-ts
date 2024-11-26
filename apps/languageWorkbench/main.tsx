@@ -1,5 +1,5 @@
 import React, { useReducer } from "react";
-import ReactDOM from "react-dom";
+import ReactDOM from "react-dom/client";
 import { Explorer } from "../../uiCommon/explorer";
 import { mapObj, mapObjToList } from "../../util/util";
 import { LingoEditor } from "../../uiCommon/ide/editor";
@@ -7,13 +7,14 @@ import { EditorState } from "../../uiCommon/ide/types";
 import { LANGUAGES } from "../../languageWorkbench/languages";
 import useHashParam from "use-hash-param";
 import { ErrorList } from "../../uiCommon/ide/errorList";
-import {
-  addCursor,
-  getInterpForDoc,
-} from "../../languageWorkbench/interpCache";
+import { addCursor } from "../../languageWorkbench/interpCache";
 import { CollapsibleWithHeading } from "../../uiCommon/generic/collapsible";
-import { INIT_INTERP } from "../../languageWorkbench/vscode/common";
-import { LanguageSpec } from "../../languageWorkbench/common/types";
+import {
+  LanguageSpec,
+  dl as dl1,
+  dl2,
+} from "../../languageWorkbench/common/types";
+import { CACHE } from "../../languageWorkbench/vscode/common";
 
 function Main() {
   return <Workbench />;
@@ -29,22 +30,23 @@ function Workbench() {
 
   const curLangSpec: LanguageSpec = {
     name: versionedLangID,
-    datalog: curLangState.datalog.source,
+    logic:
+      curLangState.datalogVersion === "DL1"
+        ? dl1(curLangState.datalog.source)
+        : dl2(curLangState.datalog.source),
     example: curLangState.example.source,
     grammar: curLangState.grammar.source,
   };
 
   const uri = `test.${curLangID}`;
-  const interpWithoutCursor = getInterpForDoc(
-    INIT_INTERP,
+  const { interp: interpWithoutCursor, errors } = CACHE.getInterpForDoc(
     versionedLangID,
     {
       [versionedLangID]: curLangSpec,
     },
     uri,
     curLangState.example.source
-  ).interp;
-  const errors = [];
+  );
   const interp = addCursor(interpWithoutCursor, curLangState.example.cursorPos);
 
   return (
@@ -85,6 +87,7 @@ function Workbench() {
                 lineNumbers="off"
                 showKeyBindingsTable
               />
+              {/* TODO: show these inline in the source ccode */}
               <ErrorList errors={errors} />
             </td>
             <td>
@@ -156,13 +159,15 @@ type LangState = {
   example: EditorState;
   grammar: EditorState;
   datalog: EditorState;
+  datalogVersion: "DL1" | "DL2";
 };
 
 const emptyState: State = mapObj(LANGUAGES, (langID, spec) => ({
   version: 1,
   example: { cursorPos: 1, source: spec.example },
   grammar: { cursorPos: 1, source: spec.grammar },
-  datalog: { cursorPos: 1, source: spec.datalog },
+  datalog: { cursorPos: 1, source: spec.logic.source },
+  datalogVersion: spec.logic.type,
 }));
 
 type Action = { type: "UpdateLang"; langID: string; action: LangAction };
@@ -204,4 +209,4 @@ function updateLang(langState: LangState, action: LangAction): LangState {
   }
 }
 
-ReactDOM.render(<Main />, document.getElementById("main"));
+ReactDOM.createRoot(document.getElementById("main")).render(<Main />);

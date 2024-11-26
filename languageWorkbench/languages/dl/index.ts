@@ -1,4 +1,4 @@
-import { LanguageSpec } from "../../common/types";
+import { LanguageSpec, dl } from "../../common/types";
 import { datalogLangImpl } from "./dl";
 // @ts-ignore
 import datalogTxt from "./dl.dl";
@@ -9,7 +9,7 @@ import example from "./example.txt";
 
 export const datalog: LanguageSpec = {
   name: "datalog",
-  datalog: datalogTxt,
+  logic: dl(datalogTxt),
   grammar,
   example,
   // TODO: derive these from the grammar

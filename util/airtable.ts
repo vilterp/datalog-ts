@@ -26,12 +26,14 @@ async function getRecord(name: string, result: BenchmarkResult) {
       error: result.error.toString(),
     });
   }
-  const profileURL = await uploadProfileToS3(result.profilePath);
+  const profileURL = result.profilePath
+    ? await uploadProfileToS3(result.profilePath)
+    : null;
   return {
     ...common,
     repetitions: result.repetitions,
     "total time ms": result.totalTimeMS,
     profiling: !!result.profilePath,
-    "profile URL": result.profilePath ? profileURL : null,
+    "profile URL": profileURL,
   };
 }

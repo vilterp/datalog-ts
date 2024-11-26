@@ -1,7 +1,7 @@
 import { ppr, ppRule, ppt } from "../../core/pretty";
 import { Res, Rule, Term } from "../../core/types";
 import { Json } from "../json";
-import { joinLinesWithTrailing } from "../util";
+import { joinLinesWithTrailing, uniq } from "../util";
 
 export type Archive = { [path: string]: DDTest };
 
@@ -46,7 +46,7 @@ export function jsonOut(content: Json): TestOutput {
 
 export function datalogOut(terms: Term[]): TestOutput {
   return {
-    content: joinLinesWithTrailing(".", terms.map(ppt).sort()),
+    content: joinLinesWithTrailing(".", uniq(terms.map(ppt).sort())),
     mimeType: "application/datalog",
   };
 }

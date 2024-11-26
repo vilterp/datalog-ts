@@ -1,26 +1,107 @@
 import { Json } from "../../../../util/json";
-import { InterpreterState } from "./mutations/builtins";
-import { Lambda } from "./mutations/types";
 
 export type VersionedValue = {
   value: Json;
   transactionID: string;
 };
 
-export type KVData = { [key: string]: VersionedValue };
+// For each key, keep a value at each transaction that updated that key,
+// ordered from first transaction that happened to last.
+export type KVData = { [key: string]: VersionedValue[] };
 
 export type UserInput =
+  | { type: "Signup"; username: string; password: string }
+  | { type: "Login"; username: string; password: string }
+  | { type: "Logout" }
   | { type: "RunMutation"; invocation: MutationInvocation }
   | { type: "RegisterQuery"; id: string; query: Query }
   | { type: "CancelTransaction"; id: string };
 
-export type MsgToServer = LiveQueryRequest | MutationRequest;
+export type MsgToServer =
+  | SignupRequest
+  | LogInRequest
+  | {
+      type: "AuthenticatedRequest";
+      token: string;
+      request: AuthenticatedRequest;
+    };
+
+export type AuthenticatedRequest =
+  | LogOutRequest
+  | LiveQueryRequest
+  | MutationRequest;
 
 export type MsgToClient = MsgFromServer | UserInput;
 
-type MsgFromServer = MutationResponse | LiveQueryUpdate | LiveQueryResponse;
+type MsgFromServer =
+  | SignupResponse
+  | LogInResponse
+  | LogOutResponse
+  | UnauthorizedError
+  | MutationResponse
+  | LiveQueryUpdate
+  | LiveQueryResponse;
 
-export type MutationDefns = { [name: string]: Lambda };
+type UnauthorizedError = {
+  type: "UnauthorizedError";
+};
+
+// Login / Logout
+
+type SignupRequest = {
+  type: "SignupRequest";
+  username: string;
+  password: string;
+};
+
+type SignupResponse = {
+  type: "SignupResponse";
+  response:
+    | { type: "Success"; token: string }
+    | { type: "Failure"; msg: string };
+};
+
+type LogInRequest = {
+  type: "LogInRequest";
+  username: string;
+  password: string;
+};
+
+type LogInResponse = {
+  type: "LogInResponse";
+  response: { type: "Success"; token: string } | { type: "Failure" };
+};
+
+type LogOutRequest = {
+  type: "LogOutRequest";
+};
+
+type LogOutResponse = {
+  type: "LogOutResponse";
+};
+
+// Mutations & Queries
+
+export class AbortError extends Error {
+  resVal: Json;
+  constructor(resVal: Json) {
+    super("Mutation aborted");
+    this.resVal = resVal;
+  }
+}
+
+export type MutationCtx = {
+  curUser: string;
+  curTime: number;
+  rand: () => number;
+  read: (key: string, _default?: Json) => Json;
+  scan: (prefix: string) => Json[];
+  write: (key: string, value: Json) => void;
+};
+
+type MutationFn = (ctx: MutationCtx, args: Json[]) => void;
+
+export type TSMutationDefns = { [name: string]: MutationFn };
 
 export type Query = { prefix: string };
 
@@ -30,17 +111,26 @@ export type LiveQueryRequest = {
   query: Query;
 };
 
+// Full trace
+
 export type Trace = TraceOp[];
 
-type TraceOp = ReadOp | WriteOp;
-
-export type ReadOp = { type: "Read"; key: string; transactionID: string };
+export type TraceOp = ReadOp | WriteOp;
 
 export type WriteOp = {
   type: "Write";
   key: string;
-  value: Json;
+  desc: WriteDesc;
 };
+
+export type ReadOp = { type: "Read"; key: string; transactionID: string };
+
+export type WriteDesc =
+  | { type: "Insert"; after: VersionedValue }
+  | { type: "Update"; before: VersionedValue; after: VersionedValue }
+  | { type: "Delete"; before: VersionedValue };
+
+// Mutations
 
 export type MutationRequest = {
   type: "MutationRequest";
@@ -48,6 +138,11 @@ export type MutationRequest = {
   interpState: InterpreterState;
   invocation: MutationInvocation;
   trace: Trace;
+};
+
+export type InterpreterState = {
+  type: "InterpreterState";
+  randSeed: number;
 };
 
 export type MutationResponse = {
@@ -60,10 +155,19 @@ export type MutationResponse = {
       }
     | {
         type: "Reject";
+        timestamp: number;
         serverTrace: Trace;
-        reason: string;
+        reason: AbortReason;
       };
 };
+
+export type AbortReason =
+  | { type: "FailedOnClient"; reason: Json }
+  | { type: "FailedOnServer"; failure: ServerTransactionFailure };
+
+type ServerTransactionFailure =
+  | { type: "TraceDoesntMatch" }
+  | { type: "LogicError"; reason: Json };
 
 export type TransactionMetadata = {
   [id: string]: { serverTimestamp: number; invocation: MutationInvocation };
@@ -95,4 +199,13 @@ export type MutationInvocation = {
   type: "Invocation";
   name: string;
   args: Json[];
+};
+
+// Triggers
+
+type TriggerFn = (ctx: MutationCtx, evt: WriteOp) => void;
+
+export type TriggerDefn = {
+  prefix: string;
+  fn: TriggerFn;
 };
