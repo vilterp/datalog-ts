@@ -1,7 +1,7 @@
-main :- Program.
+main :- Rule.
 Program :- repSep(Rule, ws).
 Rule :- [
-  "rule",
+  ruleKW,
   ws,
   "{",
   ws,
@@ -37,10 +37,10 @@ InfixCall :- [
   Ident
 ].
 PrefixCall :- [Ident, Attrs].
-Attrs :- ["(", repSep(Attr, CommaSpace), ""].
+Attrs :- ["(", repSep(Attr, CommaSpace), ")"].
 Attr :- [Ident, "=", Ident].
 InfixOp :- ("+" | "-" | "*" | "/" | "==" | "!=" | "<" | "<=" | ">" | ">=").
-Bind :- [Ident, ".add", Attrs].
+Bind :- [Ident, ".", addKW, Attrs].
 Literal :- (StringLit | NumberLit | BoolLit).
 
 
@@ -56,8 +56,10 @@ ws :- repSep([spaces, (comment | "")], "\n").
 spaces :- repSep(" ", "").
 placeholder :- "???".
 CommaSpace :- [",", ws].
-path :- repSep(pathSegment, "/").
-pathSegment :- repSep(([a-z]|[A-Z]|[0-9]|'_'|'-'|'.'), "").
+
+ruleKW :- "rule".
+addKW :- "add".
+setKW :- "set".
 
 commentChar :- ^'\n'.
 comment :- ["#", repSep(commentChar, "")].
