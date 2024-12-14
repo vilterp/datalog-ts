@@ -1,0 +1,63 @@
+main :- Program.
+Program :- repSep(Rule, ws).
+Rule :- [
+  "rule",
+  ws,
+  "{",
+  ws,
+  Sequence,
+  ws,
+  "}"
+].
+Sequence :- repSep(Statement, ws).
+Statement :- (Assign | Filter | Bind | Rule).
+Assign :- [Ident, ws, "=", ws, Expr].
+Filter :- [
+  Ident,
+  ws,
+  InfixOp,
+  ws,
+  Ident
+].
+Expr :- (
+  MemberAccess |
+  Literal |
+  Call |
+  Bind |
+  Get
+).
+MemberAccess :- repSep(Ident, ".").
+Call :- InfixCall.
+Get :- [Ident, Attrs].
+InfixCall :- [
+  Ident,
+  ws,
+  InfixOp,
+  ws,
+  Ident
+].
+PrefixCall :- [Ident, Attrs].
+Attrs :- ["(", repSep(Attr, CommaSpace), ""].
+Attr :- [Ident, "=", Ident].
+InfixOp :- ("+" | "-" | "*" | "/" | "==" | "!=" | "<" | "<=" | ">" | ">=").
+Bind :- [Ident, ".add", Attrs].
+Literal :- (StringLit | NumberLit | BoolLit).
+
+
+Ident :- [alpha, repSep((alphaNum | "."), "")].
+StringLit :- ["\"", repSep(stringChar, ""), "\""].
+NumberLit :- [("-" | ""), first:num, repSep(num, "")].
+BoolLit :- ("true" | "false").
+stringChar :- (^'"' | ['\\', '"']).
+alpha :- ([a-z] | [A-Z] | "_").
+num :- [0-9].
+alphaNum :- (alpha | num).
+ws :- repSep([spaces, (comment | "")], "\n").
+spaces :- repSep(" ", "").
+placeholder :- "???".
+CommaSpace :- [",", ws].
+path :- repSep(pathSegment, "/").
+pathSegment :- repSep(([a-z]|[A-Z]|[0-9]|'_'|'-'|'.'), "").
+
+commentChar :- ^'\n'.
+comment :- ["#", repSep(commentChar, "")].
