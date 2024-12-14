@@ -11,6 +11,7 @@ import { treeSQL } from "./treeSQL";
 import { plainText } from "./plainText";
 import { opt } from "./opt";
 import { datalog2 } from "./dl2";
+import { treeDL } from "./treeDL";
 
 export const LANGUAGES: { [name: string]: LanguageSpec } = {
   plainText,
@@ -22,6 +23,7 @@ export const LANGUAGES: { [name: string]: LanguageSpec } = {
   fp,
   sql,
   treeSQL,
+  treeDL,
   modelica,
   contracts,
   opt,
