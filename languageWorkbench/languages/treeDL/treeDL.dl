@@ -1,3 +1,10 @@
+scope.Defn{scopeID: I, span: S, name: N, kind: K, type: T} :-
+  defn.localVar{scopeID: I, span: S, name: N, kind: K, type: T}.
+
+defn.localVar{scopeID: I, span: S, name: N, kind: "var", type: "any"} :-
+  ast.Assign{id: I} &
+  ast.Ident{parentID: I, span: S, text: N}.
+
 hl.mapping{rule: "Ident", type: "ident"}.
 hl.mapping{rule: "NumberLit", type: "number"}.
 hl.mapping{rule: "BoolLit", type: "number"}.

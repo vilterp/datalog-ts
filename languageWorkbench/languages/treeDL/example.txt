@@ -2,16 +2,4 @@ rule {
   raw_node = rawNode()
   id = raw_node.id
   node = Node.add(id=id)
-  rule {
-    next = Node()
-    raw_next = raw_node.next
-    next == raw_next
-    node.set(next=next)
-  }
-  rule {
-    prev = Node()
-    raw_prev = raw_node.prev
-    prev == raw_prev
-    node.set(prev=prev)
-  }
 }
