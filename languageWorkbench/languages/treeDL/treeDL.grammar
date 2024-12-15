@@ -1,4 +1,4 @@
-main :- Rule.
+main :- Program.
 Program :- repSep(Decl, ws).
 Decl :- (Rule | TypeDecl).
 TypeDecl :- [typeKW, ws, Ident].
