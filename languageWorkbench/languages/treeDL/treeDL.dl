@@ -6,13 +6,20 @@ var.localVar{scopeID: Statement, name: N, span: S, kind: "var"} :-
   ast.Statement{id: Statement} &
   ast.Assign{id: Assign, parentID: Statement} &
   ast.Expr{id: Expr, parentID: Assign} &
-  exprVar{id: Expr, name: N, span: S}.
-exprVar{id: I, name: N, span: S} :-
-  varMemberAccess{id: I, name: N, span: S}.
-varMemberAccess{id: Expr, name: N, span: span{from: Start, to: End}} :-
+  var.expr{id: Expr, name: N, span: S}.
+var.expr{id: I, name: N, span: S} :-
+  var.memberAccess{id: I, name: N, span: S} |
+  var.bindAttr{id: I, name: N, span: S}.
+var.memberAccess{id: Expr, name: N, span: span{from: Start, to: End}} :-
   ast.Expr{id: Expr} &
   ast.MemberAccess{id: MemberAccess, parentID: Expr, span: span{from: Start}} &
   ast.Ident{parentID: MemberAccess, text: N, span: span{from: Start, to: End}}.
+var.bindAttr{id: Expr, name: N, span: span{from: Start, to: End}} :-
+  ast.Expr{id: Expr} &
+  ast.Bind{id: Bind, parentID: Expr} &
+  ast.Attrs{id: Attrs, parentID: Bind} &
+  ast.Attr{id: Attr, parentID: Attrs, span: span{to: End}} &
+  ast.Ident{parentID: Attr, text: N, span: span{from: Start, to: End}}. # TODO: use 'key'
 
 # Defn
 

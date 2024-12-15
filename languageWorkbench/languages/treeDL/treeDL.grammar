@@ -38,7 +38,7 @@ InfixCall :- [
 ].
 PrefixCall :- [Ident, Attrs].
 Attrs :- ["(", repSep(Attr, CommaSpace), ")"].
-Attr :- [Ident, "=", Ident].
+Attr :- [key:Ident, "=", value:Ident].
 InfixOp :- ("+" | "-" | "*" | "/" | "==" | "!=" | "<" | "<=" | ">" | ">=").
 Bind :- [Ident, ".", addKW, Attrs].
 Literal :- (StringLit | NumberLit | BoolLit).
