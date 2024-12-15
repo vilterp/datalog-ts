@@ -1,5 +1,7 @@
 main :- Rule.
-Program :- repSep(Rule, ws).
+Program :- repSep(Decl, ws).
+Decl :- (Rule | TypeDecl).
+TypeDecl :- [typeKW, ws, Ident].
 Rule :- [ruleKW, ws, "{", ws, Sequence, ws, "}"].
 Sequence :- repSep(Statement, ws).
 Statement :- (Assign | Filter | Bind | Rule).
@@ -24,6 +26,7 @@ Bind :- [Ident, ".", addKW, Attrs].
 Literal :- (StringLit | NumberLit | BoolLit).
 
 # keywords
+typeKW :- "type".
 ruleKW :- "rule".
 addKW :- "add".
 setKW :- "set".

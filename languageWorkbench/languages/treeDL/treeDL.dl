@@ -1,7 +1,8 @@
 # Var
 
 scope.Var{scopeID: I, name: N, span: S, kind: K} :-
-  var.localVar{scopeID: I, name: N, span: S, kind: K}.
+  var.localVar{scopeID: I, name: N, span: S, kind: K} |
+  var.type{scopeID: I, name: N, span: S, kind: K}.
 var.localVar{scopeID: Statement, name: N, span: S, kind: "var"} :-
   ast.Statement{id: Statement} &
   ast.Assign{id: Assign, parentID: Statement} &
@@ -21,15 +22,30 @@ var.bindAttr{id: Expr, name: N, span: span{from: Start, to: End}} :-
   ast.Attr{id: Attr, parentID: Attrs, span: span{to: End}} &
   ast.Ident{parentID: Attr, text: N, span: span{from: Start, to: End}}. # TODO: use 'key'
 
+var.type{scopeID: I, name: N, span: S, kind: "type"} :-
+  var.getType{scopeID: I, name: N, span: S} |
+  var.bindType{scopeID: I, name: N, span: S}.
+var.getType{scopeID: global{}, name: N, span: S} :-
+  ast.Get{id: Get} &
+  ast.Ident{parentID: Get, text: N, span: S}.
+var.bindType{scopeID: global{}, name: N, span: S} :-
+  ast.Bind{id: Get} &
+  ast.Ident{parentID: Get, text: N, span: S}.
+
 # Defn
 
 scope.Defn{scopeID: I, span: S, name: N, kind: K, type: T} :-
-  defn.localVar{scopeID: I, span: S, name: N, kind: K, type: T}.
+  defn.localVar{scopeID: I, span: S, name: N, kind: K, type: T} |
+  defn.type{scopeID: I, span: S, name: N, kind: K, type: T}.
 
 defn.localVar{scopeID: Statement, span: S, name: N, kind: "var", type: "any"} :-
   ast.Statement{id: Statement} &
   ast.Assign{id: Assign, parentID: Statement} &
   ast.Ident{parentID: Assign, span: S, text: N}.
+
+defn.type{scopeID: global{}, span: S, name: N, kind: "type", type: "any"} :-
+  ast.TypeDecl{id: Decl} &
+  ast.Ident{parentID: Decl, text: N, span: S}.
 
 # Parent
 
@@ -48,3 +64,4 @@ hl.mapping{rule: "comment", type: "comment"}.
 hl.mapping{rule: "addKW", type: "keyword"}.
 hl.mapping{rule: "setKW", type: "keyword"}.
 hl.mapping{rule: "ruleKW", type: "keyword"}.
+hl.mapping{rule: "typeKW", type: "keyword"}.
