@@ -1,7 +1,10 @@
+# Var
+
 scope.Var{scopeID: I, name: N, span: S, kind: K} :-
   var.localVar{scopeID: I, name: N, span: S, kind: K}.
-var.localVar{scopeID: Assign, name: N, span: S, kind: "var"} :-
-  ast.Assign{id: Assign} &
+var.localVar{scopeID: Statement, name: N, span: S, kind: "var"} :-
+  ast.Statement{id: Statement} &
+  ast.Assign{id: Assign, parentID: Statement} &
   ast.Expr{id: Expr, parentID: Assign} &
   exprVar{id: Expr, name: N, span: S}.
 exprVar{id: I, name: N, span: S} :-
@@ -11,12 +14,24 @@ varMemberAccess{id: Expr, name: N, span: span{from: Start, to: End}} :-
   ast.MemberAccess{id: MemberAccess, parentID: Expr, span: span{from: Start}} &
   ast.Ident{parentID: MemberAccess, text: N, span: span{from: Start, to: End}}.
 
+# Defn
+
 scope.Defn{scopeID: I, span: S, name: N, kind: K, type: T} :-
   defn.localVar{scopeID: I, span: S, name: N, kind: K, type: T}.
 
-defn.localVar{scopeID: I, span: S, name: N, kind: "var", type: "any"} :-
-  ast.Assign{id: I} &
-  ast.Ident{parentID: I, span: S, text: N}.
+defn.localVar{scopeID: Statement, span: S, name: N, kind: "var", type: "any"} :-
+  ast.Statement{id: Statement} &
+  ast.Assign{id: Assign, parentID: Statement} &
+  ast.Ident{parentID: Assign, span: S, text: N}.
+
+# Parent
+
+scope.Parent{parentID: First, childID: Second} :-
+  ast.Statement{id: First} &
+  ast.Statement{id: Second} &
+  astInternal.next{prev: First, next: Second}.
+
+# Highlight
 
 hl.mapping{rule: "Ident", type: "ident"}.
 hl.mapping{rule: "NumberLit", type: "number"}.
