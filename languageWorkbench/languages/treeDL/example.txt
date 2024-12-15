@@ -1,3 +1,6 @@
+type rawNode
+type Node
+
 rule {
   raw_node = rawNode()
   id = raw_node.id
