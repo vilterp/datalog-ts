@@ -1,3 +1,45 @@
+# Var
+
+scope.Var{scopeID: I, name: N, span: S, kind: K} :-
+  var.localVar{scopeID: I, name: N, span: S, kind: K}.
+var.localVar{scopeID: Statement, name: N, span: S, kind: "var"} :-
+  ast.Statement{id: Statement} &
+  ast.Assign{id: Assign, parentID: Statement} &
+  ast.Expr{id: Expr, parentID: Assign} &
+  var.expr{id: Expr, name: N, span: S}.
+var.expr{id: I, name: N, span: S} :-
+  var.memberAccess{id: I, name: N, span: S} |
+  var.bindAttr{id: I, name: N, span: S}.
+var.memberAccess{id: Expr, name: N, span: span{from: Start, to: End}} :-
+  ast.Expr{id: Expr} &
+  ast.MemberAccess{id: MemberAccess, parentID: Expr, span: span{from: Start}} &
+  ast.Ident{parentID: MemberAccess, text: N, span: span{from: Start, to: End}}.
+var.bindAttr{id: Expr, name: N, span: span{from: Start, to: End}} :-
+  ast.Expr{id: Expr} &
+  ast.Bind{id: Bind, parentID: Expr} &
+  ast.Attrs{id: Attrs, parentID: Bind} &
+  ast.Attr{id: Attr, parentID: Attrs, span: span{to: End}} &
+  ast.Ident{parentID: Attr, text: N, span: span{from: Start, to: End}}. # TODO: use 'key'
+
+# Defn
+
+scope.Defn{scopeID: I, span: S, name: N, kind: K, type: T} :-
+  defn.localVar{scopeID: I, span: S, name: N, kind: K, type: T}.
+
+defn.localVar{scopeID: Statement, span: S, name: N, kind: "var", type: "any"} :-
+  ast.Statement{id: Statement} &
+  ast.Assign{id: Assign, parentID: Statement} &
+  ast.Ident{parentID: Assign, span: S, text: N}.
+
+# Parent
+
+scope.Parent{parentID: First, childID: Second} :-
+  ast.Statement{id: First} &
+  ast.Statement{id: Second} &
+  astInternal.next{prev: First, next: Second}.
+
+# Highlight
+
 hl.mapping{rule: "Ident", type: "ident"}.
 hl.mapping{rule: "NumberLit", type: "number"}.
 hl.mapping{rule: "BoolLit", type: "number"}.

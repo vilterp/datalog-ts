@@ -1,24 +1,10 @@
 main :- Rule.
 Program :- repSep(Rule, ws).
-Rule :- [
-  ruleKW,
-  ws,
-  "{",
-  ws,
-  Sequence,
-  ws,
-  "}"
-].
+Rule :- [ruleKW, ws, "{", ws, Sequence, ws, "}"].
 Sequence :- repSep(Statement, ws).
 Statement :- (Assign | Filter | Bind | Rule).
 Assign :- [Ident, ws, "=", ws, Expr].
-Filter :- [
-  Ident,
-  ws,
-  InfixOp,
-  ws,
-  Ident
-].
+Filter :- [Ident, ws, InfixOp, ws, Ident].
 Expr :- (
   MemberAccess |
   Literal |
@@ -29,22 +15,21 @@ Expr :- (
 MemberAccess :- repSep(Ident, ".").
 Call :- InfixCall.
 Get :- [Ident, Attrs].
-InfixCall :- [
-  Ident,
-  ws,
-  InfixOp,
-  ws,
-  Ident
-].
+InfixCall :- [Ident, ws, InfixOp, ws, Ident].
 PrefixCall :- [Ident, Attrs].
 Attrs :- ["(", repSep(Attr, CommaSpace), ")"].
-Attr :- [Ident, "=", Ident].
+Attr :- [key:Ident, "=", value:Ident].
 InfixOp :- ("+" | "-" | "*" | "/" | "==" | "!=" | "<" | "<=" | ">" | ">=").
 Bind :- [Ident, ".", addKW, Attrs].
 Literal :- (StringLit | NumberLit | BoolLit).
 
+# keywords
+ruleKW :- "rule".
+addKW :- "add".
+setKW :- "set".
 
-Ident :- [alpha, repSep((alphaNum | "."), "")].
+# stdlib
+Ident :- [alpha, repSep(alphaNum, "")].
 StringLit :- ["\"", repSep(stringChar, ""), "\""].
 NumberLit :- [("-" | ""), first:num, repSep(num, "")].
 BoolLit :- ("true" | "false").
@@ -57,9 +42,6 @@ spaces :- repSep(" ", "").
 placeholder :- "???".
 CommaSpace :- [",", ws].
 
-ruleKW :- "rule".
-addKW :- "add".
-setKW :- "set".
-
-commentChar :- ^'\n'.
 comment :- ["#", repSep(commentChar, "")].
+commentChar :- ^'\n'.
+
