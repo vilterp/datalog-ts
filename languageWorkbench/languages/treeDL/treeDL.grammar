@@ -44,7 +44,7 @@ Bind :- [Ident, ".", addKW, Attrs].
 Literal :- (StringLit | NumberLit | BoolLit).
 
 
-Ident :- [alpha, repSep((alphaNum | "."), "")].
+Ident :- [alpha, repSep(alphaNum, "")].
 StringLit :- ["\"", repSep(stringChar, ""), "\""].
 NumberLit :- [("-" | ""), first:num, repSep(num, "")].
 BoolLit :- ("true" | "false").

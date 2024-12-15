@@ -1,3 +1,16 @@
+scope.Var{scopeID: I, name: N, span: S, kind: K} :-
+  var.localVar{scopeID: I, name: N, span: S, kind: K}.
+var.localVar{scopeID: Assign, name: N, span: S, kind: "var"} :-
+  ast.Assign{id: Assign} &
+  ast.Expr{id: Expr, parentID: Assign} &
+  exprVar{id: Expr, name: N, span: S}.
+exprVar{id: I, name: N, span: S} :-
+  varMemberAccess{id: I, name: N, span: S}.
+varMemberAccess{id: Expr, name: N, span: span{from: Start, to: End}} :-
+  ast.Expr{id: Expr} &
+  ast.MemberAccess{id: MemberAccess, parentID: Expr, span: span{from: Start}} &
+  ast.Ident{parentID: MemberAccess, text: N, span: span{from: Start, to: End}}.
+
 scope.Defn{scopeID: I, span: S, name: N, kind: K, type: T} :-
   defn.localVar{scopeID: I, span: S, name: N, kind: K, type: T}.
 
