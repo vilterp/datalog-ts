@@ -434,6 +434,14 @@ export function max(numbers: number[]): number {
   return numbers.reduce((prev, cur) => Math.max(prev, cur), 0);
 }
 
+export function sum(numbers: number[]): number {
+  return numbers.reduce((x, y) => x + y, 0);
+}
+
+export function avg(numbers: number[]): number {
+  return sum(numbers) / numbers.length;
+}
+
 export function reversed<T>(arr: T[]): T[] {
   return arr.slice().reverse();
 }

@@ -38,7 +38,11 @@ function extractRule(mod: Module, term: DL2Rule): [Rule, ExtractionProblem[]] {
   };
 
   for (const disjunct of term.disjunct) {
-    const conjunction: Conjunction = { type: "Conjunction", conjuncts: [] };
+    const conjunction: Conjunction = {
+      type: "Conjunction",
+      conjuncts: [],
+      positionMap: {},
+    };
     for (const conjunct of disjunct.conjunct) {
       const [conjuncts, conjunctProblems] = extractConjunct(mod, conjunct);
       conjunction.conjuncts.push(...conjuncts);

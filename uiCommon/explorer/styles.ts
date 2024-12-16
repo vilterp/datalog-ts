@@ -16,3 +16,10 @@ export function tab(props: {
     backgroundColor: props.highlighted ? highlightColor : "",
   };
 }
+
+export const TD_STYLES: CSSProperties = {
+  paddingLeft: 5,
+  paddingRight: 5,
+  borderLeft: "1px solid lightgrey",
+  borderRight: "1px solid lightgrey",
+};
