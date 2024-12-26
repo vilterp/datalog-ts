@@ -113,6 +113,7 @@ function recur(state: State, tree: RuleTree, parentID: number): number {
         from: int(tree.span.from),
         to: int(tree.span.to),
       }),
+      tag: str(tree.captureName || ""),
       text: str(state.source.substring(tree.span.from, tree.span.to)),
       // a bit duplicative to put this in here since it's already in
       // the record name, but it does make rendering the rule tree a

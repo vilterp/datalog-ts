@@ -58,7 +58,7 @@ defn.bindAttr{scopeID: Typ, span: S, name: N, kind: "attr", type: "any"} :-
   ast.Ident{parentID: Bind, text: Typ} &
   ast.Attrs{id: Attrs, parentID: Bind} &
   ast.Attr{id: Attr, parentID: Attrs} &
-  ast.Ident{parentID: Attr, text: N, span: S}.
+  ast.Ident{parentID: Attr, text: N, span: S, tag: "key"}.
 
 # Parent
 
