@@ -7,13 +7,7 @@ Sequence :- repSep(Statement, ws).
 Statement :- (Assign | Filter | Bind | Rule).
 Assign :- [Ident, ws, "=", ws, Expr].
 Filter :- [Ident, ws, InfixOp, ws, Ident].
-Expr :- (
-  MemberAccess |
-  Literal |
-  Call |
-  Bind |
-  Get
-).
+Expr :- (MemberAccess | Literal | Call | Bind | Get).
 MemberAccess :- repSep(Ident, ".").
 Call :- InfixCall.
 Get :- [Ident, Attrs].

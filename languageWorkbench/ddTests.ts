@@ -27,6 +27,7 @@ export function lwbTests(writeResults: boolean): Suite {
     "grammar",
     "modelica",
     "treeSQL",
+    "treeDL",
     "basicBlocks",
     "contracts",
     "opt",

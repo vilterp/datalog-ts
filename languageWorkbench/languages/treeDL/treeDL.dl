@@ -1,9 +1,10 @@
 # Var
 
 scope.Var{scopeID: I, name: N, span: S, kind: K} :-
-  var.localVar{scopeID: I, name: N, span: S, kind: K} |
+  var.exprVar{scopeID: I, name: N, span: S, kind: K} |
+  var.callVar{scopeID: I, name: N, span: S, kind: K} |
   var.type{scopeID: I, name: N, span: S, kind: K}.
-var.localVar{scopeID: Statement, name: N, span: S, kind: "var"} :-
+var.exprVar{scopeID: Statement, name: N, span: S, kind: "var"} :-
   ast.Statement{id: Statement} &
   ast.Assign{id: Assign, parentID: Statement} &
   ast.Expr{id: Expr, parentID: Assign} &
@@ -21,6 +22,10 @@ var.bindAttr{id: Expr, name: N, span: span{from: Start, to: End}} :-
   ast.Attrs{id: Attrs, parentID: Bind} &
   ast.Attr{id: Attr, parentID: Attrs, span: span{to: End}} &
   ast.Ident{parentID: Attr, text: N, span: span{from: Start, to: End}}. # TODO: use 'key'
+var.callVar{scopeID: Stmt, name: N, span: S, kind: "var"} :-
+  ast.Statement{id: Stmt} &
+  ast.Filter{id: Filter, parentID: Stmt} &
+  ast.Ident{parentID: Filter, text: N, span: S}.
 
 var.type{scopeID: I, name: N, span: S, kind: "type"} :-
   var.getType{scopeID: I, name: N, span: S} |

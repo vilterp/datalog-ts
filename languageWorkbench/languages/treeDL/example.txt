@@ -4,5 +4,7 @@ type Node
 rule {
   raw_node = rawNode()
   id = raw_node.id
+  edge = Edge()
+  edge == id
   node = Node.add(id=id)
 }
