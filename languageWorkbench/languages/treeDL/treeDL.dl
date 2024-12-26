@@ -41,7 +41,8 @@ var.bindType{scopeID: global{}, name: N, span: S} :-
 
 scope.Defn{scopeID: I, span: S, name: N, kind: K, type: T} :-
   defn.localVar{scopeID: I, span: S, name: N, kind: K, type: T} |
-  defn.type{scopeID: I, span: S, name: N, kind: K, type: T}.
+  defn.type{scopeID: I, span: S, name: N, kind: K, type: T} |
+  defn.bindAttr{scopeID: I, span: S, name: N, kind: K, type: T}.
 
 defn.localVar{scopeID: Statement, span: S, name: N, kind: "var", type: "any"} :-
   ast.Statement{id: Statement} &
@@ -51,6 +52,13 @@ defn.localVar{scopeID: Statement, span: S, name: N, kind: "var", type: "any"} :-
 defn.type{scopeID: global{}, span: S, name: N, kind: "type", type: "any"} :-
   ast.TypeDecl{id: Decl} &
   ast.Ident{parentID: Decl, text: N, span: S}.
+
+defn.bindAttr{scopeID: Typ, span: S, name: N, kind: "attr", type: "any"} :-
+  ast.Bind{id: Bind} &
+  ast.Ident{parentID: Bind, text: Typ} &
+  ast.Attrs{id: Attrs, parentID: Bind} &
+  ast.Attr{id: Attr, parentID: Attrs} &
+  ast.Ident{parentID: Attr, text: N, span: S}.
 
 # Parent
 
