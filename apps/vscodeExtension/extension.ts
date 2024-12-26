@@ -14,6 +14,7 @@ const BUILTIN_LANGUAGES: LanguageSpec[] = [
   LANGUAGES.grammar,
   LANGUAGES.basicBlocks,
   LANGUAGES.opt,
+  LANGUAGES.treeDL,
 ];
 
 export function activate(context: vscode.ExtensionContext) {
