@@ -134,7 +134,7 @@ dictTest{myDict: {"foo": 2, "bar": 3}}.
 ast.dict{}?
 ----
 application/datalog
-ast.dict{id: 41, parentID: 40, rule: "dict", span: span{from: 17, to: 37}, text: "{\"foo\": 2, \"bar\": 3}"}.
+ast.dict{id: 41, parentID: 40, rule: "dict", span: span{from: 17, to: 37}, tag: "", text: "{\"foo\": 2, \"bar\": 3}"}.
 
 dl
 foo{id: I} :-

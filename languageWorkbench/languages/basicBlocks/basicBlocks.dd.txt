@@ -58,7 +58,7 @@ foo {
 ast.ifClause{}?
 ----
 application/datalog
-ast.ifClause{id: 40, parentID: 27, rule: "ifClause", span: span{from: 27, to: 31}, text: "if a"}.
+ast.ifClause{id: 40, parentID: 27, rule: "ifClause", span: span{from: 27, to: 31}, tag: "", text: "if a"}.
 
 basicBlocks
 main {
