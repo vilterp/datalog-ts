@@ -59,6 +59,14 @@ scope.Parent{parentID: First, childID: Second} :-
   ast.Statement{id: Second} &
   astInternal.next{prev: First, next: Second}.
 
+# Problem
+
+tc.Problem{desc: D, span: S} :-
+  tc.undefinedVar{desc: D, span: S}.
+tc.undefinedVar{desc: undefinedVar{name: N}, span: S} :-
+  scope.Var{scopeID: I, name: N, span: S, kind: K} &
+  !scope.Item{scopeID: I, name: N, kind: K}.
+
 # Highlight
 
 hl.mapping{rule: "Ident", type: "ident"}.
