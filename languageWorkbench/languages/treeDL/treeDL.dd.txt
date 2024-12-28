@@ -13,3 +13,18 @@ scope.Usage{definitionScopeID: 11, defnSpan: span{from: 9, to: 17}, kind: "var",
 scope.Usage{definitionScopeID: 50, defnSpan: span{from: 32, to: 34}, kind: "var", name: "id", usageScopeID: 107, usageSpan: span{from: 75, to: 77}}.
 scope.Usage{definitionScopeID: 50, defnSpan: span{from: 32, to: 34}, kind: "var", name: "id", usageScopeID: 126, usageSpan: span{from: 99, to: 101}}.
 scope.Usage{definitionScopeID: 82, defnSpan: span{from: 51, to: 55}, kind: "var", name: "edge", usageScopeID: 107, usageSpan: span{from: 67, to: 71}}.
+
+treeDL
+rule {
+  raw_node = rawNode()
+  id = raw_node.id
+  edge = Edge()
+  edge == id
+  node = Node.add(id=id)
+}
+tc.Type{}?
+----
+application/datalog
+tc.Type{scope: 11, type: "rawNode", var: "raw_node"}.
+tc.Type{scope: 126, type: "Node", var: "node"}.
+tc.Type{scope: 82, type: "Edge", var: "edge"}.
