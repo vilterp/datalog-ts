@@ -60,6 +60,18 @@ defn.bindAttr{scopeID: Typ, span: S, name: N, kind: "attr", type: "any"} :-
   ast.Attr{id: Attr, parentID: Attrs} &
   ast.Ident{parentID: Attr, text: N, span: S, tag: "key"}.
 
+# ...
+
+tc.Type{scope: S, var: N, type: T} :-
+  tc.type.get{scope: S, var: N, type: T}.
+tc.type.get{scope: Statement, var: N, type: T} :-
+  ast.Statement{id: Statement} &
+  ast.Assign{id: Assign, parentID: Statement} &
+  ast.Ident{parentID: Assign, span: S, text: N} &
+  ast.Expr{id: Expr, parentID: Assign} &
+  ast.Get{id: Get, parentID: Expr} &
+  ast.Ident{parentID: Get, text: T}.
+
 # Parent
 
 scope.Parent{parentID: First, childID: Second} :-
