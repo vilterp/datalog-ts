@@ -67,7 +67,8 @@ defn.bindAttr{scopeID: Typ, span: S, name: N, kind: "attr", type: "any"} :-
 
 tc.Type{scope: S, var: N, type: T} :-
   tc.type.get{scope: S, var: N, type: T} |
-  tc.type.bind{scope: S, var: N, type: T}.
+  tc.type.bind{scope: S, var: N, type: T} |
+  tc.type.memberAccess{scope: S, var: N, type: T}.
 tc.type.get{scope: Statement, var: N, type: T} :-
   util.AssignExpr{assign: Statement, var: N, expr: Expr} &
   ast.Get{id: Get, parentID: Expr} &
@@ -76,14 +77,17 @@ tc.type.bind{scope: Statement, var: N, type: T} :-
   util.AssignExpr{assign: Statement, var: N, expr: Expr} &
   ast.Bind{id: Bind, parentID: Expr} &
   ast.Ident{parentID: Bind, text: T}.
-# tc.type.memberAccess{scope: Statement, var: N, type: T} :-
-#   tc.type.memberAccess.end{scope: Statement, var: N, type: T}.
+# TODO: why does this have so many separate derivations
+tc.type.memberAccess{scope: Statement, var: N, type: T} :-
+  tc.type.memberAccess.step{scope: Statement, var: N, type: T, node: Ident} &
+  astInternal.lastChild{child: Ident}.
 tc.type.memberAccess.base{scope: Statement, var: N, type: T, node: Ident} :-
   util.AssignExpr{assign: Statement, var: N, expr: Expr} &
   ast.MemberAccess{id: MemberAccess, parentID: Expr} &
   astInternal.firstChild{parentID: MemberAccess, id: Ident} &
   ast.Ident{id: Ident, text: Var} &
-  scope.Item{scopeID: Statement, var: Var, type: T}.
+  scope.Parent{parentID: ParentScope, childID: Statement} &
+  scope.Item{scopeID: ParentScope, var: Var, type: T}.
 tc.type.memberAccess.step{scope: Statement, var: N, type: T, node: Ident} :-
   tc.type.memberAccess.base{scope: Statement, var: N, type: PrevT, node: Prev} &
   astInternal.next{prev: Prev, next: Ident} &
