@@ -80,6 +80,14 @@ tc.type.bind{scope: Statement, var: N, type: T} :-
   ast.Bind{id: Bind, parentID: Expr} &
   ast.Ident{parentID: Bind, text: T}.
 
+tc.typeAttr{type: T, attr: A} :-
+  ast.Bind{id: Bind} &
+  ast.Ident{parentID: Bind, text: T} &
+  ast.Attrs{id: Attrs, parentID: Bind} &
+  ast.Attr{id: Attr, parentID: Attrs} &
+  ast.Ident{parentID: Attr, tag: "key", text: A}.
+  # TODO: get type of attr
+
 # Parent
 
 scope.Parent{parentID: First, childID: Second} :-
