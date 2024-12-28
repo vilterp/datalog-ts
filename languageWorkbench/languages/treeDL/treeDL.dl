@@ -80,7 +80,7 @@ tc.type.bind{scope: Statement, var: N, type: T} :-
 # TODO: why does this have so many separate derivations
 tc.type.memberAccess{scope: Statement, var: N, type: T} :-
   tc.type.memberAccess.step{scope: Statement, var: N, type: T, node: Ident} &
-  astInternal.lastChild{child: Ident}.
+  astInternal.lastChild{id: Ident}.
 tc.type.memberAccess.base{scope: Statement, var: N, type: T, node: Ident} :-
   util.AssignExpr{assign: Statement, var: N, expr: Expr} &
   ast.MemberAccess{id: MemberAccess, parentID: Expr} &
