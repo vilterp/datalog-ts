@@ -60,7 +60,9 @@ defn.bindAttr{scopeID: Typ, span: S, name: N, kind: "attr", type: "any"} :-
   ast.Attr{id: Attr, parentID: Attrs} &
   ast.Ident{parentID: Attr, text: N, span: S, tag: "key"}.
 
-# ...
+# TODO: attrs from type
+
+# Type Checking
 
 tc.Type{scope: S, var: N, type: T} :-
   tc.type.get{scope: S, var: N, type: T} |
@@ -80,13 +82,23 @@ tc.type.bind{scope: Statement, var: N, type: T} :-
   ast.Bind{id: Bind, parentID: Expr} &
   ast.Ident{parentID: Bind, text: T}.
 
-tc.typeAttr{type: T, attr: A} :-
+# TODO: get type of attr
+tc.typeAttr{struct: S, attr: A} :-
+  tc.typeAttr.fromBind{struct: S, attr: A} |
+  tc.typeAttr.fromBind{struct: S, attr: A}.
+tc.typeAttr.fromBind{struct: S, attr: A} :-
   ast.Bind{id: Bind} &
-  ast.Ident{parentID: Bind, text: T} &
+  ast.Ident{parentID: Bind, text: S} &
   ast.Attrs{id: Attrs, parentID: Bind} &
   ast.Attr{id: Attr, parentID: Attrs} &
   ast.Ident{parentID: Attr, tag: "key", text: A}.
-  # TODO: get type of attr
+tc.typeAttr.fromTypeDecl{struct: S, attr: A, type: T} :-
+  ast.TypeDecl{id: Decl} &
+  ast.Ident{parentID: Decl, text: S} &
+  ast.MemberDecls{id: MemberDecls, parentID: Decl} &
+  ast.MemberDecl{id: MemberDecl, parentID: MemberDecls} &
+  ast.Ident{parentID: MemberDecl, tag: "name", text: A} &
+  ast.Ident{parentID: MemberDecl, tag: "type", text: T}.
 
 # Parent
 

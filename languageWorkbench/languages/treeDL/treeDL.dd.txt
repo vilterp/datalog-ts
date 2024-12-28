@@ -1,4 +1,12 @@
 treeDL
+type rawNode {
+  id: int
+}
+type Node {
+  next: Node
+  prev: Node
+  id: int
+}
 rule {
   raw_node = rawNode()
   id = raw_node.id
@@ -9,12 +17,22 @@ rule {
 scope.Usage{}?
 ----
 application/datalog
-scope.Usage{definitionScopeID: 11, defnSpan: span{from: 9, to: 17}, kind: "var", name: "raw_node", usageScopeID: 50, usageSpan: span{from: 37, to: 45}}.
-scope.Usage{definitionScopeID: 50, defnSpan: span{from: 32, to: 34}, kind: "var", name: "id", usageScopeID: 107, usageSpan: span{from: 75, to: 77}}.
-scope.Usage{definitionScopeID: 50, defnSpan: span{from: 32, to: 34}, kind: "var", name: "id", usageScopeID: 126, usageSpan: span{from: 99, to: 101}}.
-scope.Usage{definitionScopeID: 82, defnSpan: span{from: 51, to: 55}, kind: "var", name: "edge", usageScopeID: 107, usageSpan: span{from: 67, to: 71}}.
+scope.Usage{definitionScopeID: 135, defnSpan: span{from: 86, to: 94}, kind: "var", name: "raw_node", usageScopeID: 174, usageSpan: span{from: 114, to: 122}}.
+scope.Usage{definitionScopeID: 174, defnSpan: span{from: 109, to: 111}, kind: "var", name: "id", usageScopeID: 231, usageSpan: span{from: 152, to: 154}}.
+scope.Usage{definitionScopeID: 174, defnSpan: span{from: 109, to: 111}, kind: "var", name: "id", usageScopeID: 250, usageSpan: span{from: 176, to: 178}}.
+scope.Usage{definitionScopeID: 206, defnSpan: span{from: 128, to: 132}, kind: "var", name: "edge", usageScopeID: 231, usageSpan: span{from: 144, to: 148}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 32, to: 36}, kind: "type", name: "Node", usageScopeID: global{}, usageSpan: span{from: 164, to: 168}}.
+scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 5, to: 12}, kind: "type", name: "rawNode", usageScopeID: global{}, usageSpan: span{from: 97, to: 104}}.
 
 treeDL
+type rawNode {
+  id: int
+}
+type Node {
+  next: Node
+  prev: Node
+  id: int
+}
 rule {
   raw_node = rawNode()
   id = raw_node.id
@@ -25,6 +43,6 @@ rule {
 tc.Type{}?
 ----
 application/datalog
-tc.Type{scope: 11, type: "rawNode", var: "raw_node"}.
-tc.Type{scope: 126, type: "Node", var: "node"}.
-tc.Type{scope: 82, type: "Edge", var: "edge"}.
+tc.Type{scope: 135, type: "rawNode", var: "raw_node"}.
+tc.Type{scope: 206, type: "Edge", var: "edge"}.
+tc.Type{scope: 250, type: "Node", var: "node"}.
