@@ -2,7 +2,7 @@ import { fsLoader } from "../core/fsLoader";
 import { SimpleInterpreter } from "../core/simple/interpreter";
 import { InterpCache, addCursor } from "./interpCache";
 import { TestOutput } from "../util/ddTest";
-import { runDDTestAtPathTwoVariants } from "../util/ddTest/runner";
+import { runDDTestAtPath } from "../util/ddTest/runner";
 import { datalogOut } from "../util/ddTest/types";
 import * as fs from "fs";
 import { Suite } from "../util/testBench/testing";
@@ -34,16 +34,9 @@ export function lwbTests(writeResults: boolean): Suite {
   ].map((lang) => ({
     name: lang,
     test() {
-      runDDTestAtPathTwoVariants(
+      runDDTestAtPath(
         `languageWorkbench/languages/${lang}/${lang}.dd.txt`,
-        {
-          name: "simple",
-          getResults: (test) => testLangQuery(test, SIMPLE_CACHE),
-        },
-        {
-          name: "incremental",
-          getResults: (test) => testLangQuery(test, INCR_CACHE),
-        },
+        (test) => testLangQuery(test, INCR_CACHE),
         writeResults
       );
     },
