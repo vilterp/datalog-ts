@@ -1,4 +1,4 @@
-def scope.Defn{scopeID: I, span: S, name: N, kind: K} {
+def scope.Defn{scopeID: I, span: S, name: N, kind: K, type: "any"} {
   scope.defnRelation{scopeID: I, span: S, name: N, kind: K} |
   scope.defnRule{scopeID: I, span: S, name: N, kind: K} |
   scope.defnVar{scopeID: I, span: S, name: N, kind: K} |

@@ -27,14 +27,14 @@ rule coalMax{timestep: T} {
 scope.Defn{}?
 ----
 application/datalog
-scope.Defn{kind: "attr", name: "a", scopeID: "base.add", span: span{from: -1, to: -1}}.
-scope.Defn{kind: "attr", name: "b", scopeID: "base.add", span: span{from: -1, to: -1}}.
-scope.Defn{kind: "attr", name: "res", scopeID: "base.add", span: span{from: -1, to: -1}}.
-scope.Defn{kind: "relation", name: "bar", scopeID: global{}, span: span{from: 17, to: 20}}.
-scope.Defn{kind: "relation", name: "base.add", scopeID: global{}, span: span{from: -1, to: -1}}.
-scope.Defn{kind: "relation", name: "foo", scopeID: global{}, span: span{from: 4, to: 7}}.
-scope.Defn{kind: "rule", name: "coalMax", scopeID: global{}, span: span{from: 29, to: 36}}.
-scope.Defn{kind: "var", name: "CoalLevel", scopeID: "coalMax", span: span{from: 99, to: 108}}.
-scope.Defn{kind: "var", name: "MaxLevel", scopeID: "coalMax", span: span{from: 142, to: 150}}.
-scope.Defn{kind: "var", name: "T", scopeID: "coalMax", span: span{from: 120, to: 121}}.
-scope.Defn{kind: "var", name: "T", scopeID: "coalMax", span: span{from: 74, to: 75}}.
+scope.Defn{kind: "attr", name: "a", scopeID: "base.add", span: span{from: -1, to: -1}, type: "any"}.
+scope.Defn{kind: "attr", name: "b", scopeID: "base.add", span: span{from: -1, to: -1}, type: "any"}.
+scope.Defn{kind: "attr", name: "res", scopeID: "base.add", span: span{from: -1, to: -1}, type: "any"}.
+scope.Defn{kind: "relation", name: "bar", scopeID: global{}, span: span{from: 17, to: 20}, type: "any"}.
+scope.Defn{kind: "relation", name: "base.add", scopeID: global{}, span: span{from: -1, to: -1}, type: "any"}.
+scope.Defn{kind: "relation", name: "foo", scopeID: global{}, span: span{from: 4, to: 7}, type: "any"}.
+scope.Defn{kind: "rule", name: "coalMax", scopeID: global{}, span: span{from: 29, to: 36}, type: "any"}.
+scope.Defn{kind: "var", name: "CoalLevel", scopeID: "coalMax", span: span{from: 99, to: 108}, type: "any"}.
+scope.Defn{kind: "var", name: "MaxLevel", scopeID: "coalMax", span: span{from: 142, to: 150}, type: "any"}.
+scope.Defn{kind: "var", name: "T", scopeID: "coalMax", span: span{from: 120, to: 121}, type: "any"}.
+scope.Defn{kind: "var", name: "T", scopeID: "coalMax", span: span{from: 74, to: 75}, type: "any"}.
