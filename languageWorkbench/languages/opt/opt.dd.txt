@@ -38,3 +38,61 @@ scope.Defn{kind: "var", name: "CoalLevel", scopeID: "coalMax", span: span{from: 
 scope.Defn{kind: "var", name: "MaxLevel", scopeID: "coalMax", span: span{from: 142, to: 150}, type: "any"}.
 scope.Defn{kind: "var", name: "T", scopeID: "coalMax", span: span{from: 120, to: 121}, type: "any"}.
 scope.Defn{kind: "var", name: "T", scopeID: "coalMax", span: span{from: 74, to: 75}, type: "any"}.
+
+opt
+var coalOutput {
+  timestep,
+  level
+}
+var natGasOutput {
+  timestep,
+  level
+}
+input loadLevel {
+  timestep,
+  level
+}
+param coalMax { min: 0, max: 100, init: 50 }
+param coalRampRate { min: 0, max: 100, init: 50 }
+param coalPrice { min: 0, max: 100, init: 50 }
+param natGasPrice { min: 0, max: 100, init: 50 }
+minimize {
+  loadLevel{timestep: T} &
+  coalOutput{level: CoalLevel, timestep: T} &
+  natGasOutput{level: NatGasLevel, timestep: T} &
+  coalPrice{price: CoalPrice} &
+  natGasPrice{price: NatGasPrice}
+  =>
+  CoalPrice*CoalLevel + NatGasPrice*NatGasLevel
+}
+rule outputEqualsDemand{timestep: T} {
+  loadLevel{level: LoadLevel, timestep: T} &
+  coalOutput{level: CoalLevel, timestep: T} &
+  natGasOutput{level: NatGasLevel, timestep: T}
+  =>
+  CoalLevel + NatGasLevel = LoadLevel
+}
+rule coalMax{timestep: T} {
+  loadLevel{timestep: T} &
+  coalOutput{level: CoalLevel, timestep: T} &
+  coalMax{level: MaxLevel}
+  =>
+  CoalLevel <= MaxLevel
+}
+rule coalRampRate{timestep: T2} {
+  loadLevel{timestep: T1} &
+  loadLevel{timestep: T2} &
+  coalOutput{level: L1, timestep: T1} &
+  coalOutput{level: L2, timestep: T2} &
+  base.add{a: T1, b: 1, res: T2} &
+  coalRampRate{rate: RampRate}
+  =>
+  -1*L1 + L2 <= RampRate
+}
+tc.Problem{}?
+----
+application/datalog
+tc.Problem{desc: undefinedVar{name: "level"}, span: span{from: 900, to: 905}}.
+tc.Problem{desc: undefinedVar{name: "price"}, span: span{from: 457, to: 462}}.
+tc.Problem{desc: undefinedVar{name: "price"}, span: span{from: 491, to: 496}}.
+tc.Problem{desc: undefinedVar{name: "rate"}, span: span{from: 1168, to: 1172}}.
