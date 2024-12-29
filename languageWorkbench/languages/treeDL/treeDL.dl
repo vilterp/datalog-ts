@@ -48,7 +48,7 @@ defn.localVar{scopeID: Statement, span: S, name: N, kind: "var", type: T} :-
   ast.Statement{id: Statement} &
   ast.Assign{id: Assign, parentID: Statement} &
   ast.Ident{parentID: Assign, span: S, text: N} &
-  tc.Type{scopeID: Statement, var: N, type: T}.
+  tc.Type{scope: Statement, var: N, type: T}.
 
 defn.type{scopeID: global{}, span: S, name: N, kind: "type", type: "any"} :-
   ast.TypeDecl{id: Decl} &
