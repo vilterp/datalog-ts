@@ -3,7 +3,9 @@
 scope.Var{scopeID: I, name: N, span: S, kind: K} :-
   var.exprVar{scopeID: I, name: N, span: S, kind: K} |
   var.callVar{scopeID: I, name: N, span: S, kind: K} |
-  var.type{scopeID: I, name: N, span: S, kind: K}.
+  var.type{scopeID: I, name: N, span: S, kind: K} |
+  # TODO: rename
+  var.memberAccess2{scopeID: I, name: N, span: S, kind: K}.
 var.exprVar{scopeID: Statement, name: N, span: S, kind: "var"} :-
   ast.Statement{id: Statement} &
   ast.Assign{id: Assign, parentID: Statement} &
@@ -26,6 +28,9 @@ var.callVar{scopeID: Stmt, name: N, span: S, kind: "var"} :-
   ast.Statement{id: Stmt} &
   ast.Filter{id: Filter, parentID: Stmt} &
   ast.Ident{parentID: Filter, text: N, span: S}.
+var.memberAccess2{scopeID: PrevT, name: N, span: S, kind: "attr"} :-
+  tc.type.memberAccess.step{prevType: PrevT, type: T, node: Ident} &
+  ast.Ident{id: Ident, span: S, text: N}.
 
 var.type{scopeID: I, name: N, span: S, kind: "type"} :-
   var.getType{scopeID: I, name: N, span: S} |
@@ -80,7 +85,6 @@ tc.type.bind{scope: Statement, var: N, type: T} :-
   util.AssignExpr{assign: Statement, var: N, expr: Expr} &
   ast.Bind{id: Bind, parentID: Expr} &
   ast.Ident{parentID: Bind, text: T}.
-# TODO: why does this have so many separate derivations
 tc.type.memberAccess{scope: Statement, var: N, type: T} :-
   tc.type.memberAccess.step{scope: Statement, var: N, type: T, node: Ident} &
   astInternal.lastChild{id: Ident}.
@@ -91,7 +95,7 @@ tc.type.memberAccess.base{scope: Statement, var: N, type: T, node: Ident} :-
   ast.Ident{id: Ident, text: Var} &
   astInternal.next{prev: ParentScope, next: Statement} &
   scope.Item{scopeID: ParentScope, name: Var, type: T}.
-tc.type.memberAccess.step{scope: Statement, var: N, type: T, node: Ident} :-
+tc.type.memberAccess.step{scope: Statement, var: N, prevType: PrevT, type: T, node: Ident} :-
   tc.type.memberAccess.base{scope: Statement, var: N, type: PrevT, node: Prev} &
   astInternal.next{prev: Prev, next: Ident} &
   ast.Ident{id: Ident, text: Attr} &

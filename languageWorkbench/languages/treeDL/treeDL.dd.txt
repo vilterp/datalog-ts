@@ -17,6 +17,7 @@ rule {
 scope.Usage{}?
 ----
 application/datalog
+scope.Usage{definitionScopeID: "rawNode", defnSpan: span{from: 17, to: 19}, kind: "attr", name: "id", usageScopeID: "rawNode", usageSpan: span{from: 123, to: 125}}.
 scope.Usage{definitionScopeID: 135, defnSpan: span{from: 86, to: 94}, kind: "var", name: "raw_node", usageScopeID: 174, usageSpan: span{from: 114, to: 122}}.
 scope.Usage{definitionScopeID: 174, defnSpan: span{from: 109, to: 111}, kind: "var", name: "id", usageScopeID: 231, usageSpan: span{from: 152, to: 154}}.
 scope.Usage{definitionScopeID: 174, defnSpan: span{from: 109, to: 111}, kind: "var", name: "id", usageScopeID: 250, usageSpan: span{from: 176, to: 178}}.
