@@ -86,7 +86,7 @@ tc.type.bind{scope: Statement, var: N, type: T} :-
   ast.Bind{id: Bind, parentID: Expr} &
   ast.Ident{parentID: Bind, text: T}.
 tc.type.memberAccess{scope: Statement, var: N, type: T} :-
-  tc.type.memberAccess.step{scope: Statement, var: N, type: T, node: Ident} &
+  tc.type.memberAccess.node{scope: Statement, var: N, type: T, node: Ident} &
   astInternal.lastChild{id: Ident}.
 tc.type.memberAccess.base{scope: Statement, var: N, type: T, node: Ident} :-
   util.AssignExpr{assign: Statement, var: N, expr: Expr} &
@@ -95,8 +95,11 @@ tc.type.memberAccess.base{scope: Statement, var: N, type: T, node: Ident} :-
   ast.Ident{id: Ident, text: Var} &
   astInternal.next{prev: ParentScope, next: Statement} &
   scope.Item{scopeID: ParentScope, name: Var, type: T}.
+tc.type.memberAccess.node{scope: Statement, var: N, type: T, node: Ident} :-
+  tc.type.memberAccess.base{scope: Statement, var: N, type: T, node: Ident} |
+  tc.type.memberAccess.step{scope: Statement, var: N, type: T, node: Ident}.
 tc.type.memberAccess.step{scope: Statement, var: N, prevType: PrevT, type: T, node: Ident} :-
-  tc.type.memberAccess.base{scope: Statement, var: N, type: PrevT, node: Prev} &
+  tc.type.memberAccess.node{scope: Statement, var: N, type: PrevT, node: Prev} &
   astInternal.next{prev: Prev, next: Ident} &
   ast.Ident{id: Ident, text: Attr} &
   tc.typeAttr{struct: PrevT, attr: Attr, type: T}.

@@ -18,7 +18,10 @@ rule {
 scope.Usage{}?
 ----
 application/datalog
+scope.Usage{definitionScopeID: "Node", defnSpan: span{from: 173, to: 175}, kind: "attr", name: "id", usageScopeID: "Node", usageSpan: span{from: 201, to: 203}}.
 scope.Usage{definitionScopeID: "Node", defnSpan: span{from: 41, to: 45}, kind: "attr", name: "next", usageScopeID: "Node", usageSpan: span{from: 191, to: 195}}.
+scope.Usage{definitionScopeID: "Node", defnSpan: span{from: 41, to: 45}, kind: "attr", name: "next", usageScopeID: "Node", usageSpan: span{from: 196, to: 200}}.
+scope.Usage{definitionScopeID: "Node", defnSpan: span{from: 67, to: 69}, kind: "attr", name: "id", usageScopeID: "Node", usageSpan: span{from: 201, to: 203}}.
 scope.Usage{definitionScopeID: "rawNode", defnSpan: span{from: 17, to: 19}, kind: "attr", name: "id", usageScopeID: "rawNode", usageSpan: span{from: 123, to: 125}}.
 scope.Usage{definitionScopeID: 135, defnSpan: span{from: 86, to: 94}, kind: "var", name: "raw_node", usageScopeID: 174, usageSpan: span{from: 114, to: 122}}.
 scope.Usage{definitionScopeID: 174, defnSpan: span{from: 109, to: 111}, kind: "var", name: "id", usageScopeID: 231, usageSpan: span{from: 152, to: 154}}.
@@ -52,3 +55,4 @@ tc.Type{scope: 135, type: "rawNode", var: "raw_node"}.
 tc.Type{scope: 174, type: "int", var: "id"}.
 tc.Type{scope: 206, type: "Edge", var: "edge"}.
 tc.Type{scope: 250, type: "Node", var: "node"}.
+tc.Type{scope: 285, type: "int", var: "x"}.
