@@ -5,7 +5,7 @@ import { MessagePayload, SubstituteDesc } from "../types";
 export function processSubstitute(
   nodeDesc: SubstituteDesc,
   payload: MessagePayload
-): MessagePayload[] {
+): [SubstituteDesc, MessagePayload[]] {
   const data = payload.data;
   if (data.type === "Record") {
     throw new Error("Substitute nodes should not get Record messages");
@@ -17,9 +17,12 @@ export function processSubstitute(
   //   out: ppt(rec),
   // });
   return [
-    {
-      multiplicity: payload.multiplicity,
-      data: { type: "Record", rec: rec as Rec },
-    },
+    nodeDesc,
+    [
+      {
+        multiplicity: payload.multiplicity,
+        data: { type: "Record", rec: rec as Rec },
+      },
+    ],
   ];
 }

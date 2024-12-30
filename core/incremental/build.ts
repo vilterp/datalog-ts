@@ -303,7 +303,7 @@ function addNode(
 }
 
 function addEdge(graph: RuleGraph, from: NodeID, to: NodeID): RuleGraph {
-  graph.edges.updateWithDefault(from, [], (destinations) => {
+  graph.edges.update(from, [], (destinations) => {
     destinations.push(to);
     return destinations;
   });

@@ -88,6 +88,9 @@ export class IndexedMultiSet<T> {
   }
 
   getByIndex(indexName: string, key: Key): Set<ItemAndMult<T>> {
+    if (!this.indexes.has(indexName)) {
+      throw new Error(`missing index: ${indexName}`);
+    }
     const keySet: Set<string> = this.indexes
       .get(indexName)
       .items.get(key, Set());

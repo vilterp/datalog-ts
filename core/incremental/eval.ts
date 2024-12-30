@@ -6,6 +6,7 @@ import {
   EmissionLog,
   EmissionBatch,
   NodeAndCache,
+  NodeDesc,
 } from "./types";
 import {
   baseFactTrace,
@@ -169,12 +170,15 @@ function stepPropagator(iter: Propagator): EmissionBatch {
     throw new Error(`not found: node ${curMsg.destination}`);
   }
   // note: sometimes has the side effect of mutating node.desc
-  const outMessages = processMessage(
+  const [newNodeDesc, outMessages] = processMessage(
     iter.graph,
     node.desc,
     curMsg.origin,
     curMsg.payload
   );
+  if (newNodeDesc !== node.desc) {
+    newGraph = updateNodeDesc(newGraph, curNodeID, newNodeDesc);
+  }
   // console.log("push", results);
   const out: MessagePayload[] = [];
   for (let outMessage of outMessages) {
@@ -186,7 +190,7 @@ function stepPropagator(iter: Propagator): EmissionBatch {
     // update cache
     newGraph = updateCurNodeCache(newGraph, curNodeID, outMessage);
     // propagate messages
-    for (let destination of newGraph.edges.getWithDefault(curNodeID, [])) {
+    for (let destination of newGraph.edges.get(curNodeID, [])) {
       iter.queue.push({
         destination,
         origin: curNodeID,
@@ -240,4 +244,17 @@ function maybePrintSample(curMsg: Message, nodeID: NodeID, node: NodeAndCache) {
       data.type === "Record" ? ppt(data.rec) : ppb(data.bindings.bindings)
     );
   }
+}
+function updateNodeDesc(
+  graph: RuleGraph,
+  nodeID: string,
+  newNodeDesc: NodeDesc
+): RuleGraph {
+  throw {
+    ...graph,
+    nodes: graph.nodes.update(nodeID, (nodeAndCache) => ({
+      ...nodeAndCache,
+      desc: newNodeDesc,
+    })),
+  };
 }
