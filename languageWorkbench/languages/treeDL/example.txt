@@ -13,4 +13,5 @@ rule {
   edge = Edge()
   edge == id
   node = Node.add(id=id)
+  x = node.next.next.id
 }
