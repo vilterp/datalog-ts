@@ -1,7 +1,11 @@
 main :- Program.
 Program :- repSep(Decl, ws).
 Decl :- (Rule | TypeDecl).
-TypeDecl :- [typeKW, ws, Ident].
+
+TypeDecl :- [typeKW, ws, Ident, ws, MemberDecls].
+MemberDecls :- ["{", ws, repSep(MemberDecl, ws), ws, "}"].
+MemberDecl :- [name:Ident, ":", ws, type:Ident].
+
 Rule :- [ruleKW, ws, "{", ws, Sequence, ws, "}"].
 Sequence :- repSep(Statement, ws).
 Statement :- (Assign | Filter | Bind | Rule).

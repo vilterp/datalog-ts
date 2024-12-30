@@ -1,5 +1,11 @@
-type rawNode
-type Node
+type rawNode {
+  id: int
+}
+type Node {
+  next: Node
+  prev: Node
+  id: int
+}
 
 rule {
   raw_node = rawNode()

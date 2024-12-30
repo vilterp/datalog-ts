@@ -95,16 +95,18 @@ export function LingoEditor(props: {
 
   // constructInterp has its own memoization, but that doesn't work across multiple LingoEditor
   // instances... sigh
-  const withoutCursor = useMemo(() => {
-    const res = CACHE.getInterpForDoc(
+  const interp = useMemo(() => {
+    const { interp: withoutCursor, errors } = CACHE.getInterpForDoc(
       props.langSpec.name,
       { [props.langSpec.name]: props.langSpec },
       `test.${props.langSpec.name}`,
       props.editorState.source
     );
-    return res;
-  }, [props.langSpec, props.editorState.source]);
-  const interp = addCursor(withoutCursor.interp, props.editorState.cursorPos);
+    if (errors.length > 0) {
+      console.warn("getInterp errors", errors);
+    }
+    return addCursor(withoutCursor, props.editorState.cursorPos);
+  }, [props.langSpec, props.editorState.source, props.editorState.cursorPos]);
 
   return (
     <div style={{ display: "flex" }}>

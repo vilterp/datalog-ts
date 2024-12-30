@@ -3,7 +3,9 @@
 scope.Var{scopeID: I, name: N, span: S, kind: K} :-
   var.exprVar{scopeID: I, name: N, span: S, kind: K} |
   var.callVar{scopeID: I, name: N, span: S, kind: K} |
-  var.type{scopeID: I, name: N, span: S, kind: K}.
+  var.type{scopeID: I, name: N, span: S, kind: K} |
+  # TODO: rename
+  var.memberAccess2{scopeID: I, name: N, span: S, kind: K}.
 var.exprVar{scopeID: Statement, name: N, span: S, kind: "var"} :-
   ast.Statement{id: Statement} &
   ast.Assign{id: Assign, parentID: Statement} &
@@ -26,6 +28,9 @@ var.callVar{scopeID: Stmt, name: N, span: S, kind: "var"} :-
   ast.Statement{id: Stmt} &
   ast.Filter{id: Filter, parentID: Stmt} &
   ast.Ident{parentID: Filter, text: N, span: S}.
+var.memberAccess2{scopeID: PrevT, name: N, span: S, kind: "attr"} :-
+  tc.type.memberAccess.step{prevType: PrevT, type: T, node: Ident} &
+  ast.Ident{id: Ident, span: S, text: N}.
 
 var.type{scopeID: I, name: N, span: S, kind: "type"} :-
   var.getType{scopeID: I, name: N, span: S} |
@@ -42,16 +47,20 @@ var.bindType{scopeID: global{}, name: N, span: S} :-
 scope.Defn{scopeID: I, span: S, name: N, kind: K, type: T} :-
   defn.localVar{scopeID: I, span: S, name: N, kind: K, type: T} |
   defn.type{scopeID: I, span: S, name: N, kind: K, type: T} |
-  defn.bindAttr{scopeID: I, span: S, name: N, kind: K, type: T}.
+  defn.typeAttr{scopeID: I, span: S, name: N, kind: K, type: T}.
 
-defn.localVar{scopeID: Statement, span: S, name: N, kind: "var", type: "any"} :-
+defn.localVar{scopeID: Statement, span: S, name: N, kind: "var", type: T} :-
   ast.Statement{id: Statement} &
   ast.Assign{id: Assign, parentID: Statement} &
-  ast.Ident{parentID: Assign, span: S, text: N}.
+  ast.Ident{parentID: Assign, span: S, text: N} &
+  tc.Type{scope: Statement, var: N, type: T}.
 
 defn.type{scopeID: global{}, span: S, name: N, kind: "type", type: "any"} :-
   ast.TypeDecl{id: Decl} &
   ast.Ident{parentID: Decl, text: N, span: S}.
+
+defn.typeAttr{scopeID: Struct, span: S, name: N, kind: "attr", type: T} :-
+  tc.typeAttr{struct: Struct, defnSpan: S, attr: N, type: T}.
 
 defn.bindAttr{scopeID: Typ, span: S, name: N, kind: "attr", type: "any"} :-
   ast.Bind{id: Bind} &
@@ -59,6 +68,66 @@ defn.bindAttr{scopeID: Typ, span: S, name: N, kind: "attr", type: "any"} :-
   ast.Attrs{id: Attrs, parentID: Bind} &
   ast.Attr{id: Attr, parentID: Attrs} &
   ast.Ident{parentID: Attr, text: N, span: S, tag: "key"}.
+
+# TODO: attrs from type
+
+# Type Checking
+
+tc.Type{scope: S, var: N, type: T} :-
+  tc.type.get{scope: S, var: N, type: T} |
+  tc.type.bind{scope: S, var: N, type: T} |
+  tc.type.memberAccess{scope: S, var: N, type: T}.
+tc.type.get{scope: Statement, var: N, type: T} :-
+  util.AssignExpr{assign: Statement, var: N, expr: Expr} &
+  ast.Get{id: Get, parentID: Expr} &
+  ast.Ident{parentID: Get, text: T}.
+tc.type.bind{scope: Statement, var: N, type: T} :-
+  util.AssignExpr{assign: Statement, var: N, expr: Expr} &
+  ast.Bind{id: Bind, parentID: Expr} &
+  ast.Ident{parentID: Bind, text: T}.
+tc.type.memberAccess{scope: Statement, var: N, type: T} :-
+  tc.type.memberAccess.step{scope: Statement, var: N, type: T, node: Ident} &
+  astInternal.lastChild{id: Ident}.
+tc.type.memberAccess.base{scope: Statement, var: N, type: T, node: Ident} :-
+  util.AssignExpr{assign: Statement, var: N, expr: Expr} &
+  ast.MemberAccess{id: MemberAccess, parentID: Expr} &
+  astInternal.firstChild{parentID: MemberAccess, id: Ident} &
+  ast.Ident{id: Ident, text: Var} &
+  astInternal.next{prev: ParentScope, next: Statement} &
+  scope.Item{scopeID: ParentScope, name: Var, type: T}.
+tc.type.memberAccess.step{scope: Statement, var: N, prevType: PrevT, type: T, node: Ident} :-
+  tc.type.memberAccess.base{scope: Statement, var: N, type: PrevT, node: Prev} &
+  astInternal.next{prev: Prev, next: Ident} &
+  ast.Ident{id: Ident, text: Attr} &
+  tc.typeAttr{struct: PrevT, attr: Attr, type: T}.
+
+# TODO: rename assign to statement
+util.AssignExpr{assign: Stmt, var: Var, varSpan: S, expr: Expr} :-
+  ast.Statement{id: Stmt} &
+  ast.Assign{id: Assign, parentID: Stmt} &
+  ast.Ident{parentID: Assign, span: S, text: Var} &
+  ast.Expr{id: Expr, parentID: Assign}.
+
+tc.typeAttr{struct: S, defnSpan: SP, attr: A, type: T} :-
+  tc.typeAttr.fromBind{struct: S, defnSpan: SP, attr: A, type: T} |
+  tc.typeAttr.fromTypeDecl{struct: S, defnSpan: SP, attr: A, type: T}.
+tc.typeAttr.fromBind{struct: S, defnSpan: SP, attr: A, type: T} :-
+  util.AssignExpr{assign: Stmt, expr: Expr} &
+  ast.Bind{id: Bind, parentID: Expr} &
+  ast.Ident{parentID: Bind, text: S} &
+  ast.Attrs{id: Attrs, parentID: Bind} &
+  ast.Attr{id: Attr, parentID: Attrs} &
+  ast.Ident{parentID: Attr, tag: "key", span: SP, text: A} &
+  ast.Ident{parentID: Attr, tag: "value", text: Var} &
+  scope.Parent{parentID: ParentScope, childID: Stmt} &
+  scope.Item{scopeID: ParentScope, name: Var, type: T}.
+tc.typeAttr.fromTypeDecl{struct: S, defnSpan: SP, attr: A, type: T} :-
+  ast.TypeDecl{id: Decl} &
+  ast.Ident{parentID: Decl, text: S} &
+  ast.MemberDecls{id: MemberDecls, parentID: Decl} &
+  ast.MemberDecl{id: MemberDecl, parentID: MemberDecls} &
+  ast.Ident{parentID: MemberDecl, tag: "name", span: SP, text: A} &
+  ast.Ident{parentID: MemberDecl, tag: "type", text: T}.
 
 # Parent
 
