@@ -231,8 +231,15 @@ function updateCache(
   res: Res,
   multiplicityDelta: number
 ): RuleGraph {
-  graph.nodes.get(nodeID).cache.update(res, multiplicityDelta);
-  return graph;
+  const cache = graph.nodes.get(nodeID).cache;
+  const newCache = cache.update(res, multiplicityDelta);
+  return {
+    ...graph,
+    nodes: graph.nodes.update(nodeID, (oldNode) => ({
+      ...oldNode,
+      cache: newCache,
+    })),
+  };
 }
 
 function maybePrintSample(curMsg: Message, nodeID: NodeID, node: NodeAndCache) {
@@ -247,14 +254,14 @@ function maybePrintSample(curMsg: Message, nodeID: NodeID, node: NodeAndCache) {
 }
 function updateNodeDesc(
   graph: RuleGraph,
-  nodeID: string,
-  newNodeDesc: NodeDesc
+  nodeID: NodeID,
+  newDesc: NodeDesc
 ): RuleGraph {
-  throw {
+  return {
     ...graph,
-    nodes: graph.nodes.update(nodeID, (nodeAndCache) => ({
-      ...nodeAndCache,
-      desc: newNodeDesc,
+    nodes: graph.nodes.update(nodeID, (oldNode) => ({
+      ...oldNode,
+      desc: newDesc,
     })),
   };
 }
