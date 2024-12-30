@@ -277,12 +277,14 @@ function addNodeKnownID(
   isInternal: boolean,
   desc: NodeDesc
 ): RuleGraph {
-  graph.nodes.set(id, {
-    isInternal,
-    desc,
-    cache: emptyIndexedMultiset(fastPPR),
-  });
-  return graph;
+  return {
+    ...graph,
+    nodes: graph.nodes.set(id, {
+      isInternal,
+      desc,
+      cache: emptyIndexedMultiset(fastPPR),
+    }),
+  };
 }
 
 function addNode(
@@ -291,23 +293,29 @@ function addNode(
   desc: NodeDesc
 ): [RuleGraph, NodeID] {
   const nodeID = graph.nextNodeID.toString();
-  graph.nextNodeID += 1;
-  graph.builtins =
-    desc.type === "Builtin" ? graph.builtins.add(nodeID) : graph.builtins;
-  graph.nodes.set(nodeID, {
-    desc,
-    cache: emptyIndexedMultiset(fastPPR),
-    isInternal,
-  });
-  return [graph, nodeID];
+  return [
+    {
+      ...graph,
+      nextNodeID: graph.nextNodeID + 1,
+      builtins:
+        desc.type === "Builtin" ? graph.builtins.add(nodeID) : graph.builtins,
+      nodes: graph.nodes.set(nodeID, {
+        desc,
+        cache: emptyIndexedMultiset(fastPPR),
+        isInternal,
+      }),
+    },
+    nodeID,
+  ];
 }
 
 function addEdge(graph: RuleGraph, from: NodeID, to: NodeID): RuleGraph {
-  graph.edges.updateWithDefault(from, [], (destinations) => {
-    destinations.push(to);
-    return destinations;
-  });
-  return graph;
+  return {
+    ...graph,
+    edges: graph.edges.update(from, List(), (destinations) =>
+      destinations.push(to)
+    ),
+  };
 }
 
 function addIndex(
@@ -315,12 +323,15 @@ function addIndex(
   nodeID: NodeID,
   joinVars: Set<string>
 ): RuleGraph {
-  graph.nodes
-    .get(nodeID)
-    .cache.createIndex(getIndexName(joinVars), (bindings) => {
-      // TODO: is this gonna be a perf bottleneck?
-      // console.log({ attrs, res: ppt(res.term) });
-      return getIndexKey(bindings.bindings, joinVars);
-    });
-  return graph;
+  return {
+    ...graph,
+    nodes: graph.nodes.update(nodeID, (node) => ({
+      ...node,
+      cache: node.cache.createIndex(getIndexName(joinVars), (bindings) => {
+        // TODO: is this gonna be a perf bottleneck?
+        // console.log({ attrs, res: ppt(res.term) });
+        return getIndexKey(bindings.bindings, joinVars);
+      }),
+    })),
+  };
 }

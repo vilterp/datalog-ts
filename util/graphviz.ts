@@ -39,35 +39,39 @@ export function prettyPrintGraph(g: Graph): string {
       pp.braces,
       [
         ...(g.comments || []).map((comment) => `// ${comment}`),
-        ...g.nodes.map((node) => [
-          `"${escapeStr(node.id)}"`,
-          " [",
-          pp.intersperse(
-            " ",
-            mapObjToList(node.attrs, (attr, attrValue) => [
-              attr,
-              "=",
-              stringifyNodeAttrValue(attrValue),
-            ])
-          ),
-          "];",
-          node.comment ? ` // ${node.comment}` : "",
-        ]),
-        ...g.edges.map((edge) => [
-          stringifyEdgeID(edge.from),
-          " -> ",
-          stringifyEdgeID(edge.to),
-          " [",
-          pp.intersperse(
-            " ",
-            mapObjToList(edge.attrs, (attr, attrValue) => [
-              attr,
-              "=",
-              `"${escapeStr(attrValue)}"`,
-            ])
-          ),
-          "];",
-        ]),
+        ...g.nodes
+          .map((node) => [
+            `"${escapeStr(node.id)}"`,
+            " [",
+            pp.intersperse(
+              " ",
+              mapObjToList(node.attrs, (attr, attrValue) => [
+                attr,
+                "=",
+                stringifyNodeAttrValue(attrValue),
+              ])
+            ),
+            "];",
+            node.comment ? ` // ${node.comment}` : "",
+          ])
+          .sort(),
+        ...g.edges
+          .map((edge) => [
+            stringifyEdgeID(edge.from),
+            " -> ",
+            stringifyEdgeID(edge.to),
+            " [",
+            pp.intersperse(
+              " ",
+              mapObjToList(edge.attrs, (attr, attrValue) => [
+                attr,
+                "=",
+                `"${escapeStr(attrValue)}"`,
+              ])
+            ),
+            "];",
+          ])
+          .sort(),
       ],
       { sep: "" }
     ),

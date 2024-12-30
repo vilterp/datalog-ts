@@ -15,7 +15,7 @@ export function processJoin(
   nodeDesc: JoinDesc,
   origin: NodeID,
   payload: MessagePayload
-): MessagePayload[] {
+): [JoinDesc, MessagePayload[]] {
   const data = payload.data;
   if (data.type === "Record") {
     throw new Error("Join type not receive messages of type Record");
@@ -28,11 +28,14 @@ export function processJoin(
     origin === nodeDesc.leftID
       ? doJoin(graph, bwm, nodeDesc, nodeDesc.rightID)
       : doJoin(graph, bwm, nodeDesc, nodeDesc.leftID);
-  return results.map(({ bindings, multiplicity }) => ({
-    type: "Data",
-    multiplicity,
-    data: { type: "Bindings", bindings },
-  }));
+  return [
+    nodeDesc,
+    results.map(({ bindings, multiplicity }) => ({
+      type: "Data",
+      multiplicity,
+      data: { type: "Bindings", bindings },
+    })),
+  ];
 }
 
 export function doJoin(

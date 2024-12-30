@@ -7,29 +7,24 @@ import {
   Term,
   Bindings,
 } from "../types";
-import { List, Set } from "immutable";
+import { Map, Set, List } from "immutable";
 import { IndexedMultiSet } from "./indexedMultiSet";
-import { DefaultDict } from "../../util/defaultDict";
 
 export type NodeID = string;
 
 export type RuleGraph = {
   nextNodeID: number;
   builtins: Set<NodeID>;
-  nodes: DefaultDict<NodeID, NodeAndCache>;
-  edges: DefaultDict<NodeID, NodeID[]>;
+  nodes: Map<NodeID, NodeAndCache>;
+  edges: Map<NodeID, List<NodeID>>;
 };
 
 export function emptyRuleGraph(): RuleGraph {
   return {
     nextNodeID: 0,
     builtins: Set(),
-    nodes: new DefaultDict<NodeID, NodeAndCache>((key) => {
-      throw new Error(`not found: ${key}`);
-    }),
-    edges: new DefaultDict<NodeID, NodeID[]>((key) => {
-      throw new Error(`not found: ${key}`);
-    }),
+    nodes: Map(),
+    edges: Map(),
   };
 }
 
@@ -82,12 +77,10 @@ export type AggregationDesc = {
   state: AggregationState;
 };
 
-export type AggregationState = DefaultDict<string, Term>;
+export type AggregationState = Map<string, Term>;
 
 export function emptyAggregationState(): AggregationState {
-  return new DefaultDict<string, Term>(() => {
-    throw new Error("not found");
-  });
+  return Map();
 }
 
 // eval

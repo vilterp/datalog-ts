@@ -6,7 +6,7 @@ import { AggregationDesc, MessagePayload } from "../types";
 export function processAggregation(
   nodeDesc: AggregationDesc,
   payload: MessagePayload
-): MessagePayload[] {
+): [AggregationDesc, MessagePayload[]] {
   const aggregation = nodeDesc.aggregation;
   const aggVar = aggregation.varNames[aggregation.varNames.length - 1];
   const agg = AGGREGATIONS[aggregation.aggregation];
@@ -24,7 +24,7 @@ export function processAggregation(
         .map(fastPPT)
         .join(",");
       const hadGroupKey = nodeDesc.state.has(groupKey);
-      const curGroupState = nodeDesc.state.getWithDefault(groupKey, agg.init);
+      const curGroupState = nodeDesc.state.get(groupKey, agg.init);
       const groupBindings: Bindings = {};
       groupVars.forEach((groupVar) => {
         groupBindings[groupVar] = data.bindings.bindings[groupVar];
@@ -39,7 +39,10 @@ export function processAggregation(
         data.bindings.bindings,
         payload.multiplicity
       );
-      nodeDesc.state.set(groupKey, newGroupState);
+      const newNodeState: AggregationDesc = {
+        ...nodeDesc,
+        state: nodeDesc.state.set(groupKey, newGroupState),
+      };
 
       const oldBindings: Bindings = agg.final(curGroupState, groupInfo);
       const newBindings: Bindings = agg.final(newGroupState, groupInfo);
@@ -75,7 +78,7 @@ export function processAggregation(
         },
       });
 
-      return out;
+      return [newNodeState, out];
     }
   }
 }
