@@ -13,15 +13,18 @@ rule {
   edge = Edge()
   edge == id
   node = Node.add(id=id)
+  x = node.next.next.id
 }
 scope.Usage{}?
 ----
 application/datalog
+scope.Usage{definitionScopeID: "Node", defnSpan: span{from: 41, to: 45}, kind: "attr", name: "next", usageScopeID: "Node", usageSpan: span{from: 191, to: 195}}.
 scope.Usage{definitionScopeID: "rawNode", defnSpan: span{from: 17, to: 19}, kind: "attr", name: "id", usageScopeID: "rawNode", usageSpan: span{from: 123, to: 125}}.
 scope.Usage{definitionScopeID: 135, defnSpan: span{from: 86, to: 94}, kind: "var", name: "raw_node", usageScopeID: 174, usageSpan: span{from: 114, to: 122}}.
 scope.Usage{definitionScopeID: 174, defnSpan: span{from: 109, to: 111}, kind: "var", name: "id", usageScopeID: 231, usageSpan: span{from: 152, to: 154}}.
 scope.Usage{definitionScopeID: 174, defnSpan: span{from: 109, to: 111}, kind: "var", name: "id", usageScopeID: 250, usageSpan: span{from: 176, to: 178}}.
 scope.Usage{definitionScopeID: 206, defnSpan: span{from: 128, to: 132}, kind: "var", name: "edge", usageScopeID: 231, usageSpan: span{from: 144, to: 148}}.
+scope.Usage{definitionScopeID: 250, defnSpan: span{from: 157, to: 161}, kind: "var", name: "node", usageScopeID: 285, usageSpan: span{from: 186, to: 190}}.
 scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 32, to: 36}, kind: "type", name: "Node", usageScopeID: global{}, usageSpan: span{from: 164, to: 168}}.
 scope.Usage{definitionScopeID: global{}, defnSpan: span{from: 5, to: 12}, kind: "type", name: "rawNode", usageScopeID: global{}, usageSpan: span{from: 97, to: 104}}.
 
@@ -40,6 +43,7 @@ rule {
   edge = Edge()
   edge == id
   node = Node.add(id=id)
+  x = node.next.next.id
 }
 tc.Type{}?
 ----
