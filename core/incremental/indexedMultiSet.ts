@@ -1,95 +1,96 @@
-import { DefaultDict } from "../../util/defaultDict";
+import { List, Map, Seq, Set } from "immutable";
+
+export type Key = string; // ???
 
 export function emptyIndexedMultiset<T>(
-  stringify: (t: T) => Key
+  stringify: (t: T) => string
 ): IndexedMultiSet<T> {
-  return new IndexedMultiSet(
-    new DefaultDict<Key, ItemAndMult<T>>((key) => {
-      throw new Error(`not found: ${key}`);
-    }),
-    new DefaultDict<string, Index<T>>((key) => {
-      throw new Error(`not found: ${key}`);
-    }),
-    stringify
-  );
+  return new IndexedMultiSet(Map(), Map(), stringify);
 }
 
 type ItemAndMult<T> = { item: T; mult: number };
 
-export type Key = string;
-
 type Index<T> = {
   getKey: (t: T) => Key;
-  items: DefaultDict<Key, Set<Key>>;
+  items: Map<Key, Set<string>>;
 };
 
 export class IndexedMultiSet<T> {
-  private readonly allRecords: DefaultDict<Key, ItemAndMult<T>>;
-  private readonly indexes: DefaultDict<string, Index<T>>;
-  private readonly stringify: (t: T) => Key;
+  private readonly allRecords: Map<string, ItemAndMult<T>>;
+  private readonly indexes: Map<string, Index<T>>;
+  private readonly stringify: (t: T) => string;
   readonly size: number;
 
   constructor(
-    allRecords: DefaultDict<Key, ItemAndMult<T>>,
-    indexes: DefaultDict<string, Index<T>>,
-    stringify: (t: T) => Key
+    allRecords: Map<string, ItemAndMult<T>>,
+    indexes: Map<string, Index<T>>,
+    stringify: (t: T) => string
   ) {
     this.allRecords = allRecords;
     this.indexes = indexes;
-    this.size = allRecords.size();
+    this.size = allRecords.size;
     this.stringify = stringify;
   }
 
-  all(): IterableIterator<ItemAndMult<T>> {
-    return this.allRecords.values();
+  all(): Seq.Indexed<ItemAndMult<T>> {
+    return this.allRecords
+      .entrySeq()
+      .map(([key, value]) => ({ item: value.item, mult: value.mult }));
   }
 
   indexNames(): string[] {
-    return [...this.indexes.keys()];
+    return this.indexes.keySeq().toArray();
+  }
+
+  toJSON(): object {
+    return this.indexes.toJSON();
   }
 
   createIndex(name: string, getKey: (t: T) => Key): IndexedMultiSet<T> {
-    const indexItems = new DefaultDict<Key, Set<Key>>(() => new Set<Key>());
-    for (const [key, val] of this.allRecords.entries()) {
-      const keyForItem = getKey(val.item);
-      const itemsForKey = indexItems.get(keyForItem);
-      itemsForKey.add(keyForItem);
-    }
-    this.indexes.set(name, { getKey, items: indexItems });
-    return this;
+    return new IndexedMultiSet<T>(
+      this.allRecords,
+      this.indexes.set(name, {
+        getKey,
+        items: this.allRecords.reduce(
+          (accum, val, key) =>
+            accum.update(getKey(val.item), Set(), (l) => l.add(key)),
+          Map()
+        ),
+      }),
+      this.stringify
+    );
+  }
+
+  update(item: T, multiplicityDelta: number): IndexedMultiSet<T> {
+    // TODO: remove item if newMult is 0?
+    const key = this.stringify(item);
+    const curMult = this.allRecords.get(key, { item, mult: 0 }).mult;
+    const newMult = curMult + multiplicityDelta;
+    return new IndexedMultiSet<T>(
+      this.allRecords.set(key, { mult: newMult, item }),
+      this.indexes.map((index) => ({
+        ...index,
+        items: index.items.update(index.getKey(item), Set(), (items) =>
+          items.add(key)
+        ),
+      })),
+      this.stringify
+    );
   }
 
   get(item: T): number {
-    return this.allRecords.getWithDefault(this.stringify(item), {
-      item,
-      mult: 0,
-    }).mult;
+    const entry = this.allRecords.get(this.stringify(item));
+    return entry ? entry.mult : 0;
   }
 
   has(item: T): boolean {
     return this.allRecords.has(this.stringify(item));
   }
 
-  update(item: T, multiplicityDelta: number): IndexedMultiSet<T> {
-    // TODO: remove item if newMult is 0?
-    const key = this.stringify(item);
-    const curMult = this.allRecords.getWithDefault(key, { item, mult: 0 }).mult;
-    const newMult = curMult + multiplicityDelta;
-    this.allRecords.set(key, { item, mult: newMult });
-    for (const index of this.indexes.values()) {
-      const idxKey = index.getKey(item);
-      const items = index.items.get(idxKey);
-      items.add(key);
-    }
-    return this;
-  }
-
-  getByIndex(indexName: string, key: Key): ItemAndMult<T>[] {
-    const keySet: Set<Key> = this.indexes.get(indexName).items.get(key);
-    const out: ItemAndMult<T>[] = [];
-    for (const key of keySet) {
-      out.push(this.allRecords.get(key));
-    }
-    return out;
+  getByIndex(indexName: string, key: Key): Set<ItemAndMult<T>> {
+    const keySet: Set<string> = this.indexes
+      .get(indexName)
+      .items.get(key, Set());
+    return keySet.map((key) => this.allRecords.get(key));
   }
 }
