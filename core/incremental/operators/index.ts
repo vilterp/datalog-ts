@@ -12,10 +12,10 @@ export function processMessage(
   nodeDesc: NodeDesc,
   origin: NodeID,
   payload: MessagePayload
-): MessagePayload[] {
+): [NodeDesc, MessagePayload[]] {
   switch (nodeDesc.type) {
     case "Union":
-      return [payload];
+      return [nodeDesc, [payload]];
     case "Join":
       return processJoin(graph, nodeDesc, origin, payload);
     case "Match":
@@ -23,12 +23,12 @@ export function processMessage(
     case "Substitute":
       return processSubstitute(nodeDesc, payload);
     case "BaseFactTable":
-      return [payload];
+      return [nodeDesc, [payload]];
     case "Builtin":
       // TODO: does this make sense?
-      return [payload];
+      return [nodeDesc, [payload]];
     case "Negation":
-      return processNegation(payload);
+      return [nodeDesc, processNegation(payload)];
     case "Aggregation":
       return processAggregation(nodeDesc, payload);
     case "Distinct": {
