@@ -7,7 +7,7 @@ import {
   Term,
   Bindings,
 } from "../types";
-import { Map, Set } from "immutable";
+import { Map, Set, List } from "immutable";
 import { IndexedMultiSet } from "./indexedMultiSet";
 
 export type NodeID = string;
@@ -16,7 +16,7 @@ export type RuleGraph = {
   nextNodeID: number;
   builtins: Set<NodeID>;
   nodes: Map<NodeID, NodeAndCache>;
-  edges: Map<NodeID, NodeID[]>;
+  edges: Map<NodeID, List<NodeID>>;
 };
 
 export function emptyRuleGraph(): RuleGraph {
