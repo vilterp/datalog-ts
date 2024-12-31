@@ -1,5 +1,8 @@
+import { Point } from "../util/geom";
+
 export type Statement =
   | { type: "Rule"; rule: Rule }
+  | { type: "DeleteRule"; name: string }
   | { type: "Fact"; record: Rec }
   | { type: "Query"; record: Rec }
   | { type: "Delete"; record: Rec }
@@ -9,8 +12,9 @@ export type Statement =
 // === DB Contents ===
 
 export type Relation =
-  | { type: "Table"; name: string }
-  | { type: "Rule"; name: string; rule: Rule };
+  | { type: "Table"; name: string; columns: string[] }
+  | { type: "Rule"; name: string; rule: Rule }
+  | { type: "Builtin"; name: string; columns: string[] };
 
 // === Results ===
 
@@ -30,9 +34,19 @@ export type Rule = {
   body: Disjunction;
 };
 
-export type Disjunction = { type: "Disjunction"; disjuncts: Conjunction[] };
+// TODO: attach positions to individual elements in the rule tree
+export type PositionMap = { [nodeID: string]: Point };
 
-export type Conjunction = { type: "Conjunction"; conjuncts: Conjunct[] };
+export type Disjunction = {
+  type: "Disjunction";
+  disjuncts: Conjunction[];
+};
+
+export type Conjunction = {
+  type: "Conjunction";
+  conjuncts: Conjunct[];
+  positionMap: PositionMap;
+};
 
 export type Conjunct = Rec | Negation | Aggregation;
 
@@ -48,7 +62,9 @@ export type Aggregation = {
 
 // === Terms ===
 
-export type Term = Rec | Dict | StringLit | Var | Conjunct | Bool | Int | Array;
+export type Term = Rec | Dict | Var | Conjunct | Array | Literal;
+
+export type Literal = Int | Bool | StringLit;
 
 export type Var = { type: "Var"; name: string };
 
@@ -85,7 +101,7 @@ export function or(opts: Conjunction[]): Disjunction {
 }
 
 export function and(clauses: Conjunct[]): Conjunction {
-  return { type: "Conjunction", conjuncts: clauses };
+  return { type: "Conjunction", conjuncts: clauses, positionMap: {} };
 }
 
 // term helpers

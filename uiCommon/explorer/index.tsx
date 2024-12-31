@@ -56,6 +56,7 @@ export function Explorer(props: {
       <div style={{ padding: 10, border: "1px solid black", flexGrow: 1 }}>
         <OpenRelationsContainer
           interp={props.interp}
+          runStatements={props.runStatements}
           highlight={highlightProps}
           collapseStates={relationCollapseStates}
           setCollapseStates={setRelationCollapseStates}

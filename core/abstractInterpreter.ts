@@ -1,4 +1,4 @@
-import { Rec, Relation, Res, Rule, Statement } from "./types";
+import { rec, Rec, Relation, Res, Rule, Statement } from "./types";
 import { Loader } from "./loaders";
 import {
   DLStatement,
@@ -9,6 +9,7 @@ import {
   parserStatementToInternal,
   parserTermToInternal,
 } from "./translateAST";
+import { BUILTINS } from "./builtins";
 import { ParseErrors } from "../languageWorkbench/parserlib/types";
 
 export abstract class AbstractInterpreter {
@@ -100,13 +101,45 @@ export abstract class AbstractInterpreter {
   getRelation(name: string): Relation | null {
     const table = this.getTables().find((t) => t === name);
     if (table) {
-      return { type: "Table", name: table };
+      const contents = this.queryRec(rec(name, {}));
+      return {
+        type: "Table",
+        name,
+        columns:
+          contents.length > 0
+            ? Object.keys((contents[0].term as Rec).attrs)
+            : [],
+      };
     }
     const rule = this.getRules().find((r) => r.head.relation === name);
     if (rule) {
       return { type: "Rule", name, rule };
     }
     return null;
+  }
+
+  // TODO: return as a dict
+  getRelations(): Relation[] {
+    const relations = [
+      ...this.getRules().map(
+        (rule) =>
+          ({
+            type: "Rule",
+            name: rule.head.relation,
+            rule,
+          } as Relation)
+      ),
+      ...this.getTables().map((table) => this.getRelation(table)),
+      ...Object.values(BUILTINS).map(
+        (builtin) =>
+          ({
+            type: "Builtin",
+            name: builtin.head.relation,
+            columns: Object.keys(builtin.head.attrs),
+          } as Relation)
+      ),
+    ];
+    return relations;
   }
 
   // TODO: do these two with queries to virtual tables

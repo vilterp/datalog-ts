@@ -65,6 +65,8 @@ export function parserRuleToInternal(term: DLRule): Rule {
       type: "Disjunction",
       disjuncts: term.disjunct.map((disjunct) => ({
         type: "Conjunction",
+        // TODO: grab position map from comment
+        positionMap: {},
         conjuncts: disjunct.conjunct.map((conjunct): Conjunct => {
           switch (conjunct.type) {
             case "AssignmentOnLeft":

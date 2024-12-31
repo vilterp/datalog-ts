@@ -26,6 +26,7 @@ application/json
         "disjuncts": [
           {
             "type": "Conjunction",
+            "positionMap": {},
             "conjuncts": [
               {
                 "type": "Record",
@@ -269,6 +270,7 @@ application/json
         "disjuncts": [
           {
             "type": "Conjunction",
+            "positionMap": {},
             "conjuncts": [
               {
                 "type": "Record",
@@ -340,6 +342,7 @@ application/json
         "disjuncts": [
           {
             "type": "Conjunction",
+            "positionMap": {},
             "conjuncts": [
               {
                 "type": "Record",
@@ -397,6 +400,7 @@ application/json
         "disjuncts": [
           {
             "type": "Conjunction",
+            "positionMap": {},
             "conjuncts": [
               {
                 "type": "Record",
@@ -454,6 +458,7 @@ application/json
         "disjuncts": [
           {
             "type": "Conjunction",
+            "positionMap": {},
             "conjuncts": [
               {
                 "type": "Record",
@@ -511,6 +516,7 @@ application/json
         "disjuncts": [
           {
             "type": "Conjunction",
+            "positionMap": {},
             "conjuncts": [
               {
                 "type": "Record",
@@ -530,6 +536,7 @@ application/json
           },
           {
             "type": "Conjunction",
+            "positionMap": {},
             "conjuncts": [
               {
                 "type": "Record",
@@ -573,6 +580,7 @@ application/json
         "disjuncts": [
           {
             "type": "Conjunction",
+            "positionMap": {},
             "conjuncts": [
               {
                 "type": "Record",
@@ -702,6 +710,7 @@ application/json
         "disjuncts": [
           {
             "type": "Conjunction",
+            "positionMap": {},
             "conjuncts": [
               {
                 "type": "Negation",
@@ -742,6 +751,7 @@ application/json
         "disjuncts": [
           {
             "type": "Conjunction",
+            "positionMap": {},
             "conjuncts": [
               {
                 "type": "Aggregation",
@@ -870,6 +880,7 @@ application/json
         "disjuncts": [
           {
             "type": "Conjunction",
+            "positionMap": {},
             "conjuncts": [
               {
                 "type": "Aggregation",
@@ -961,6 +972,7 @@ application/json
         "disjuncts": [
           {
             "type": "Conjunction",
+            "positionMap": {},
             "conjuncts": [
               {
                 "type": "Record",
@@ -1055,6 +1067,7 @@ application/json
         "disjuncts": [
           {
             "type": "Conjunction",
+            "positionMap": {},
             "conjuncts": [
               {
                 "type": "Record",
@@ -1165,6 +1178,7 @@ application/json
         "disjuncts": [
           {
             "type": "Conjunction",
+            "positionMap": {},
             "conjuncts": [
               {
                 "type": "Record",
@@ -1215,6 +1229,7 @@ application/json
         "disjuncts": [
           {
             "type": "Conjunction",
+            "positionMap": {},
             "conjuncts": [
               {
                 "type": "Record",
