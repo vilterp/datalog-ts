@@ -138,6 +138,8 @@ function runMutationOnServer(
 
   if (!jsonEq(ctx.trace, req.trace)) {
     console.warn("SERVER: rejecting txn due to trace mismatch", {
+      invocation: req.invocation,
+      from: clientID,
       serverTrace: ctx.trace,
       clientTrace: req.trace,
     });
