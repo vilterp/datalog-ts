@@ -18,7 +18,7 @@ const INCR_CACHE = new InterpCache(
   () => new IncrementalInterpreter(BASE_PATH, fsLoader)
 );
 
-export function lwbTests(writeResults: boolean): Suite {
+export function languageTests(writeResults: boolean): Suite {
   return [
     "fp",
     "sql",
