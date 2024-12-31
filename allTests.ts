@@ -1,48 +1,20 @@
 import { runSuites, Suite } from "./util/testBench/testing";
-import { unifyTests } from "./core/unifyTests";
-import {
-  coreTestsSimple,
-  coreTestsIncremental,
-  coreTestsCommon,
-  parserTests,
-  joinOrderTests,
-} from "./core/ddTests";
-import { prettyPrintTests } from "./core/prettyTest";
-import { treeTests } from "./util/treeTest";
-import { parserlibTests } from "./languageWorkbench/parserlib/ddTests";
-import { incrTests } from "./core/incremental/ddTests";
-import { sourcePositionsTests } from "./languageWorkbench/sourcePositionsTest";
-import { executionVisualizerTests } from "./apps/executionVisualizer/ddTests";
-import { kvSyncTests } from "./apps/actors/systems/kvSync/ddTests";
-import { nativeTests } from "./languageWorkbench/languages/dl/nativeTests";
-import { lwbTests } from "./languageWorkbench/ddTests";
-import { optTests } from "./core/opt/optTests";
-import { dl2Tests } from "./languageWorkbench/languages/dl2/compiler/ddTests";
+import { coreTests } from "./core/tests";
+import { lwbTests } from "./languageWorkbench/tests";
+import { appsTests } from "./apps/tests";
+import { utilTests } from "./util/tests";
 
 // TODO: use a real arg parser
 const flags = new Set(process.argv.slice(2));
 const writeResults = flags.has("--write-results");
 const stayAlive = flags.has("--stay-alive");
 
+// TODO: nested suites
 const suites: { [name: string]: Suite } = {
-  unifyTests,
-  parserTests: parserTests(writeResults),
-  // TODO: it does seem kind of bad to have two test suites that use the same set of dd files
-  coreTestsSimple: coreTestsSimple(writeResults),
-  coreTestsIncremental: coreTestsIncremental(writeResults),
-  coreTestsCommon: coreTestsCommon(writeResults),
-  joinOrderTests: joinOrderTests(writeResults),
-  incrTests: incrTests(writeResults),
-  prettyPrintTests,
-  treeTests,
-  parserlibTests: parserlibTests(writeResults),
-  sourcePositionsTests,
-  kvSync: kvSyncTests(writeResults),
-  executionVisualizer: executionVisualizerTests(writeResults),
-  dl2Tests: dl2Tests(writeResults),
-  lwbTests: lwbTests(writeResults),
-  lwbNativeDatalogTests: nativeTests,
-  optTests: optTests(writeResults),
+  ...coreTests(writeResults),
+  ...lwbTests(writeResults),
+  ...appsTests(writeResults),
+  ...utilTests(writeResults),
 };
 
 try {
