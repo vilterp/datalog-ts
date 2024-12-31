@@ -18,3 +18,13 @@ export function processDistinct(
     curMult < 1 && newMult >= 1 ? 1 : curMult >= 1 && newMult < 1 ? -1 : 0;
   return [newDesc, [{ ...payload, multiplicity: multDiff }]];
 }
+
+function getMultDiff(curMult: number, newMult: number): number {
+  if (curMult < 1 && newMult >= 1) {
+    return 1;
+  }
+  if (curMult >= 1 && newMult < 1) {
+    return -1;
+  }
+  return 0;
+}
